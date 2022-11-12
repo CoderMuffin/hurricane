@@ -1,6 +1,8 @@
 { pkgs }: {
 	deps = [
-		pkgs.ffmpeg.bin
+		pkgs.sudo
+  pkgs.tree
+  pkgs.ffmpeg.bin
   pkgs.valgrind-light
   pkgs.clang_12
 		pkgs.ccls

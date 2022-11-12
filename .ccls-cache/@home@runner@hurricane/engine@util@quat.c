@@ -17,6 +17,8 @@ typedef struct hc_quaternion {
 #define M_PI (3.14159265358979323846)
 #endif
 
+const hc_quaternion hc_quaternion_identity = {1, {0, 0, 0}};
+
 void hc_quaternion_set(double w, double v1, double v2, double v3,
                        hc_quaternion *output) {
   assert(output != NULL);
@@ -31,11 +33,11 @@ void hc_quaternion_set_identity(hc_quaternion *q) {
   hc_quaternion_set(1, 0, 0, 0, q);
 }
 
-void hc_quaternion_copy(hc_quaternion *q, hc_quaternion *output) {
+void hc_quaternion_copy(const hc_quaternion *q, hc_quaternion *output) {
   hc_quaternion_set(q->w, q->v[0], q->v[1], q->v[2], output);
 }
 
-bool hc_quaternion_equal(hc_quaternion *q1, hc_quaternion *q2) {
+bool hc_quaternion_eq(const hc_quaternion *q1, const hc_quaternion *q2) {
   bool equalW = fabs(q1->w - q2->w) <= QUATERNION_EPS;
   bool equalV0 = fabs(q1->v[0] - q2->v[0]) <= QUATERNION_EPS;
   bool equalV1 = fabs(q1->v[1] - q2->v[1]) <= QUATERNION_EPS;
@@ -47,7 +49,7 @@ void hc_quaternion_fprint(FILE *file, hc_quaternion *q) {
   fprintf(file, "(%.3f, %.3f, %.3f, %.3f)", q->w, q->v[0], q->v[1], q->v[2]);
 }
 
-void hc_quaternion_from_axis_angle(double axis[3], double angle,
+void hc_quaternion_from_axis_angle(const double axis[3], const double angle,
                                    hc_quaternion *output) {
   assert(output != NULL);
   // Formula from
@@ -157,7 +159,7 @@ void hc_quaternion_normalize(hc_quaternion *q, hc_quaternion *output) {
                     output);
 }
 
-void hc_quaternion_multiply(hc_quaternion *q1, hc_quaternion *q2,
+void hc_quaternion_mul(hc_quaternion *q1, hc_quaternion *q2,
                             hc_quaternion *output) {
   assert(output != NULL);
   hc_quaternion result;
