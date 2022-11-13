@@ -2,10 +2,12 @@
 #define HC_RENDERER
 
 typedef struct hc_renderer {
-  void (*before_render)();
+  void (*init)();
+  void (*pre_frame)();
   void (*triangle)(int, int, double, int, int, double, int, int, double,
                    unsigned char, unsigned char, unsigned char);
-  void (*render)();
+  void (*frame)();
+  void (*finish)();
 } hc_renderer;
 
 #endif

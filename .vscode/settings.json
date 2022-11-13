@@ -2,6 +2,9 @@
     "files.associations": {
         "cstdlib": "c",
         "cmath": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "gdiplus.h": "c",
+        "iostream": "c",
+        "ios": "c"
     }
 }
