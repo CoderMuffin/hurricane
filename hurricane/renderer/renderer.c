@@ -1,5 +1,6 @@
 #ifndef HC_RENDERER
 #define HC_RENDERER
+#include "../shared.c"
 
 typedef struct hc_renderer {
   void (*init)();
@@ -8,6 +9,7 @@ typedef struct hc_renderer {
                    unsigned char, unsigned char, unsigned char);
   void (*frame)();
   void (*finish)();
+  double **internal_depth_buf;
 } hc_renderer;
 
 #endif

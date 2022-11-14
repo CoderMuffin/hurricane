@@ -136,7 +136,8 @@ const hc_renderer hc_renderer_sdl = {
     .pre_frame = hc_sdl_pre_frame,
     .triangle = hc_sdl_triangle,
     .frame = hc_sdl_frame,
-    .finish = hc_sdl_finish
+    .finish = hc_sdl_finish,
+    .internal_depth_buf = hc_sdl_depth_buf
 };
 
 #endif

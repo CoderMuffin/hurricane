@@ -1,6 +1,7 @@
 #ifndef HC_VIDEO_RENDER
 #define HC_VIDEO_RENDER
 #include "../shared.c"
+#include "renderer.c"
 #include <stdio.h>
 #include <memory.h>
 #include <math.h>
@@ -102,4 +103,12 @@ void hc_video_finish() {
   fflush(hc_video_pipe);
   pclose(hc_video_pipe);
 }
+const hc_renderer hc_renderer_video = {
+    .init = hc_video_init,
+    .pre_frame = hc_video_pre_frame,
+    .triangle = hc_video_triangle,
+    .frame = hc_video_frame,
+    .finish = hc_video_finish,
+    .internal_depth_buf = hc_video_depth_buf
+};
 #endif

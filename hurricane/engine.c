@@ -10,6 +10,7 @@
 #include <stdlib.h>
 
 bool hc_internal_quit = false;
+int debug_triangle_count = 0;
 hc_renderer hc_internal_engine_renderer;
 
 double hc_internal_eye_dist = 8;
@@ -57,6 +58,8 @@ void hc_render_object(hc_object *camera, hc_object *object) {
     hc_world_to_screen(camera, hc_internal_frame_tmp_vec, c);
     double cz = hc_internal_frame_tmp_vec[2];
 
+    debug_triangle_count++;
+
     hc_internal_engine_renderer.triangle(a[0], a[1], az, b[0], b[1], bz, c[0], c[1], cz,
                             object->geometry->colors[i],
                             object->geometry->colors[i + 1],
@@ -73,8 +76,10 @@ void hc_init(const bool hc_render_progress, int frames, hc_renderer renderer, vo
   hc_internal_engine_renderer = renderer;
   int i = 0;
   while (!hc_internal_quit && (frames == -1 || i++ < frames)) {
+    debug_triangle_count = 0;
     hc_internal_engine_renderer.pre_frame();
     update();
+    printf("Triangles: %d");
     hc_internal_engine_renderer.frame();
     if (hc_render_progress) {
       printf("\rProcessing frame %d/%d", i, frames);

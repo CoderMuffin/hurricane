@@ -180,7 +180,8 @@ const hc_renderer hc_renderer_console = {
     .pre_frame = hc_console_pre_frame,
     .triangle = hc_console_triangle,
     .frame = hc_console_frame,
-    .finish = hc_console_finish
+    .finish = hc_console_finish,
+    .internal_depth_buf = hc_console_depth_buf
 };
 
 #endif
