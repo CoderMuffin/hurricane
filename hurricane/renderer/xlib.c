@@ -195,7 +195,7 @@ const hc_renderer hc_renderer_xlib = {
     .triangle = hc_xlib_triangle,
     .frame = hc_xlib_frame,
     .finish = hc_xlib_finish,
-    .internal_depth_buf = hc_xlib_depth_buf
+    .internal_depth_buf = (double**)hc_xlib_depth_buf
 };
 
 #endif

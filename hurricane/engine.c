@@ -49,14 +49,19 @@ void hc_render_object(hc_object *camera, hc_object *object) {
     hc_geometry_to_world(object, i, hc_internal_frame_tmp_vec);
     hc_world_to_screen(camera, hc_internal_frame_tmp_vec, a);
     double az = hc_internal_frame_tmp_vec[2];
+    double depth_az = (*hc_internal_engine_renderer.internal_depth_buf)[a[1] * HC_RENDER_SIZE_X + a[0]];
 
     hc_geometry_to_world(object, i + 1, hc_internal_frame_tmp_vec);
     hc_world_to_screen(camera, hc_internal_frame_tmp_vec, b);
     double bz = hc_internal_frame_tmp_vec[2];
+    double depth_bz = (*hc_internal_engine_renderer.internal_depth_buf)[b[1] * HC_RENDER_SIZE_X + b[0]];
 
     hc_geometry_to_world(object, i + 2, hc_internal_frame_tmp_vec);
     hc_world_to_screen(camera, hc_internal_frame_tmp_vec, c);
     double cz = hc_internal_frame_tmp_vec[2];
+    double depth_cz = (*hc_internal_engine_renderer.internal_depth_buf)[c[1] * HC_RENDER_SIZE_X + c[0]];
+
+    if (depth_az < az && depth_bz < bz && depth_cz < cz) continue;
 
     debug_triangle_count++;
 
@@ -79,7 +84,7 @@ void hc_init(const bool hc_render_progress, int frames, hc_renderer renderer, vo
     debug_triangle_count = 0;
     hc_internal_engine_renderer.pre_frame();
     update();
-    printf("Triangles: %d");
+    printf("Triangles: %d\n", debug_triangle_count);
     hc_internal_engine_renderer.frame();
     if (hc_render_progress) {
       printf("\rProcessing frame %d/%d", i, frames);

@@ -109,6 +109,6 @@ const hc_renderer hc_renderer_video = {
     .triangle = hc_video_triangle,
     .frame = hc_video_frame,
     .finish = hc_video_finish,
-    .internal_depth_buf = hc_video_depth_buf
+    .internal_depth_buf = (double**)hc_video_depth_buf
 };
 #endif
