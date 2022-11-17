@@ -2,18 +2,18 @@ int logq = 0;
 
 #include "hurricane/engine.c"
 #include "hurricane/shared.c"
-#include "hurricane/renderer/console.c"
-//#include "hurricane/renderer/video.c"
-//#include "hurricane/renderer/xlib.c"
-#include "hurricane/renderer/SDL.c"
+//#include "hurricane/renderer/console.c"
+#include "hurricane/renderer/video.c"
+#include "hurricane/renderer/xlib.c"
+//#include "hurricane/renderer/SDL.c"
 #include "hurricane/input.c"
 
-#include "hurricane/util/anim.c"
+#include "hurricane/anim.c"
 #include "hurricane/util/log.c"
-#include <stdio.h>
 #include <stdbool.h>
+#include <stdio.h>
 
-
+double x_rot, y_rot;
 void noop() {}
 
 bool w_down = false, s_down = false, a_down = false, d_down = false;
@@ -31,28 +31,44 @@ double tmpvec[3] = {0.02, 0.02, 0};
 double tmpvecupdate[3];
 
 void update() {
-  //hc_quaternion_mul(&cube.rotation, &tick, &cube.rotation);
+  // hc_quaternion_mul(&cube.rotation, &tick, &cube.rotation);
   hc_quaternion_mul(&cube2.rotation, &tick, &cube2.rotation);
   hc_quaternion_mul(&cube2.rotation, &tick, &cube2.rotation);
+  // if (w_down) {
+  //   hc_quaternion_rotate(&camera.rotation, (double[]){0, 0, 0.1}, tmpvecupdate);
+  //   hc_vec3_add(camera.position, tmpvecupdate, camera.position);
+  // }
+  // if (s_down) {
+  //   hc_quaternion_rotate(&camera.rotation, (double[]){0, 0, -0.1},
+  //                        tmpvecupdate);
+  //   hc_vec3_add(camera.position, tmpvecupdate, camera.position);
+  // }
   if (w_down) {
-    hc_quaternion_rotate(&camera.rotation, (double[]){0, 0, 0.1}, tmpvecupdate);
-    hc_vec3_add(camera.position, tmpvecupdate, camera.position);
+    x_rot -= 3 * DEG2RAD;
   }
   if (s_down) {
-    hc_quaternion_rotate(&camera.rotation, (double[]){0, 0, -0.1},
-                         tmpvecupdate);
-    hc_vec3_add(camera.position, tmpvecupdate, camera.position);
+    x_rot += 3 * DEG2RAD;
   }
-  if (a_down)
-    hc_quaternion_mul(&camera.rotation, &camera_small_left, &camera.rotation);
-  if (d_down)
-    hc_quaternion_mul(&camera.rotation, &camera_small_right, &camera.rotation);
+  if (a_down) {
+    y_rot += 3 * DEG2RAD;
+  }
+  if (d_down) {
+    y_rot -= 3 * DEG2RAD;
+  }
+  if (w_down || s_down || a_down || d_down) {
+    hc_quaternion_from_euler_zyx(VEC3(x_rot, y_rot, 0), &camera.rotation);
+    double tmp_vec[3];
+    hc_quaternion_rotate(&camera.rotation, VEC3(0,0,-3), tmp_vec);
+    hc_vec3_add(VEC3(0,0,3), tmp_vec, camera.position);
+  }
   // hc_vec3_add(cube->position, tmpvec, cube->position);
   hc_render_object(&camera, &cube);
+
   hc_render_object(&camera, &cube2);
   hc_anim_step(&cube_anim, 0.002, &cube.rotation);
-  // printf("anim: time:%f playing:%d looping:%d\n", cube_anim.time, cube_anim.playing, cube_anim.looping);
-  // printf("%f %f %f\n", cube.position[0], cube.position[1], cube.position[2]);
+  // printf("anim: time:%f playing:%d looping:%d\n", cube_anim.time,
+  // cube_anim.playing, cube_anim.looping); printf("%f %f %f\n",
+  // cube.position[0], cube.position[1], cube.position[2]);
   if (logq) {
     logq = false;
   }
@@ -92,37 +108,38 @@ void on_key_down(void *e) {
 
 int main(int argc, char **argv) {
   // hc_xlib_init();
-  renderer = hc_renderer_sdl;
+  renderer = hc_renderer_xlib;
   renderer.init();
   // hc_video_init();
   // hc_console_init();
   // hc_init_geometries();
   hc_input_subscribe(on_key_down, HC_INPUT_KEYDOWN);
   hc_input_subscribe(on_key_up, HC_INPUT_KEYUP);
-  //hc_anim_new(&cube_anim, (hc_keyframe[]){{VEC3(-2,0,5),0}, {VEC3(-2,1,5),1}, {VEC3(-2,0,5),2}}, 3, hc_animator_vec3);
-  
-  hc_anim_new(&cube_anim, (hc_keyframe[]){
-    {QUAT(0,0,0),0},
-    {QUAT(0,M_PI,0),1},
-    {QUAT(0,M_PI*2,0),2}
-  }, 3, hc_animator_quaternion);
+  // hc_anim_new(&cube_anim, (hc_keyframe[]){{VEC3(-2,0,5),0}, {VEC3(-2,1,5),1},
+  // {VEC3(-2,0,5),2}}, 3, hc_animator_vec3);
+
+  hc_anim_new(&cube_anim,
+              (hc_keyframe[]){{QUAT(M_PI, 0, 0), 0},
+                              {QUAT(M_PI, M_PI, 0), 1},
+                              {QUAT(M_PI, M_PI * 2, 0), 2}},
+              3, hc_animator_quaternion);
   cube_anim.looping = true;
-  
+
   hc_set_fov(70, false);
-  double tmp_vec[3] = {0, 0, 3};
   hc_quaternion_from_euler_zyx(
       (double[3]){0 / 180 * M_PI, 2.0 / 180 * M_PI, 0 / 180 * M_PI}, &tick);
   hc_quaternion_from_y_rotation(-2.0 * DEG2RAD, &camera_small_left);
   hc_quaternion_from_y_rotation(2.0 * DEG2RAD, &camera_small_right);
-  hc_new_object(&cube, &hc_geometry_sphere5, tmp_vec, hc_quaternion_identity,
-                hc_vec3_one);
+  hc_geometry geometry_teapot;
+  hc_geometry_from_obj("teapot.obj", &geometry_teapot);
+  hc_new_object(&cube, &geometry_teapot, VEC3(0, 1, 3), hc_quaternion_identity,
+                (double[]){0.5, 0.5, 0.5});
 
-  hc_new_object(&camera, &hc_geometry_none, hc_vec3_zero,
+  hc_new_object(&camera, &hc_geometry_none, VEC3(0, 0, 0),
                 hc_quaternion_identity, hc_vec3_one);
 
-  double tmp_vec2[3] = {1.2, 0, 3};
 
-  hc_new_object(&cube2, &hc_geometry_cube, tmp_vec2, hc_quaternion_identity,
+  hc_new_object(&cube2, &hc_geometry_cube, VEC3(1.2, 0, 3), hc_quaternion_identity,
                 (double[]){1, 0.2, 0.2});
   // hc_init(false, 200, hc_video_pre_frame, hc_video_triangle, hc_video_frame,
   //        update);
@@ -132,10 +149,10 @@ int main(int argc, char **argv) {
   // hc_world_to_screen(&camera, (double[]){4, 0, -1}, tmp);
   // printf("%d %d\n", tmp[0], tmp[1]);
   // exit(1);
-  hc_init(false, 2500, renderer, update);
+  hc_init(false, 5000, renderer, update);
 
   renderer.finish();
-  //hc_sdl_finish();
+  // hc_sdl_finish();
   // hc_video_finish();
   return 0;
 }
@@ -173,7 +190,7 @@ int main(int argc, char **argv) {
 //           100, 100, 280, 220, NULL, NULL, hInstance, NULL);
 
 //     while (GetMessage(&msg, NULL, 0, 0)) {
-        
+
 //         TranslateMessage(&msg);
 //         DispatchMessage(&msg);
 //     }
@@ -194,25 +211,25 @@ int main(int argc, char **argv) {
 //     switch(msg) {
 
 //         case WM_CREATE:
-     
-//              hBitmap = (HBITMAP) LoadImageW(NULL, L"blackbuck.bmp", 
+
+//              hBitmap = (HBITMAP) LoadImageW(NULL, L"blackbuck.bmp",
 //                         IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
 //              if (hBitmap == NULL) {
-//                  MessageBoxW(hwnd, L"Failed to load image", L"Error", MB_OK); 
+//                  MessageBoxW(hwnd, L"Failed to load image", L"Error", MB_OK);
 //              }
 
-//              break;      
+//              break;
 
 //         case WM_PAINT:
-        
+
 //              hdc = BeginPaint(hwnd, &ps);
 
 //              hdcMem = CreateCompatibleDC(hdc);
 //              oldBitmap = SelectObject(hdcMem, hBitmap);
 
 //              GetObject(hBitmap, sizeof(bitmap), &bitmap);
-//              BitBlt(hdc, 5, 5, bitmap.bmWidth, bitmap.bmHeight, 
+//              BitBlt(hdc, 5, 5, bitmap.bmWidth, bitmap.bmHeight,
 //                  hdcMem, 0, 0, SRCCOPY);
 //               printf("aloha\n");
 //              SelectObject(hdcMem, oldBitmap);
@@ -226,7 +243,7 @@ int main(int argc, char **argv) {
 
 //             DeleteObject(hBitmap);
 //             PostQuitMessage(0);
-            
+
 //             return 0;
 //     }
 

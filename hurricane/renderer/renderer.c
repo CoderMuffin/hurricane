@@ -9,7 +9,7 @@ typedef struct hc_renderer {
                    unsigned char, unsigned char, unsigned char);
   void (*frame)();
   void (*finish)();
-  double **internal_depth_buf;
+  double (*internal_depth_buf)[HC_RENDER_SIZE_Y][HC_RENDER_SIZE_X];
 } hc_renderer;
 
 #endif

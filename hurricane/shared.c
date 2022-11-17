@@ -2,8 +2,8 @@
 #define HC_SHARED
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
-#define HC_RENDER_SIZE_X (512)
-#define HC_RENDER_SIZE_Y (512)
+#define HC_RENDER_SIZE_X 512
+#define HC_RENDER_SIZE_Y 512
 #define HC_RENDER_SIZE_STR_X STR(HC_RENDER_SIZE_X)
 #define HC_RENDER_SIZE_STR_Y STR(HC_RENDER_SIZE_Y)
 #define DEG2RAD (M_PI / 180)

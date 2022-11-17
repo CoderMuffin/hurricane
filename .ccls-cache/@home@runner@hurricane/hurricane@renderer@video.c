@@ -1,6 +1,7 @@
 #ifndef HC_VIDEO_RENDER
 #define HC_VIDEO_RENDER
 #include "../shared.c"
+#include "renderer.c"
 #include <stdio.h>
 #include <memory.h>
 #include <math.h>
@@ -15,6 +16,7 @@ FILE *hc_video_pipe;
 //   *a = temp;
 // }
 void hc_video_init() {
+  //printf(("ideo -pix_fmt rgb24 " "-s " HC_RENDER_SIZE_STR_X "x" HC_RENDER_SIZE_STR_Y " "));
   hc_video_pipe = popen("ffmpeg -fflags +discardcorrupt -hide_banner -y -f rawvideo -vcodec rawvideo -pix_fmt rgb24 "
                         "-s " HC_RENDER_SIZE_STR_X "x" HC_RENDER_SIZE_STR_Y " "
                         "-r 25 -i - -f mp4 -q:v 2 -an -vcodec mpeg4 output.mp4",
@@ -102,4 +104,12 @@ void hc_video_finish() {
   fflush(hc_video_pipe);
   pclose(hc_video_pipe);
 }
+const hc_renderer hc_renderer_video = {
+    .init = hc_video_init,
+    .pre_frame = hc_video_pre_frame,
+    .triangle = hc_video_triangle,
+    .frame = hc_video_frame,
+    .finish = hc_video_finish,
+    .internal_depth_buf = &hc_video_depth_buf
+};
 #endif

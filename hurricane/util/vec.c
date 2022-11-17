@@ -67,11 +67,25 @@ double hc_vec3_mag(const double v[3]) {
   return sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 }
 
+void hc_vec3_cross(const double a[3], const double b[3], double out[3]) {
+  out[0] = a[1]*b[2] - a[2]*b[1];  
+  out[1] = a[2]*b[0] - a[0]*b[2];
+  out[2] = a[0]*b[1] - a[1]*b[0];
+}
+
+void hc_vec3_normalise(const double in[3], double out[3]) {
+  hc_vec3_div(in, hc_vec3_mag(in), out);
+}
+
 void hc_vec3_lerp(const double a[3], const double b[3], double f,
                   double out[3]) {
   out[0] = a[0] * (1.0 - f) + (b[0] * f);
   out[1] = a[1] * (1.0 - f) + (b[1] * f);
   out[2] = a[2] * (1.0 - f) + (b[2] * f);
+}
+
+double hc_vec3_dot(const double a[3], const double b[3]) {
+  return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
 #endif

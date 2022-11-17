@@ -4,6 +4,7 @@
 #include "../X11/X.h"
 #include "../input.c"
 #include "../shared.c"
+#include "renderer.c"
 #include <math.h>
 #include <memory.h>
 #include <stdio.h>
@@ -186,5 +187,15 @@ void hc_xlib_finish() {
   // fflush(hc_xlib_pipe);
   // pclose(hc_xlib_pipe);
 }
+
+
+const hc_renderer hc_renderer_xlib = {
+    .init = hc_xlib_init,
+    .pre_frame = hc_xlib_pre_frame,
+    .triangle = hc_xlib_triangle,
+    .frame = hc_xlib_frame,
+    .finish = hc_xlib_finish,
+    .internal_depth_buf = &hc_xlib_depth_buf
+};
 
 #endif
