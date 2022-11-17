@@ -10,7 +10,7 @@
 #define VEC3(x, y, z) ((double[]){(x), (y), (z)})
 #define QUAT(x, y, z) ((hc_quaternion[]){hc_quaternion_new_euler_zyx(VEC3((z), (y), (x)))})
 
-int hc_render_bg[3] = {20, 20, 20};
+int hc_render_bg[3] = {205, 20, 250};
 
 void swap_int(int *a, int *b) {
   int temp = *b;

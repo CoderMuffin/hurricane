@@ -32,8 +32,8 @@ double tmpvecupdate[3];
 
 void update() {
   // hc_quaternion_mul(&cube.rotation, &tick, &cube.rotation);
-  hc_quaternion_mul(&cube2.rotation, &tick, &cube2.rotation);
-  hc_quaternion_mul(&cube2.rotation, &tick, &cube2.rotation);
+  //hc_quaternion_mul(&cube2.rotation, &tick, &cube2.rotation);
+  //hc_quaternion_mul(&cube2.rotation, &tick, &cube2.rotation);
   // if (w_down) {
   //   hc_quaternion_rotate(&camera.rotation, (double[]){0, 0, 0.1}, tmpvecupdate);
   //   hc_vec3_add(camera.position, tmpvecupdate, camera.position);
@@ -50,16 +50,20 @@ void update() {
     x_rot += 3 * DEG2RAD;
   }
   if (a_down) {
-    y_rot -= 3 * DEG2RAD;
-  }
-  if (d_down) {
     y_rot += 3 * DEG2RAD;
   }
+  if (d_down) {
+    y_rot -= 3 * DEG2RAD;
+  }
   if (w_down || s_down || a_down || d_down) {
-    hc_quaternion_from_euler_zyx(x_rot, y_rot, 0);    
+    hc_quaternion_from_euler_zyx(VEC3(x_rot, y_rot, 0), &camera.rotation);
+    double tmp_vec[3];
+    hc_quaternion_rotate(&camera.rotation, VEC3(0,0,-3), tmp_vec);
+    hc_vec3_add(VEC3(0,0,3), tmp_vec, camera.position);
   }
   // hc_vec3_add(cube->position, tmpvec, cube->position);
   hc_render_object(&camera, &cube);
+
   hc_render_object(&camera, &cube2);
   hc_anim_step(&cube_anim, 0.002, &cube.rotation);
   // printf("anim: time:%f playing:%d looping:%d\n", cube_anim.time,
@@ -104,7 +108,7 @@ void on_key_down(void *e) {
 
 int main(int argc, char **argv) {
   // hc_xlib_init();
-  renderer = hc_renderer_video;
+  renderer = hc_renderer_xlib;
   renderer.init();
   // hc_video_init();
   // hc_console_init();
@@ -131,7 +135,7 @@ int main(int argc, char **argv) {
   hc_new_object(&cube, &geometry_teapot, VEC3(0, 1, 3), hc_quaternion_identity,
                 (double[]){0.5, 0.5, 0.5});
 
-  hc_new_object(&camera, &hc_geometry_none, hc_vec3_zero,
+  hc_new_object(&camera, &hc_geometry_none, VEC3(0, 0, 0),
                 hc_quaternion_identity, hc_vec3_one);
 
 
@@ -145,7 +149,7 @@ int main(int argc, char **argv) {
   // hc_world_to_screen(&camera, (double[]){4, 0, -1}, tmp);
   // printf("%d %d\n", tmp[0], tmp[1]);
   // exit(1);
-  hc_init(false, 50, renderer, update);
+  hc_init(false, 5000, renderer, update);
 
   renderer.finish();
   // hc_sdl_finish();

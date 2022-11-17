@@ -13,7 +13,7 @@ bool hc_internal_quit = false;
 int debug_triangle_count = 0;
 hc_renderer hc_internal_engine_renderer;
 
-double hc_internal_eye_dist = 8;
+double hc_internal_eye_dist = HC_RENDER_SIZE_X / (2 * 0.7); //70 fov default
 void (*hc_render_triangle_call)(int, int, double, int, int, double, int, int,
                                 double, unsigned char, unsigned char,
                                 unsigned char);

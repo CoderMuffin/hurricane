@@ -32,8 +32,8 @@ double tmpvecupdate[3];
 
 void update() {
   // hc_quaternion_mul(&cube.rotation, &tick, &cube.rotation);
-  hc_quaternion_mul(&cube2.rotation, &tick, &cube2.rotation);
-  hc_quaternion_mul(&cube2.rotation, &tick, &cube2.rotation);
+  //hc_quaternion_mul(&cube2.rotation, &tick, &cube2.rotation);
+  //hc_quaternion_mul(&cube2.rotation, &tick, &cube2.rotation);
   // if (w_down) {
   //   hc_quaternion_rotate(&camera.rotation, (double[]){0, 0, 0.1}, tmpvecupdate);
   //   hc_vec3_add(camera.position, tmpvecupdate, camera.position);

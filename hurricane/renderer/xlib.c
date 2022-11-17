@@ -92,9 +92,9 @@ void hc_xlib_pre_frame() {
   // memset(hc_xlib_depth_buf, 0, sizeof(hc_xlib_depth_buf));
   for (int y = 0; y < HC_RENDER_SIZE_Y; y++)
     for (int x = 0; x < HC_RENDER_SIZE_X; x++) {
-      hc_xlib_image->data[(y * HC_RENDER_SIZE_X + x) * 4 + 0] = hc_render_bg[0];
+      hc_xlib_image->data[(y * HC_RENDER_SIZE_X + x) * 4 + 0] = hc_render_bg[2];
       hc_xlib_image->data[(y * HC_RENDER_SIZE_X + x) * 4 + 1] = hc_render_bg[1];
-      hc_xlib_image->data[(y * HC_RENDER_SIZE_X + x) * 4 + 2] = hc_render_bg[2];
+      hc_xlib_image->data[(y * HC_RENDER_SIZE_X + x) * 4 + 2] = hc_render_bg[0];
       hc_xlib_depth_buf[y][x] = INFINITY;
     }
 }
@@ -138,9 +138,9 @@ void hc_xlib_triangle(int x0, int y0, double z0, int x1, int y1, double z1,
         }
         if (depth < hc_xlib_depth_buf[y][x]) {
           hc_xlib_depth_buf[y][x] = depth;
-          hc_xlib_image->data[(y * HC_RENDER_SIZE_X + x) * 4 + 0] = r;
-          hc_xlib_image->data[(y * HC_RENDER_SIZE_X + x) * 4 + 1] = g;
-          hc_xlib_image->data[(y * HC_RENDER_SIZE_X + x) * 4 + 2] = b;
+          hc_xlib_image->data[(y * HC_RENDER_SIZE_X + x) * 4 + 0] = depth * 70;
+          hc_xlib_image->data[(y * HC_RENDER_SIZE_X + x) * 4 + 1] = depth * 70;
+          hc_xlib_image->data[(y * HC_RENDER_SIZE_X + x) * 4 + 2] = depth * 70;
         }
       }
       for (int x = (xf < HC_RENDER_SIZE_X ? (int)(xf) : HC_RENDER_SIZE_X - 1);
@@ -156,9 +156,9 @@ void hc_xlib_triangle(int x0, int y0, double z0, int x1, int y1, double z1,
         }
         if (depth < hc_xlib_depth_buf[y][x]) {
           hc_xlib_depth_buf[y][x] = depth;
-          hc_xlib_image->data[(y * HC_RENDER_SIZE_X + x) * 4 + 0] = r;
-          hc_xlib_image->data[(y * HC_RENDER_SIZE_X + x) * 4 + 1] = g;
-          hc_xlib_image->data[(y * HC_RENDER_SIZE_X + x) * 4 + 2] = b;
+          hc_xlib_image->data[(y * HC_RENDER_SIZE_X + x) * 4 + 0] = depth * 70;
+          hc_xlib_image->data[(y * HC_RENDER_SIZE_X + x) * 4 + 1] = depth * 70;
+          hc_xlib_image->data[(y * HC_RENDER_SIZE_X + x) * 4 + 2] = depth * 70;
         }
       }
     }
