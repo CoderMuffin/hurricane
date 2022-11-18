@@ -16,7 +16,7 @@ typedef struct hc_geometry {
   unsigned int face_count;
 } hc_geometry;
 
-int getline(char **lineptr, size_t *n, FILE *stream) {
+int hc_getline(char **lineptr, size_t *n, FILE *stream) {
     char *bufptr = NULL;
     char *p = bufptr;
     size_t size;

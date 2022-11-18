@@ -2,13 +2,14 @@
 #define HC_RENDER
 #include "../shared.c"
 #include <stdio.h>
-#include <pthread.h>
 #include <stdlib.h>
 #include "../input.c"
 #include <string.h>
+#include <math.h>
+#include "renderer.c"
 #define CHAR_SIZE (sizeof(char) * 30)
 
-unsigned char *hc_draw_buf;
+unsigned char *hc_console_buf;
 char *hc_console_char_buf;
 char *map_buf;
 
@@ -27,28 +28,28 @@ void *hc_internal_console_input_handler(void *_) {
 
 void hc_console_init() {
   printf("\033[H\033[J");
-  pthread_t input_thread;
-  hc_draw_buf =
+  //pthread_t input_thread;
+  //pthread_create(&input_thread, NULL, hc_internal_console_input_handler, NULL);
+  hc_console_buf =
       calloc(HC_RENDER_SIZE_X * HC_RENDER_SIZE_Y * 3, sizeof(unsigned char));
   hc_console_char_buf =
       malloc((HC_RENDER_SIZE_X * 2 + 1) * HC_RENDER_SIZE_Y * CHAR_SIZE + 1);
   map_buf = malloc(CHAR_SIZE);
   printf("alloc'd %d\n", (HC_RENDER_SIZE_X * 2 + 1) * HC_RENDER_SIZE_Y);
-  pthread_create(&input_thread, NULL, hc_internal_console_input_handler, NULL);
 }
 
 void hc_console_pre_frame() {
   for (int i = 0; i < HC_RENDER_SIZE_X * HC_RENDER_SIZE_Y; i++) {
-    hc_draw_buf[i*3] = hc_render_bg[0];
-    hc_draw_buf[i*3+1] = hc_render_bg[1];
-    hc_draw_buf[i*3+2] = hc_render_bg[2];
+    hc_console_buf[i*3] = hc_render_bg[0];
+    hc_console_buf[i*3+1] = hc_render_bg[1];
+    hc_console_buf[i*3+2] = hc_render_bg[2];
   }
   for (int y = 0; y < HC_RENDER_SIZE_Y; y++)
     for (int x = 0; x < HC_RENDER_SIZE_X; x++)
       hc_console_depth_buf[y][x] = INFINITY;
 }
 
-// void hc_draw_buf_line(int x0, int y0, int x1, int y1) {
+// void hc_console_buf_line(int x0, int y0, int x1, int y1) {
 //   int dx = abs(x1 - x0);
 //   //int HC_RENDER_SIZE_X = x0 < x1 ? 1 : -1;
 //   int dy = -abs(y1 - y0);
@@ -56,7 +57,7 @@ void hc_console_pre_frame() {
 //   int error = dx + dy;
 
 //   while (1) {
-//     hc_draw_buf[(x0 + y0 * HC_RENDER_SIZE_X) * 3] = 255;
+//     hc_console_buf[(x0 + y0 * HC_RENDER_SIZE_X) * 3] = 255;
 //     if (x0 == x1 && y0 == y1)
 //       break;
 //     int e2 = 2 * error;
@@ -112,9 +113,9 @@ void hc_console_triangle(int x0, int y0, double z0, int x1, int y1, double z1,
         }
         if (depth < hc_console_depth_buf[y][x]) {
           hc_console_depth_buf[y][x] = depth;
-          hc_draw_buf[(y * HC_RENDER_SIZE_X + x) * 3 + 0] = r;
-          hc_draw_buf[(y * HC_RENDER_SIZE_X + x) * 3 + 1] = g;
-          hc_draw_buf[(y * HC_RENDER_SIZE_X + x) * 3 + 2] = b;
+          hc_console_buf[(y * HC_RENDER_SIZE_X + x) * 3 + 0] = r;
+          hc_console_buf[(y * HC_RENDER_SIZE_X + x) * 3 + 1] = g;
+          hc_console_buf[(y * HC_RENDER_SIZE_X + x) * 3 + 2] = b;
         }
       }
       for (int x = (xf < HC_RENDER_SIZE_X ? (int)(xf) : HC_RENDER_SIZE_X - 1);
@@ -127,9 +128,9 @@ void hc_console_triangle(int x0, int y0, double z0, int x1, int y1, double z1,
         }
         if (depth < hc_console_depth_buf[y][x]) {
           hc_console_depth_buf[y][x] = depth;
-          hc_draw_buf[(y * HC_RENDER_SIZE_X + x) * 3 + 0] = r;
-          hc_draw_buf[(y * HC_RENDER_SIZE_X + x) * 3 + 1] = g;
-          hc_draw_buf[(y * HC_RENDER_SIZE_X + x) * 3 + 2] = b;
+          hc_console_buf[(y * HC_RENDER_SIZE_X + x) * 3 + 0] = r;
+          hc_console_buf[(y * HC_RENDER_SIZE_X + x) * 3 + 1] = g;
+          hc_console_buf[(y * HC_RENDER_SIZE_X + x) * 3 + 2] = b;
         }
       }
     }
@@ -158,7 +159,7 @@ void hc_console_frame() {
       // dont try to refactor this code
       // for your own sake
       // please
-      char *to_write = map_char(hc_draw_buf + ((x + y * HC_RENDER_SIZE_X)) * 3);
+      char *to_write = map_char(hc_console_buf + ((x + y * HC_RENDER_SIZE_X)) * 3);
       strncpy(hc_console_char_buf + advance, to_write, strlen(to_write));
       advance += strlen(to_write);
       strncpy(hc_console_char_buf + advance, to_write, strlen(to_write));
@@ -171,5 +172,16 @@ void hc_console_frame() {
   hc_console_char_buf[advance] = '\0';
   printf("\033[0;0H%s", hc_console_char_buf);
 }
+
+void hc_console_finish() {}
+
+const hc_renderer hc_renderer_console = {
+    .init = hc_console_init,
+    .pre_frame = hc_console_pre_frame,
+    .triangle = hc_console_triangle,
+    .frame = hc_console_frame,
+    .finish = hc_console_finish,
+    .internal_depth_buf = (double**)hc_console_depth_buf
+};
 
 #endif

@@ -2,10 +2,12 @@ int logq = 0;
 
 #include "hurricane/engine.c"
 #include "hurricane/shared.c"
+#include "hurricane/util/list.c"
 //#include "hurricane/renderer/console.c"
 #include "hurricane/renderer/video.c"
-//#include "hurricane/renderer/xlib.c"
-#include "hurricane/renderer/SDL.c"
+#include "hurricane/renderer/xlib.c"
+#include "hurricane/loader/obj.c"
+//#include "hurricane/renderer/SDL.c"
 #include "hurricane/input.c"
 
 #include "hurricane/anim.c"
@@ -13,7 +15,7 @@ int logq = 0;
 #include <stdbool.h>
 #include <stdio.h>
 
-#if 1
+#if 0
   #define KEYW 119
   #define KEYA 97
   #define KEYS 115
@@ -119,8 +121,19 @@ void on_key_down(void *e) {
 
 int main(int argc, char **argv) {
   // hc_xlib_init();
-  renderer = hc_renderer_sdl;
+  renderer = hc_renderer_xlib;
   renderer.init();
+  //hc_list list;
+  //hc_list_new(&list);
+  //hc_list_add(&list, VEC3(0,1,4));
+  //hc_list_add(&list, VEC3(1,4,4));
+  //hc_list_add(&list, VEC3(2,2,4));
+  //hc_list_add(&list, VEC3(3,1,7));
+  //hc_list_add(&list, VEC3(4,1,7));
+  //hc_list_remove(&list, 2);
+  //double *a = hc_list_get(&list, 2);
+  //hc_log("%f %f %f %d %d", a[0], a[1], a[2], list.length, list.allocated);
+  //exit(1);
   // hc_video_init();
   // hc_console_init();
   // hc_init_geometries();
