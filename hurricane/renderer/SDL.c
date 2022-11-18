@@ -2,6 +2,7 @@
 #define HC_SDL
 
 #include "../engine.c"
+#include "../input.c"
 #include <SDL2/SDL.h>
 #include <stdio.h>
 
@@ -15,22 +16,22 @@ SDL_Event hc_sdl_event;
 
 void hc_sdl_init()
 {
-	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-		fprintf(stderr, "SDL_Init Error: %s\n", SDL_GetError());
-		return;
-	}
+  if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+    fprintf(stderr, "SDL_Init Error: %s\n", SDL_GetError());
+    return;
+  }
     hc_sdl_window = SDL_CreateWindow("Hello World!", 100, 100, HC_RENDER_SIZE_X, HC_RENDER_SIZE_Y, SDL_WINDOW_SHOWN);
-	if (hc_sdl_window == NULL) {
-		fprintf(stderr, "SDL_CreateWindow Error: %s\n", SDL_GetError());
-		return;
-	}
+  if (hc_sdl_window == NULL) {
+    fprintf(stderr, "SDL_CreateWindow Error: %s\n", SDL_GetError());
+    return;
+  }
     hc_sdl_renderer = SDL_CreateRenderer(hc_sdl_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	if (hc_sdl_renderer == NULL) {
-		fprintf(stderr, "SDL_CreateRenderer Error: %s\n", SDL_GetError());
-		SDL_DestroyWindow(hc_sdl_window);
-		SDL_Quit();
-		return;
-	}
+  if (hc_sdl_renderer == NULL) {
+    fprintf(stderr, "SDL_CreateRenderer Error: %s\n", SDL_GetError());
+    SDL_DestroyWindow(hc_sdl_window);
+    SDL_Quit();
+    return;
+  }
     hc_sdl_bitmap = SDL_CreateTexture(hc_sdl_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, HC_RENDER_SIZE_X, HC_RENDER_SIZE_Y);
 }
 
@@ -113,6 +114,12 @@ void hc_sdl_triangle(int x0, int y0, double z0, int x1, int y1, double z1,
 void hc_sdl_frame() {
     while (SDL_PollEvent(&hc_sdl_event)) {
         switch (hc_sdl_event.type) {
+            case SDL_KEYDOWN:
+                hc_internal_keydown(hc_sdl_event.key.keysym.sym);
+                break;
+            case SDL_KEYUP:
+                hc_internal_keyup(hc_sdl_event.key.keysym.sym);
+                break;
             case SDL_QUIT:
                 hc_internal_quit = true;
                 break;
@@ -125,10 +132,10 @@ void hc_sdl_frame() {
 }
 
 void hc_sdl_finish() {
-	SDL_DestroyTexture(hc_sdl_bitmap);
-	SDL_DestroyRenderer(hc_sdl_renderer);
-	SDL_DestroyWindow(hc_sdl_window);
-	SDL_Quit();
+  SDL_DestroyTexture(hc_sdl_bitmap);
+  SDL_DestroyRenderer(hc_sdl_renderer);
+  SDL_DestroyWindow(hc_sdl_window);
+  SDL_Quit();
 }
 
 const hc_renderer hc_renderer_sdl = {
@@ -137,7 +144,7 @@ const hc_renderer hc_renderer_sdl = {
     .triangle = hc_sdl_triangle,
     .frame = hc_sdl_frame,
     .finish = hc_sdl_finish,
-    .internal_depth_buf = (double**)hc_sdl_depth_buf
+    .internal_depth_buf = &hc_sdl_depth_buf
 };
 
 #endif

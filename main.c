@@ -4,8 +4,8 @@ int logq = 0;
 #include "hurricane/shared.c"
 //#include "hurricane/renderer/console.c"
 #include "hurricane/renderer/video.c"
-#include "hurricane/renderer/xlib.c"
-//#include "hurricane/renderer/SDL.c"
+//#include "hurricane/renderer/xlib.c"
+#include "hurricane/renderer/SDL.c"
 #include "hurricane/input.c"
 
 #include "hurricane/anim.c"
@@ -13,6 +13,17 @@ int logq = 0;
 #include <stdbool.h>
 #include <stdio.h>
 
+#if 1
+  #define KEYW 119
+  #define KEYA 97
+  #define KEYS 115
+  #define KEYD 100
+#else
+  #define KEYW 25
+  #define KEYA 38
+  #define KEYS 39
+  #define KEYD 40
+#endif
 double x_rot, y_rot;
 void noop() {}
 
@@ -77,13 +88,13 @@ void update() {
 void on_key_up(void *e) {
   hc_input_key_event *evt = e;
   // printf("%d\n", evt->code);
-  if (evt->code == 25) {
+  if (evt->code == KEYW) {
     w_down = false;
-  } else if (evt->code == 38) {
+  } else if (evt->code == KEYA) {
     a_down = false;
-  } else if (evt->code == 39) {
+  } else if (evt->code == KEYS) {
     s_down = false;
-  } else if (evt->code == 40) {
+  } else if (evt->code == KEYD) {
     d_down = false;
   }
 }
@@ -91,13 +102,13 @@ void on_key_up(void *e) {
 void on_key_down(void *e) {
   hc_input_key_event *evt = e;
   // printf("%d\n", evt->code);
-  if (evt->code == 25) {
+  if (evt->code == KEYW) {
     w_down = true;
-  } else if (evt->code == 38) {
+  } else if (evt->code == KEYA) {
     a_down = true;
-  } else if (evt->code == 39) {
+  } else if (evt->code == KEYS) {
     s_down = true;
-  } else if (evt->code == 40) {
+  } else if (evt->code == KEYD) {
     d_down = true;
   } else if (evt->code == 41) {
     logq = 1;
@@ -108,7 +119,7 @@ void on_key_down(void *e) {
 
 int main(int argc, char **argv) {
   // hc_xlib_init();
-  renderer = hc_renderer_xlib;
+  renderer = hc_renderer_sdl;
   renderer.init();
   // hc_video_init();
   // hc_console_init();
