@@ -78,12 +78,14 @@ void hc_sdl_triangle(int x0, int y0, double z0, int x1, int y1, double z1,
         // if (logq) {
         //   printf("%f %f %f %f\n", z0, z1, z2, depth);
         // }
-        if (isnan(depth) || !isfinite(depth) || depth <= 0.1) {
+        if (isnan(depth) || !isfinite(depth)) {
           continue;
         }
         if (depth < hc_sdl_depth_buf[y][x]) {
           hc_sdl_depth_buf[y][x] = depth;
           hc_sdl_image[y * HC_RENDER_SIZE_X + x] = (r << 16) + (g << 8) + b;
+          //hc_sdl_image[y * HC_RENDER_SIZE_X + x] = ((int)(depth * 70) << 16) + ((int)(depth * 70) << 8) + (int)(depth * 70);
+          //hc_sdl_image[y * HC_RENDER_SIZE_X + x] = (((int)(depth*5) * 10) << 16) + (((int)(depth*5) * 10) << 8) + ((int)(depth*5) * 10);
         }
       }
       for (int x = (xf < HC_RENDER_SIZE_X ? (int)(xf) : HC_RENDER_SIZE_X - 1);
@@ -94,12 +96,14 @@ void hc_sdl_triangle(int x0, int y0, double z0, int x1, int y1, double z1,
         // if (logq) {
         //   printf("%f %f %f %f\n", z0, z1, z2, depth);
         // }
-        if (isnan(depth) || !isfinite(depth) || depth <= 0.1) {
+        if (isnan(depth) || !isfinite(depth)) {
           continue;
         }
         if (depth < hc_sdl_depth_buf[y][x]) {
           hc_sdl_depth_buf[y][x] = depth;
           hc_sdl_image[y * HC_RENDER_SIZE_X + x] = (r << 16) + (g << 8) + b;
+          //hc_sdl_image[y * HC_RENDER_SIZE_X + x] = ((int)(depth * 70) << 16) + ((int)(depth * 70) << 8) + (int)(depth * 70);
+          //hc_sdl_image[y * HC_RENDER_SIZE_X + x] = (((int)(depth*5) * 10) << 16) + (((int)(depth*5) * 10) << 8) + ((int)(depth*5) * 10);
         }
       }
     }

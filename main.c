@@ -5,9 +5,9 @@ int logq = 0;
 #include "hurricane/util/list.c"
 //#include "hurricane/renderer/console.c"
 #include "hurricane/renderer/video.c"
-#include "hurricane/renderer/xlib.c"
+//#include "hurricane/renderer/xlib.c"
 #include "hurricane/loader/obj.c"
-//#include "hurricane/renderer/SDL.c"
+#include "hurricane/renderer/SDL.c"
 #include "hurricane/input.c"
 
 #include "hurricane/anim.c"
@@ -15,7 +15,7 @@ int logq = 0;
 #include <stdbool.h>
 #include <stdio.h>
 
-#if 0
+#if 1
   #define KEYW 119
   #define KEYA 97
   #define KEYS 115
@@ -70,9 +70,7 @@ void update() {
   }
   if (w_down || s_down || a_down || d_down) {
     hc_quaternion_from_euler_zyx(VEC3(x_rot, y_rot, 0), &camera.rotation);
-    double tmp_vec[3];
-    hc_quaternion_rotate(&camera.rotation, VEC3(0,0,-3), tmp_vec);
-    hc_vec3_add(VEC3(0,0,3), tmp_vec, camera.position);
+    hc_quaternion_rotate(&camera.rotation, VEC3(0,0,-3), camera.position);
   }
   // hc_vec3_add(cube->position, tmpvec, cube->position);
   hc_render_object(&camera, &cube);
@@ -121,7 +119,7 @@ void on_key_down(void *e) {
 
 int main(int argc, char **argv) {
   // hc_xlib_init();
-  renderer = hc_renderer_xlib;
+  renderer = hc_renderer_sdl;
   renderer.init();
   //hc_list list;
   //hc_list_new(&list);
@@ -156,14 +154,14 @@ int main(int argc, char **argv) {
   hc_quaternion_from_y_rotation(2.0 * DEG2RAD, &camera_small_right);
   hc_geometry geometry_teapot;
   hc_geometry_from_obj("teapot.obj", &geometry_teapot);
-  hc_new_object(&cube, &geometry_teapot, VEC3(0, 1, 3), hc_quaternion_identity,
+  hc_new_object(&cube, &geometry_teapot, VEC3(0, 1, 0), hc_quaternion_identity,
                 (double[]){0.5, 0.5, 0.5});
 
-  hc_new_object(&camera, &hc_geometry_none, VEC3(0, 0, 0),
+  hc_new_object(&camera, &hc_geometry_none, VEC3(0, 0, -3),
                 hc_quaternion_identity, hc_vec3_one);
 
 
-  hc_new_object(&cube2, &hc_geometry_cube, VEC3(1.2, 0, 3), hc_quaternion_identity,
+  hc_new_object(&cube2, &hc_geometry_cube, VEC3(1.2, 0, 0), hc_quaternion_identity,
                 (double[]){1, 0.2, 0.2});
   // hc_init(false, 200, hc_video_pre_frame, hc_video_triangle, hc_video_frame,
   //        update);
