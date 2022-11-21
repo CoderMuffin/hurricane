@@ -5,9 +5,9 @@ int logq = 0;
 #include "hurricane/util/list.c"
 //#include "hurricane/renderer/console.c"
 #include "hurricane/renderer/video.c"
-//#include "hurricane/renderer/xlib.c"
+#include "hurricane/renderer/xlib.c"
 #include "hurricane/loader/obj.c"
-#include "hurricane/renderer/SDL.c"
+//#include "hurricane/renderer/SDL.c"
 #include "hurricane/input.c"
 
 #include "hurricane/anim.c"
@@ -15,7 +15,7 @@ int logq = 0;
 #include <stdbool.h>
 #include <stdio.h>
 
-#if 1
+#if 0
   #define KEYW 119
   #define KEYA 97
   #define KEYS 115
@@ -119,7 +119,7 @@ void on_key_down(void *e) {
 
 int main(int argc, char **argv) {
   // hc_xlib_init();
-  renderer = hc_renderer_sdl;
+  renderer = hc_renderer_xlib;
   renderer.init();
   //hc_list list;
   //hc_list_new(&list);
@@ -154,7 +154,7 @@ int main(int argc, char **argv) {
   hc_quaternion_from_y_rotation(2.0 * DEG2RAD, &camera_small_right);
   hc_geometry geometry_teapot;
   hc_geometry_from_obj("teapot.obj", &geometry_teapot);
-  hc_new_object(&cube, &geometry_teapot, VEC3(0, 1, 0), hc_quaternion_identity,
+  hc_new_object(&cube, &geometry_teapot, VEC3(0, 0.8, 0), hc_quaternion_identity,
                 (double[]){0.5, 0.5, 0.5});
 
   hc_new_object(&camera, &hc_geometry_none, VEC3(0, 0, -3),

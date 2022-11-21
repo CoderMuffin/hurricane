@@ -1070,7 +1070,7 @@ hc_geometry hc_geometry_sphere5 = {
             209, 20,  137, 87,  62,  171, 28,  233, 43,  50,  117, 192, 92,
             238, 169, 127, 49,  162, 153, 229, 45,  111, 48,  234, 3,   79,
             10,  207, 2,   8,   84},
-    .face_count = 500 * 3};
+    .face_count = 500};
 
 hc_geometry hc_geometry_cube = {
     .vertices = (double[]){1,  -1, 1, 1,  -1, -1, 1,  1, -1, 1,  1, 1,
@@ -1093,7 +1093,7 @@ hc_geometry hc_geometry_cube = {
             255, 0,   255, // face bottom
             255, 0,   255, //
         },
-    .face_count = 36};
+    .face_count = 12};
 
 hc_geometry hc_geometry_mobius = {
     .vertices =
@@ -1559,7 +1559,7 @@ hc_geometry hc_geometry_mobius = {
             205, 200, 16,  169, 90,  102, 71,  154, 146, 57,  101, 109, 194,
             76,  41,
         },
-    .face_count = 200 * 3};
+    .face_count = 200};
 
 // void hc_init_geometries() {
 //   hc_geometry_cube = malloc(sizeof(hc_geometry));

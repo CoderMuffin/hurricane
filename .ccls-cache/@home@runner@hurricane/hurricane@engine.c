@@ -29,7 +29,7 @@ void hc_geometry_to_world(hc_object *object, int index, double out[3]) {
 }
 
 void hc_world_to_screen(const hc_object *camera, const double p_world[3],
-                        int out[2]) {
+                        int out[2], double *out_z) {
   hc_vec3_sub(p_world, camera->position, hc_internal_world_transform_tmp_vec);
   hc_quaternion_rotate_inverse(&camera->rotation,
                                hc_internal_world_transform_tmp_vec,
@@ -41,6 +41,7 @@ void hc_world_to_screen(const hc_object *camera, const double p_world[3],
   out[1] = hc_internal_world_transform_tmp_vec[1] * hc_internal_eye_dist /
                hc_internal_world_transform_tmp_vec[2] +
            HC_RENDER_SIZE_Y / 2;
+  *out_z = hc_internal_world_transform_tmp_vec[2];
 }
 
 double hc_internal_lighting(hc_object *object, int i) {
@@ -57,22 +58,20 @@ double hc_internal_lighting(hc_object *object, int i) {
 
 void hc_render_object(hc_object *camera, hc_object *object) {
   int a[2], b[2], c[2];
-  for (int i = 0; i < object->geometry->face_count; i += 3) {
+  double az, bz, cz;
+  for (int i = 0; i < object->geometry->face_count * 3; i += 3) {
     hc_geometry_to_world(object, i, hc_internal_frame_tmp_vec);
-    hc_world_to_screen(camera, hc_internal_frame_tmp_vec, a);
-    double az = hc_internal_frame_tmp_vec[2];
+    hc_world_to_screen(camera, hc_internal_frame_tmp_vec, a, &az);
     double depth_az = INFINITY;
     //    (*hc_internal_engine_renderer.internal_depth_buf)[a[1]][a[0]];
 
     hc_geometry_to_world(object, i + 1, hc_internal_frame_tmp_vec);
-    hc_world_to_screen(camera, hc_internal_frame_tmp_vec, b);
-    double bz = hc_internal_frame_tmp_vec[2];
+    hc_world_to_screen(camera, hc_internal_frame_tmp_vec, b, &bz);
     double depth_bz = INFINITY;
     //    (*hc_internal_engine_renderer.internal_depth_buf)[b[1]][b[0]];
 
     hc_geometry_to_world(object, i + 2, hc_internal_frame_tmp_vec);
-    hc_world_to_screen(camera, hc_internal_frame_tmp_vec, c);
-    double cz = hc_internal_frame_tmp_vec[2];
+    hc_world_to_screen(camera, hc_internal_frame_tmp_vec, c, &cz);
     double depth_cz = INFINITY;
     //    (*hc_internal_engine_renderer.internal_depth_buf)[c[1]][c[0]];
 

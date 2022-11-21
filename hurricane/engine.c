@@ -59,7 +59,7 @@ double hc_internal_lighting(hc_object *object, int i) {
 void hc_render_object(hc_object *camera, hc_object *object) {
   int a[2], b[2], c[2];
   double az, bz, cz;
-  for (int i = 0; i < object->geometry->face_count; i += 3) {
+  for (int i = 0; i < object->geometry->face_count * 3; i += 3) {
     hc_geometry_to_world(object, i, hc_internal_frame_tmp_vec);
     hc_world_to_screen(camera, hc_internal_frame_tmp_vec, a, &az);
     double depth_az = INFINITY;
