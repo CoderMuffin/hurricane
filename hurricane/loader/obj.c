@@ -13,9 +13,13 @@ void hc_geometry_from_obj(char *file, hc_geometry *output) {
   int vertex_count = 0;
   int vertex_buffer_size = 1;
   int vertex_pointer = 0;
+
+  int face_buffer_size = 1;
+  int face_count = 0;
   int face_pointer = 0;
+  
   output->vertices = malloc(sizeof(double) * vertex_buffer_size * 3);
-  output->faces = malloc(sizeof(int) * 10000 * 3);
+  output->faces = malloc(sizeof(int) * face_buffer_size * 3);
   output->colors = malloc(sizeof(int) * 10000 * 3);
 
   while ((read = hc_getline(&line, &len, fp)) != -1) {
@@ -27,6 +31,10 @@ void hc_geometry_from_obj(char *file, hc_geometry *output) {
     if (vertex_buffer_size <= vertex_count) {
       vertex_buffer_size <<= 2;
       output->vertices = realloc(output->vertices, sizeof(double) * vertex_buffer_size * 3);
+    }
+    if (face_buffer_size <= face_count) {
+      face_buffer_size <<= 2;
+      output->faces = realloc(output->faces, sizeof(double) * face_buffer_size * 3);
     }
 
     if (line[0] == 'v') {
@@ -42,11 +50,12 @@ void hc_geometry_from_obj(char *file, hc_geometry *output) {
       output->faces[face_pointer++] = atoi(n1)-1;
       output->colors[face_pointer] = 255;
       output->faces[face_pointer++] = atoi(n2)-1;
+      face_count++;
     } else {
       hc_internal_warn("Unknown character '%d' in obj file reading '%s'", line[0], file);
     }
   }
-  output->face_count = face_pointer / 3;
+  output->face_count = face_count;
 
   fclose(fp);
   if (line)
