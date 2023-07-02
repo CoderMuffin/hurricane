@@ -156,7 +156,7 @@ int main(int argc, char **argv) {
   hc_geometry_from_obj("teapot.obj", &geometry_teapot);
   hc_new_object(&cube, &geometry_teapot, VEC3(0, 0.8, 0), hc_quaternion_identity,
                 (double[]){0.5, 0.5, 0.5});
-
+    hc_log("%d", geometry_teapot.face_count);
   hc_new_object(&camera, &hc_geometry_none, VEC3(0, 0, -3),
                 hc_quaternion_identity, hc_vec3_one);
 

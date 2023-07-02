@@ -52,7 +52,7 @@ double hc_internal_lighting(hc_object *object, int i) {
   hc_vec3_sub(b, a, t1);
   hc_vec3_sub(c, b, t2);
   hc_vec3_cross(t1, t2, normal);
-  hc_vec3_normalise(normal, normal);
+  hc_vec3_normalize(normal, normal);
   return (hc_vec3_dot((double[]){1,0,0}, normal) + 1) / 2;
 }
 
