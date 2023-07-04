@@ -43,7 +43,7 @@ hc_renderer renderer;
 double tmpvec[3] = {0.02, 0.02, 0};
 double tmpvecupdate[3];
 
-void update() {
+void update(double delta_time) {
   // hc_quaternion_mul(&cube.rotation, &tick, &cube.rotation);
   //hc_quaternion_mul(&cube2.rotation, &tick, &cube2.rotation);
   //hc_quaternion_mul(&cube2.rotation, &tick, &cube2.rotation);
@@ -76,7 +76,7 @@ void update() {
   hc_render_object(&camera, &cube);
 
   hc_render_object(&camera, &cube2);
-  hc_anim_step(&cube_anim, 0.002, &cube.rotation);
+  hc_anim_step(&cube_anim, delta_time, &cube.rotation);
   // printf("anim: time:%f playing:%d looping:%d\n", cube_anim.time,
   // cube_anim.playing, cube_anim.looping); printf("%f %f %f\n",
   // cube.position[0], cube.position[1], cube.position[2]);
