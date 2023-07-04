@@ -181,7 +181,7 @@ const hc_renderer hc_renderer_console = {
     .triangle = hc_console_triangle,
     .frame = hc_console_frame,
     .finish = hc_console_finish,
-    .internal_depth_buf = (double**)hc_console_depth_buf
+    .internal_depth_buf = &hc_console_depth_buf
 };
 
 #endif

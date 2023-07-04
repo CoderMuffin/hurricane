@@ -3,11 +3,11 @@ int logq = 0;
 #include "hurricane/engine.c"
 #include "hurricane/shared.c"
 #include "hurricane/util/list.c"
-//#include "hurricane/renderer/console.c"
+#include "hurricane/renderer/console.c"
 #include "hurricane/renderer/video.c"
-#include "hurricane/renderer/xlib.c"
+// #include "hurricane/renderer/xlib.c"
 #include "hurricane/loader/obj.c"
-//#include "hurricane/renderer/SDL.c"
+#include "hurricane/renderer/SDL.c"
 #include "hurricane/input.c"
 
 #include "hurricane/anim.c"
@@ -15,7 +15,7 @@ int logq = 0;
 #include <stdbool.h>
 #include <stdio.h>
 
-#if 0
+#if 1
   #define KEYW 119
   #define KEYA 97
   #define KEYS 115
@@ -113,13 +113,14 @@ void on_key_down(void *e) {
   } else if (evt->code == 41) {
     logq = 1;
   } else {
-    printf("%d\n", evt->code);
+    hc_error("unknown key %d", evt->code);
+    exit(1);
   }
 }
 
 int main(int argc, char **argv) {
   // hc_xlib_init();
-  renderer = hc_renderer_xlib;
+  renderer = hc_renderer_sdl;
   renderer.init();
   //hc_list list;
   //hc_list_new(&list);
@@ -156,7 +157,7 @@ int main(int argc, char **argv) {
   hc_geometry_from_obj("teapot.obj", &geometry_teapot);
   hc_new_object(&cube, &geometry_teapot, VEC3(0, 0.8, 0), hc_quaternion_identity,
                 (double[]){0.5, 0.5, 0.5});
-    hc_log("%d", geometry_teapot.face_count);
+  hc_log("%d faces", geometry_teapot.face_count);
   hc_new_object(&camera, &hc_geometry_none, VEC3(0, 0, -3),
                 hc_quaternion_identity, hc_vec3_one);
 
@@ -171,7 +172,7 @@ int main(int argc, char **argv) {
   // hc_world_to_screen(&camera, (double[]){4, 0, -1}, tmp);
   // printf("%d %d\n", tmp[0], tmp[1]);
   // exit(1);
-  hc_init(false, 5000, renderer, update);
+  hc_init(false, -1, renderer, update);
 
   renderer.finish();
   // hc_sdl_finish();

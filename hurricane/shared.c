@@ -28,6 +28,10 @@ double calculate_depth(double x0, double y0, double z0, double x1, double y1,
                        double py) {
   double w_denom = ((y1 - y2) * (x0 - x2) + (x2 - x1) * (y0 - y2));
 
+  if (w_denom == 0) {
+    return 1000;
+  }
+
   double w0 = ((y1 - y2) * (px - x2) + (x2 - x1) * (py - y2)) / w_denom;
   double w1 = ((y2 - y0) * (px - x2) + (x0 - x2) * (py - y2)) / w_denom;
   double w2 = 1 - w0 - w1;

@@ -26,7 +26,7 @@ void hc_mat4x4_mul(double a[4][4], double b[4][4], double out[4][4]) {
 }
 
 void hc_mat4x4_perspective(float fov, float aspect, float nearDist,
-                           float farDist, bool leftHanded, double out[4][4]) {
+                           float farDist, int leftHanded, double out[4][4]) {
   //
   // General form of the Projection Matrix
   //
