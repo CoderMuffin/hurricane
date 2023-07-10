@@ -12,6 +12,7 @@ int logq = 0;
 
 #include "hurricane/anim.c"
 #include "hurricane/util/log.c"
+#include "hurricane/clock.c"
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -34,6 +35,7 @@ bool w_down = false, s_down = false, a_down = false, d_down = false;
 hc_object cube;
 hc_object camera;
 hc_object cube2;
+hc_clock gclock;
 hc_anim cube_anim;
 hc_quaternion tick;
 hc_quaternion camera_small_left;
@@ -43,7 +45,7 @@ hc_renderer renderer;
 double tmpvec[3] = {0.02, 0.02, 0};
 double tmpvecupdate[3];
 
-void update(double delta_time) {
+void update() {
   // hc_quaternion_mul(&cube.rotation, &tick, &cube.rotation);
   //hc_quaternion_mul(&cube2.rotation, &tick, &cube2.rotation);
   //hc_quaternion_mul(&cube2.rotation, &tick, &cube2.rotation);
@@ -76,7 +78,8 @@ void update(double delta_time) {
   hc_render_object(&camera, &cube);
 
   hc_render_object(&camera, &cube2);
-  hc_anim_step(&cube_anim, delta_time, &cube.rotation);
+  double delta = hc_clock_step(&gclock);
+  hc_anim_step(&cube_anim, delta, &cube.rotation);
   // printf("anim: time:%f playing:%d looping:%d\n", cube_anim.time,
   // cube_anim.playing, cube_anim.looping); printf("%f %f %f\n",
   // cube.position[0], cube.position[1], cube.position[2]);
@@ -122,6 +125,7 @@ int main(int argc, char **argv) {
   // hc_xlib_init();
   renderer = hc_renderer_sdl;
   renderer.init();
+  hc_clock_new(&gclock);
   //hc_list list;
   //hc_list_new(&list);
   //hc_list_add(&list, VEC3(0,1,4));
@@ -143,8 +147,8 @@ int main(int argc, char **argv) {
 
   hc_anim_new(&cube_anim,
               (hc_keyframe[]){{QUAT(M_PI, 0, 0), 0},
-                              {QUAT(M_PI, M_PI, 0), 1},
-                              {QUAT(M_PI, M_PI * 2, 0), 2}},
+                              {QUAT(M_PI, M_PI, 0), 3},
+                              {QUAT(M_PI, M_PI * 2, 0), 6}},
               3, hc_animator_quaternion);
   cube_anim.looping = true;
 

@@ -1,3 +1,4 @@
+#ifdef HC_ENABLE_SDL2
 #ifndef HC_SDL
 #define HC_SDL
 
@@ -151,4 +152,5 @@ const hc_renderer hc_renderer_sdl = {
     .internal_depth_buf = &hc_sdl_depth_buf
 };
 
+#endif
 #endif

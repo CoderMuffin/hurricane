@@ -11,6 +11,7 @@
 
 unsigned char *hc_console_buf;
 char *hc_console_char_buf;
+char *hc_console_text_buf;
 char *map_buf;
 
 double hc_console_depth_buf[HC_RENDER_SIZE_Y][HC_RENDER_SIZE_X];
@@ -34,8 +35,9 @@ void hc_console_init() {
       calloc(HC_RENDER_SIZE_X * HC_RENDER_SIZE_Y * 3, sizeof(unsigned char));
   hc_console_char_buf =
       malloc((HC_RENDER_SIZE_X * 2 + 1) * HC_RENDER_SIZE_Y * CHAR_SIZE + 1);
+  hc_console_text_buf =
+      malloc(HC_RENDER_SIZE_X * HC_RENDER_SIZE_Y * sizeof(char) + 1);
   map_buf = malloc(CHAR_SIZE);
-  printf("alloc'd %d\n", (HC_RENDER_SIZE_X * 2 + 1) * HC_RENDER_SIZE_Y);
 }
 
 void hc_console_pre_frame() {
@@ -43,10 +45,13 @@ void hc_console_pre_frame() {
     hc_console_buf[i*3] = hc_render_bg[0];
     hc_console_buf[i*3+1] = hc_render_bg[1];
     hc_console_buf[i*3+2] = hc_render_bg[2];
+    hc_console_text_buf[i] = 0;
   }
-  for (int y = 0; y < HC_RENDER_SIZE_Y; y++)
-    for (int x = 0; x < HC_RENDER_SIZE_X; x++)
+  for (int y = 0; y < HC_RENDER_SIZE_Y; y++) {
+    for (int x = 0; x < HC_RENDER_SIZE_X; x++) {
       hc_console_depth_buf[y][x] = INFINITY;
+    }
+  }
 }
 
 // void hc_console_buf_line(int x0, int y0, int x1, int y1) {
@@ -143,8 +148,12 @@ void hc_console_triangle(int x0, int y0, double z0, int x1, int y1, double z1,
 }
 
 char *map_char(unsigned char *vs) {
-  sprintf(map_buf, "\033[38;2;%d;%d;%dm@", vs[0], vs[1], vs[2]);
+  sprintf(map_buf, "\033[38;2;%d;%d;%dm\xdb", vs[0], vs[1], vs[2]);
   return map_buf;
+}
+
+void hc_console_blit(char *text, int x, int y) {
+  strncpy(hc_console_text_buf + y * HC_RENDER_SIZE_X + x, text, strlen(text));
 }
 
 void hc_console_frame() {
@@ -159,11 +168,16 @@ void hc_console_frame() {
       // dont try to refactor this code
       // for your own sake
       // please
-      char *to_write = map_char(hc_console_buf + ((x + y * HC_RENDER_SIZE_X)) * 3);
-      strncpy(hc_console_char_buf + advance, to_write, strlen(to_write));
-      advance += strlen(to_write);
-      strncpy(hc_console_char_buf + advance, to_write, strlen(to_write));
-      advance += strlen(to_write);
+      if (hc_console_text_buf[y*HC_RENDER_SIZE_X + x]) {
+        strncpy(hc_console_char_buf + advance, hc_console_text_buf + y * HC_RENDER_SIZE_X + x, sizeof(char));
+        advance += sizeof(char);
+      } else {
+        char *to_write = map_char(hc_console_buf + ((x + y * HC_RENDER_SIZE_X)) * 3);
+        strncpy(hc_console_char_buf + advance, to_write, strlen(to_write));
+        advance += strlen(to_write);
+        strncpy(hc_console_char_buf + advance, to_write, strlen(to_write));
+        advance += strlen(to_write);
+      }
     }
     // printf("newline %d\n", ((y+1) * HC_RENDER_SIZE_X) * 2 + y);
     hc_console_char_buf[advance] = '\n';

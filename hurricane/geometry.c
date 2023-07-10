@@ -1,8 +1,8 @@
 #ifndef HC_GEOMETRY
 #define HC_GEOMETRY
 
-#define FAST_OBJ_IMPLEMENTATION
-#include "fast_obj.c"
+// #define FAST_OBJ_IMPLEMENTATION
+// #include "fast_obj.c"
 #include "util/vec.c"
 #include <memory.h>
 #include <stdio.h>
@@ -1078,20 +1078,34 @@ hc_geometry hc_geometry_cube = {
     .faces =
         (unsigned int[]){4, 0, 3, 4, 3, 7, 0, 1, 2, 0, 2, 3, 1, 5, 6, 1, 6, 2,
                          5, 4, 7, 5, 7, 6, 7, 3, 2, 7, 2, 6, 0, 5, 1, 0, 4, 5},
-    .colors =
+    // .colors =
+    //     (unsigned char[]){
+    //         0,   0,   255, // face front
+    //         0,   0,   255, //
+    //         0,   255, 0,   // face top
+    //         0,   255, 0,   //
+    //         255, 0,   0,   // face right
+    //         255, 0,   0,   //
+    //         0,   255, 255, // face left
+    //         0,   255, 255, //
+    //         255, 255, 0,   // face back
+    //         255, 255, 0,   //
+    //         255, 0,   255, // face bottom
+    //         255, 0,   255, //
+    //     },
         (unsigned char[]){
-            0,   0,   255, // face front
-            0,   0,   255, //
-            0,   255, 0,   // face top
-            0,   255, 0,   //
-            255, 0,   0,   // face right
-            255, 0,   0,   //
-            0,   255, 255, // face left
-            0,   255, 255, //
-            255, 255, 0,   // face back
-            255, 255, 0,   //
-            255, 0,   255, // face bottom
-            255, 0,   255, //
+            128, 128, 128,
+            128, 128, 128,
+            128, 128, 128,
+            128, 128, 128,
+            128, 128, 128,
+            128, 128, 128,
+            128, 128, 128,
+            128, 128, 128,
+            128, 128, 128,
+            128, 128, 128,
+            128, 128, 128,
+            128, 128, 128,
         },
     .face_count = 12};
 

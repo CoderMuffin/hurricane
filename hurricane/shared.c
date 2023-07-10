@@ -2,15 +2,15 @@
 #define HC_SHARED
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
-#define HC_RENDER_SIZE_X 512
-#define HC_RENDER_SIZE_Y 512
+#define HC_RENDER_SIZE_X 40
+#define HC_RENDER_SIZE_Y 40
 #define HC_RENDER_SIZE_STR_X STR(HC_RENDER_SIZE_X)
 #define HC_RENDER_SIZE_STR_Y STR(HC_RENDER_SIZE_Y)
 #define DEG2RAD (M_PI / 180)
 #define VEC3(x, y, z) ((double[]){(x), (y), (z)})
 #define QUAT(x, y, z) ((hc_quaternion[]){hc_quaternion_new_euler_zyx(VEC3((z), (y), (x)))})
 
-int hc_render_bg[3] = {205, 20, 250};
+int hc_render_bg[3] = {255, 255, 255};
 
 void swap_int(int *a, int *b) {
   int temp = *b;

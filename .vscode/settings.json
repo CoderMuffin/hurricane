@@ -5,6 +5,8 @@
         "stdio.h": "c",
         "gdiplus.h": "c",
         "iostream": "c",
-        "ios": "c"
+        "ios": "c",
+        "utime.h": "c",
+        "stdbool.h": "c"
     }
 }

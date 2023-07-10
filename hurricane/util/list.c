@@ -20,9 +20,9 @@ void hc_list_new(hc_list *l) {
 
 void hc_list_add(hc_list *l, void *item) {
   l->length++;
-  if (l->allocated == l->length) {
+  if (l->allocated <= l->length) {
     l->allocated <<= 1;
-    l->data = realloc(l->data, l->allocated);
+    l->data = realloc(l->data, sizeof(void *) * l->allocated);
   }
   l->data[l->length - 1] = item;
 }

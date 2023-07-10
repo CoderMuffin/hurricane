@@ -6,7 +6,8 @@
         {
             "label": "build",
             "type": "shell",
-            "command": "gcc -g -Wall -lmingw32 -Ihurricane/renderer/SDL/include -Lhurricane/renderer/SDL/bin/ -lSDL2 -Lhurricane/renderer/SDL/lib/ -lSDL2main -Werror -Wno-stringop-truncation -Wno-stringop-overflow -O0 -pthread -lm main.c -o main.exe"
+            // "command": "gcc -g -Wall -Werror -Wno-stringop-truncation -Wno-stringop-overflow -O0 -pthread -lm *.c -o main.exe"
+            "command": "gcc -g -Wall -lmingw32 -Ihurricane/renderer/SDL/include -Lhurricane/renderer/SDL/bin/ -lSDL2 -Lhurricane/renderer/SDL/lib/ -lSDL2main -Werror -Wno-stringop-truncation -Wno-stringop-overflow -O0 -pthread -lm *.c -o main.exe"
         }
     ]
 }
