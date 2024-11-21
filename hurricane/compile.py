@@ -17,7 +17,7 @@ if debug:
     gcc.append("-g")
 
 if sdl:
-    gcc.extend(["-Ihurricane/renderer/SDL/include", "-Lhurricane/renderer/SDL/bin/", "-lSDL2", "-Lhurricane/renderer/SDL/lib/", "-lSDL2main", "-D", "HC_ENABLE_SDL2"])
+    gcc.extend(["-Ihurricane/renderer/SDL/include", "-Lhurricane/renderer/SDL/bin/", "-lSDL2", "-Lhurricane/renderer/SDL/lib/", "-lSDL2main", "-D"])
 
 gcc.append("*.c")
 gcc.append("-o")

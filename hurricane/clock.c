@@ -1,22 +1,21 @@
 #ifndef HC_CLOCK
 #define HC_CLOCK
 
-#include <time.h>
-#include <sys/utime.h>
-#include <sys/timeb.h>
+#include <sys/time.h>
+#include <stdlib.h>
 
 typedef struct hc_clock {
-    struct timeb last_time;
+    struct timeval last_time;
 } hc_clock;
 
 void hc_clock_new(hc_clock *clock) {
-    ftime(&clock->last_time);
+    gettimeofday(&clock->last_time, NULL);
 }
 
 double hc_clock_step(hc_clock *clock) {
-    struct timeb now;
-    ftime(&now);
-    double delta = (now.time - clock->last_time.time) + (now.millitm - clock->last_time.millitm)/1000.0;
+    struct timeval now;
+    gettimeofday(&now, NULL);
+    double delta = (now.tv_sec - clock->last_time.tv_sec) + (now.tv_usec - clock->last_time.tv_usec) / 1000000.0;
     clock->last_time = now;
     return delta;
 }
