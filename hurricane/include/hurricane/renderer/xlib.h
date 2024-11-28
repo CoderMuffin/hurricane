@@ -10,6 +10,7 @@
 #include <memory.h>
 #include <stdio.h>
 
+extern const hc_renderer hc_renderer_xlib;
 
 void hc_xlib_process_event(Display *display, Window window);
 void hc_xlib_init();

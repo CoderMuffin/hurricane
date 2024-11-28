@@ -1,8 +1,9 @@
 #ifndef HC_SDL
 #define HC_SDL
 
-#include "../engine.c"
-#include "../input.c"
+#include <hurricane/engine.h>
+#include <hurricane/input.h>
+#include <hurricane/renderer/SDL.h>
 #include <SDL2/SDL.h>
 #include <stdio.h>
 
@@ -125,7 +126,7 @@ void hc_sdl_frame() {
                 hc_internal_keyup(hc_sdl_event.key.keysym.sym);
                 break;
             case SDL_QUIT:
-                hc_internal_quit = true;
+                hc_quit();
                 break;
         }
     }

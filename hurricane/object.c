@@ -1,9 +1,11 @@
 #ifndef HC_OBJECT
 #define HC_OBJECT
-#include "geometry.c"
-#include "util/quat.c"
-#include "util/vec.c"
+
+#include <hurricane/geometry.h>
+#include <hurricane/util/quat.h>
+#include <hurricane/util/vec.h>
 #include <stdlib.h>
+#include <assert.h>
 
 typedef struct hc_object {
   double position[3];

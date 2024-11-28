@@ -1,18 +1,6 @@
-#ifndef HC_INPUT
-#define HC_INPUT
 #include <stdbool.h>
 #include <stdlib.h>
-
-typedef struct linked_list {
-  void *node;
-  struct linked_list *next;
-} linked_list;
-
-typedef struct hc_input_key_event {
-  unsigned int code;
-} hc_input_key_event;
-
-enum hc_input_event_type { HC_INPUT_KEYDOWN, HC_INPUT_KEYUP };
+#include <hurricane/input.h>
 
 struct hc_internal_input_subscription {
   int id;
@@ -71,5 +59,3 @@ void hc_internal_keyup(unsigned int key) {
   hc_input_key_event event = {.code = key};
   hc_internal_input_dispatch_event(&event, HC_INPUT_KEYUP);
 }
-
-#endif

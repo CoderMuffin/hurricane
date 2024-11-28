@@ -1,9 +1,7 @@
-#ifndef HC_LOG
-#define HC_LOG
+#ifndef HC_LOG_H
+#define HC_LOG_H
 
-const char *const hc_log_levels[4] = {
-    "\033[32mLOG\033[0m", "\033[34mINFO\033[0m", "\033[33mWARN\033[0m",
-    "\033[31mERROR\033[0m"};
+extern const char *const hc_log_levels[4];
 
 #define hc_log_handler(level, file, line, fmt, ...)                            \
   printf("[%s] %s:%d: " fmt "\n", hc_log_levels[level], file,                  \
@@ -18,8 +16,8 @@ const char *const hc_log_levels[4] = {
   hc_log_handler(3, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 
 #define hc_internal_log_handler(level, func, fmt, ...)                         \
-  printf("[\033[35mHurricane\033[0m] <\033[36m%s\033[0m> %s " fmt "\n",        \
-         func, hc_log_levels[level] __VA_OPT__(, ) __VA_ARGS__)
+  printf("[%s (\033[35mhurricane\033[0m)] <\033[36m%s\033[0m> " fmt "\n",        \
+          hc_log_levels[level], func __VA_OPT__(, ) __VA_ARGS__)
 #define hc_internal_log(fmt, ...)                                              \
   hc_internal_log_handler(0, __func__, fmt __VA_OPT__(, ) __VA_ARGS__)
 #define hc_internal_info(fmt, ...)                                             \

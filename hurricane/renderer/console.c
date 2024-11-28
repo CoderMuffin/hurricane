@@ -1,12 +1,13 @@
 #ifndef HC_RENDER
 #define HC_RENDER
-#include "../shared.c"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include "../input.c"
 #include <string.h>
 #include <math.h>
-#include "renderer.c"
+#include <hurricane/renderer.h>
+#include <hurricane/input.h>
+#include <hurricane/shared.h>
 #define CHAR_SIZE (sizeof(char) * 30)
 
 unsigned char *hc_console_buf;

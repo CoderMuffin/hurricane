@@ -4,7 +4,6 @@
 #include "../geometry.h"
 #include "../util/log.h"
 
-
 void hc_geometry_from_obj(char *file, hc_geometry *output);
 
 #endif

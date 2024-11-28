@@ -2,9 +2,9 @@
 #define HC_XLIB
 #include "../X11/Xlib.h"
 #include "../X11/X.h"
-#include "../input.c"
-#include "../shared.c"
-#include "renderer.c"
+#include <hurricane/input.h>
+#include <hurricane/shared.h>
+#include <hurricane/renderer/renderer.h>
 #include <math.h>
 #include <memory.h>
 #include <stdio.h>
@@ -49,10 +49,6 @@ XImage *CreateTrueColorImage(Display *display, Visual *visual,
 }
 
 void hc_xlib_process_event(Display *display, Window window) {
-
-  // static char *tir="This is red";
-  // static char *tig="This is green";
-  // static char *tib="This is blue";
   XEvent ev;
   XNextEvent(display, &ev);
   switch (ev.type) {

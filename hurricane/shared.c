@@ -1,16 +1,7 @@
 #ifndef HC_SHARED
 #define HC_SHARED
-#define STR_HELPER(x) #x
-#define STR(x) STR_HELPER(x)
-#define HC_RENDER_SIZE_X 300
-#define HC_RENDER_SIZE_Y 300
-#define HC_RENDER_SIZE_STR_X STR(HC_RENDER_SIZE_X)
-#define HC_RENDER_SIZE_STR_Y STR(HC_RENDER_SIZE_Y)
-#define DEG2RAD (M_PI / 180)
-#define VEC3(x, y, z) ((double[]){(x), (y), (z)})
-#define QUAT(x, y, z) ((hc_quaternion[]){hc_quaternion_new_euler_zyx(VEC3((z), (y), (x)))})
 
-int hc_render_bg[3] = {255, 255, 255};
+#include <hurricane/shared.h>
 
 void swap_int(int *a, int *b) {
   int temp = *b;
@@ -38,5 +29,7 @@ double calculate_depth(double x0, double y0, double z0, double x1, double y1,
 
   return (w0 * z0 + w1 * z1 + w2 * z2);
 }
+
+int hc_render_bg[3] = {255, 255, 255};
 
 #endif

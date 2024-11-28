@@ -3,8 +3,6 @@
 
 #include "geometry.h"
 #include "util/quat.h"
-#include "util/vec.h"
-#include <stdlib.h>
 
 typedef struct hc_object {
   double position[3];

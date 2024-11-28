@@ -1,20 +1,27 @@
 #ifndef HC_OBJ
 #define HC_OBJ
-#include "../geometry.c"
-#include "../util/log.c"
+
+#include <stdlib.h>
+#include <string.h>
+#include <hurricane/geometry.h>
+#include <hurricane/util/log.h>
 
 void hc_geometry_from_obj(char *file, hc_geometry *output) {
   FILE *fp = fopen(file, "r");
+  if (fp == NULL) {
+    hc_internal_error("Could not open file '%s'", file);
+    return;
+  }
+
   char *line = NULL;
   size_t len = 0;
   int read;
-  srand(time(NULL));
   
   int vertex_count = 0;
-  int vertex_buffer_size = 1;
+  int vertex_buffer_size = 10;
   int vertex_pointer = 0;
 
-  int face_buffer_size = 1;
+  int face_buffer_size = 10;
   int face_count = 0;
   int face_pointer = 0;
   
@@ -42,7 +49,6 @@ void hc_geometry_from_obj(char *file, hc_geometry *output) {
       output->vertices[vertex_pointer++] = atof(n1);
       output->vertices[vertex_pointer++] = atof(n2);
       vertex_count++;
-      //printf("v %f %f %f\n", output->vertices[vertex_pointer-3],output->vertices[vertex_pointer-2],output->vertices[vertex_pointer-1]);
     } else if (line[0] == 'f') {
       output->colors[face_pointer] = 0;
       output->faces[face_pointer++] = atoi(n0)-1;

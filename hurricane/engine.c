@@ -1,17 +1,19 @@
 #ifndef HC_ENGINE
 #define HC_ENGINE
-#include "object.c"
-#include "renderer/renderer.c"
-#include "shared.c"
-#include "util/mat.c"
-#include "util/vec.c"
+
+#include <hurricane/object.h>
+#include <hurricane/renderer/renderer.h>
+#include <hurricane/shared.h>
+#include <hurricane/util/mat.h>
+#include <hurricane/util/vec.h>
+#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-bool hc_internal_quit = false;
+static bool hc_internal_quit = false;
 int debug_triangle_count = 0;
-hc_renderer hc_internal_engine_renderer;
+static hc_renderer hc_internal_engine_renderer;
 
 double hc_internal_eye_dist = HC_RENDER_SIZE_X / (2 * 0.7); //70 fov default
 void (*hc_render_triangle_call)(int, int, double, int, int, double, int, int,
@@ -92,6 +94,10 @@ void hc_render_object(hc_object *camera, hc_object *object) {
 void hc_set_fov(double fov, bool use_height) {
   hc_internal_eye_dist = (use_height ? HC_RENDER_SIZE_Y : HC_RENDER_SIZE_X) /
                          (2 * tan(fov * M_PI / 360));
+}
+
+void hc_quit() {
+  hc_internal_quit = true;
 }
 
 void hc_init(const bool hc_render_progress, int frames, hc_renderer renderer,

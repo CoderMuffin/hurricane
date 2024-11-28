@@ -1,8 +1,6 @@
 #ifndef HC_VEC_H
 #define HC_VEC_H
 
-#include <math.h>
-
 typedef struct {
   double v[2];
 } hc_vec2;

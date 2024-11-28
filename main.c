@@ -1,22 +1,23 @@
 int logq = 0;
 
-#include "hurricane/engine.c"
-#include "hurricane/shared.c"
-#include "hurricane/util/list.c"
-#include "hurricane/renderer/console.c"
-#include "hurricane/renderer/video.c"
-// #include "hurricane/renderer/xlib.c"
-#include "hurricane/loader/obj.c"
-#include "hurricane/renderer/SDL.c"
-#include "hurricane/input.c"
+#include <hurricane/engine.h>
+#include <hurricane/shared.h>
+#include <hurricane/util/vec.h>
+#include <hurricane/util/list.h>
+#include <hurricane/renderer/console.h>
+#include <hurricane/renderer/video.h>
+#include <hurricane/renderer/xlib.h>
+#include <hurricane/loader/obj.h>
+#include <hurricane/renderer/SDL.h>
+#include <hurricane/input.h>
 
-#include "hurricane/anim.c"
-#include "hurricane/util/log.c"
-#include "hurricane/clock.c"
+#include <hurricane/anim.h>
+#include <hurricane/util/log.h>
+#include <hurricane/clock.h>
 #include <stdbool.h>
 #include <stdio.h>
 
-#if 1
+#if 0
   #define KEYW 119
   #define KEYA 97
   #define KEYS 115
@@ -28,7 +29,7 @@ int logq = 0;
   #define KEYD 40
 #endif
 double x_rot, y_rot;
-void noop() {}
+void noop(void) {}
 
 bool w_down = false, s_down = false, a_down = false, d_down = false;
 
@@ -123,7 +124,7 @@ void on_key_down(void *e) {
 
 int main(int argc, char **argv) {
   // hc_xlib_init();
-  renderer = hc_renderer_sdl;
+  renderer = hc_renderer_xlib;
   renderer.init();
   hc_clock_new(&gclock);
   //hc_list list;

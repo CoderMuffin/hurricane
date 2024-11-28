@@ -1,5 +1,6 @@
 #ifndef HC_QUATERNION
 #define HC_QUATERNION
+#include <hurricane/util/quat.h>
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
@@ -9,11 +10,6 @@
 #include <stdio.h>
 
 #define QUATERNION_EPS (1e-4)
-
-typedef struct hc_quaternion {
-  double w;    /**< Scalar part */
-  double v[3]; /**< Vector part */
-} hc_quaternion;
 
 #ifndef M_PI
 #define M_PI (3.14159265358979323846)

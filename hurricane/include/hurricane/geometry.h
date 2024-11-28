@@ -1,11 +1,7 @@
 #ifndef HC_GEOMETRY_H
 #define HC_GEOMETRY_H
 
-#include "util/vec.h"
-#include <memory.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 
 typedef struct hc_geometry {
   double *vertices;
@@ -15,5 +11,10 @@ typedef struct hc_geometry {
 } hc_geometry;
 
 int hc_getline(char **lineptr, size_t *n, FILE *stream);
+
+extern hc_geometry hc_geometry_none;
+extern hc_geometry hc_geometry_sphere5;
+extern hc_geometry hc_geometry_cube;
+extern hc_geometry hc_geometry_mobius;
 
 #endif

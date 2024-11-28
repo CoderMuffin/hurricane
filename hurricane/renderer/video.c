@@ -1,7 +1,8 @@
 #ifndef HC_VIDEO_RENDER
 #define HC_VIDEO_RENDER
-#include "../shared.c"
-#include "renderer.c"
+
+#include <hurricane/shared.h>
+#include <hurricane/renderer/renderer.h>
 #include <stdio.h>
 #include <memory.h>
 #include <math.h>

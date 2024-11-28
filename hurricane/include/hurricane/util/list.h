@@ -1,12 +1,6 @@
 #ifndef HC_LIST_H
 #define HC_LIST_H
 
-#include "log.h"
-#include <memory.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 typedef struct hc_list {
   int length;
   int allocated;

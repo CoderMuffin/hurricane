@@ -1,12 +1,8 @@
 #ifndef HC_QUATERNION_H
 #define HC_QUATERNION_H
 
-#include <assert.h>
-#include <math.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <stdint.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 typedef struct hc_quaternion {
   double w;    /**< Scalar part */
@@ -30,5 +26,7 @@ double hc_quaternion_norm(hc_quaternion *q);
 void hc_quaternion_normalize(hc_quaternion *q, hc_quaternion *output);
 void hc_quaternion_rotate(const hc_quaternion *q, double v[3], double output[3]);
 void hc_quaternion_rotate_inverse(const hc_quaternion *q, double v[3], double output[3]);
+
+extern const hc_quaternion hc_quaternion_identity;
 
 #endif

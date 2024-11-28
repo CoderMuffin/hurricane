@@ -1,5 +1,6 @@
 #ifndef HC_VEC
 #define HC_VEC
+
 #include <math.h>
 
 const double hc_vec3_zero[3] = {0, 0, 0};

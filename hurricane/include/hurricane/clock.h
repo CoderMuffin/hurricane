@@ -1,12 +1,10 @@
 #ifndef HC_CLOCK_H
 #define HC_CLOCK_H
 
-#include <time.h>
-#include <sys/utime.h>
-#include <sys/timeb.h>
+#include <sys/time.h>
 
 typedef struct hc_clock {
-    struct timeb last_time;
+    struct timeval last_time;
 } hc_clock;
 
 void hc_clock_new(hc_clock *clock);

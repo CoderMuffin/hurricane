@@ -1,6 +1,7 @@
 #ifndef HC_LIST
 #define HC_LIST
-#include "log.c"
+
+#include <hurricane/util/log.h>
 #include <memory.h>
 #include <stdbool.h>
 #include <stdio.h>

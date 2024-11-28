@@ -1,8 +1,15 @@
 #ifndef HC_VEC_H
 #define HC_VEC_H
 
-#include <math.h>
+extern const double hc_vec3_zero[3];
+extern const double hc_vec3_one[3];
 
+extern const double hc_vec3_forward[3];
+extern const double hc_vec3_backward[3];
+extern const double hc_vec3_left[3];
+extern const double hc_vec3_right[3];
+extern const double hc_vec3_up[3];
+extern const double hc_vec3_down[3];
 
 void hc_vec3_set(double x, double y, double z, double out[3]);
 void hc_vec3_copy(const double from[3], double to[3]);
