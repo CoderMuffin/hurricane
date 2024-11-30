@@ -42,7 +42,7 @@ hc_lib = library('hurricane', hc_sources,
   dependencies : deps,
   include_directories : hc_inc)
 
-executable('hurricane',
+executable('main',
            'main.c',
            link_with : hc_lib,
            include_directories : hc_inc)

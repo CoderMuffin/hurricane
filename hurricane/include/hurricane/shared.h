@@ -18,5 +18,6 @@ void swap_dbl(double *a, double *b);
 double calculate_depth(double x0, double y0, double z0, double x1, double y1,
                        double z1, double x2, double y2, double z2, double px,
                        double py);
+void hc_sleep(long ms);
 
 #endif

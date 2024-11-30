@@ -32,4 +32,18 @@ double calculate_depth(double x0, double y0, double z0, double x1, double y1,
 
 int hc_render_bg[3] = {255, 255, 255};
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
+
+void hc_sleep(long ms) {
+#ifdef _WIN32
+  Sleep(ms);
+#else
+  usleep(ms*1000);
+#endif
+}
+
 #endif

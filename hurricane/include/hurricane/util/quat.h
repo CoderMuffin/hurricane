@@ -26,6 +26,8 @@ double hc_quaternion_norm(hc_quaternion *q);
 void hc_quaternion_normalize(hc_quaternion *q, hc_quaternion *output);
 void hc_quaternion_rotate(const hc_quaternion *q, double v[3], double output[3]);
 void hc_quaternion_rotate_inverse(const hc_quaternion *q, double v[3], double output[3]);
+void hc_quaternion_slerp(hc_quaternion *q1, hc_quaternion *q2, double t,
+                         hc_quaternion *output);
 
 extern const hc_quaternion hc_quaternion_identity;
 

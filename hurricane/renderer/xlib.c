@@ -1,7 +1,9 @@
 #ifndef HC_XLIB
 #define HC_XLIB
-#include "../X11/Xlib.h"
-#include "../X11/X.h"
+
+#include <X11/Xlib.h>
+#include <X11/X.h>
+#include <stdlib.h>
 #include <hurricane/input.h>
 #include <hurricane/shared.h>
 #include <hurricane/renderer/renderer.h>

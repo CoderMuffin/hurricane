@@ -23,6 +23,8 @@ double hc_vec3_sqrmag(const double v[3]);
 double hc_vec3_mag(const double v[3]);
 void hc_vec3_cross(const double a[3], const double b[3], double out[3]);
 void hc_vec3_normalize(const double in[3], double out[3]);
+void hc_vec3_lerp(const double a[3], const double b[3], double f,
+                  double out[3]);
 double hc_vec3_dot(const double a[3], const double b[3]);
 
 #endif

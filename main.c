@@ -17,7 +17,7 @@ int logq = 0;
 #include <stdbool.h>
 #include <stdio.h>
 
-#if 0
+#if 1
   #define KEYW 119
   #define KEYA 97
   #define KEYS 115
@@ -73,7 +73,7 @@ void update() {
   }
   if (w_down || s_down || a_down || d_down) {
     hc_quaternion_from_euler_zyx(VEC3(x_rot, y_rot, 0), &camera.rotation);
-    hc_quaternion_rotate(&camera.rotation, VEC3(0,0,-3), camera.position);
+    // hc_quaternion_rotate(&camera.rotation, VEC3(0,0,-3), camera.position);
   }
   // hc_vec3_add(cube->position, tmpvec, cube->position);
   hc_render_object(&camera, &cube);
@@ -122,9 +122,9 @@ void on_key_down(void *e) {
   }
 }
 
-int main(int argc, char **argv) {
+int main(void) {
   // hc_xlib_init();
-  renderer = hc_renderer_xlib;
+  renderer = hc_renderer_sdl;
   renderer.init();
   hc_clock_new(&gclock);
   //hc_list list;
