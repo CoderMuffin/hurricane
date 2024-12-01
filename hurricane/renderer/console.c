@@ -1,13 +1,15 @@
 #ifndef HC_RENDER
 #define HC_RENDER
 
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <hurricane/renderer.h>
+#include <hurricane/renderer/renderer.h>
 #include <hurricane/input.h>
 #include <hurricane/shared.h>
+
 #define CHAR_SIZE (sizeof(char) * 30)
 
 unsigned char *hc_console_buf;
@@ -30,8 +32,8 @@ void *hc_internal_console_input_handler(void *_) {
 
 void hc_console_init() {
   printf("\033[H\033[J");
-  //pthread_t input_thread;
-  //pthread_create(&input_thread, NULL, hc_internal_console_input_handler, NULL);
+  pthread_t input_thread;
+  pthread_create(&input_thread, NULL, hc_internal_console_input_handler, NULL);
   hc_console_buf =
       calloc(HC_RENDER_SIZE_X * HC_RENDER_SIZE_Y * 3, sizeof(unsigned char));
   hc_console_char_buf =

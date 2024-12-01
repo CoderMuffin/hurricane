@@ -7,7 +7,6 @@
 #include <hurricane/renderer/console.h>
 #include <hurricane/renderer/video.h>
 // #include <hurricane/renderer/xlib.h>
-// #include <hurricane/renderer/sdl.h>
 #include <hurricane/clock.h>
 #include <hurricane/loader/obj.h>
 #include <hurricane/input.h>
@@ -17,7 +16,8 @@
 #include <hurricane/clock.h>
 #include "maze.c"
 #include <stdbool.h>
-#include <stdio.h>
+
+#define M_PI 3.1415926535897535
 
 #if 1
 #define KEYW 119
@@ -48,14 +48,18 @@ struct {
     int angle; // 0..=3
     int x;
     int y;
+    struct {
+        int real_angle; // free
+        bool animating;
+        double progress;
+        hc_quaternion rotation_start;
+        hc_quaternion rotation_end;
+        double position_start[3];
+        double position_end[3];
+    } camera;
 } player;
 
-const double CAMERA_ANIM_DURATION = 1.0;
-double camera_anim_prog = CAMERA_ANIM_DURATION;
-hc_quaternion camera_rotation_start;
-hc_quaternion camera_rotation_end;
-double camera_position_start[3];
-double camera_position_end[3];
+const double CAMERA_ANIM_DURATION = 0.3;
 
 char format_tmp[100];
 hc_quaternion tick;
@@ -66,8 +70,13 @@ int maze_h = 0;
 void on_key_down(void *e) {
     hc_input_key_event *evt = e;
     if (evt->code == KEYSPC) {
-        hc_log("\033[0mangle=%d x=%d y=%d px=%f py=%f pz=%f anim=%f action=%d", player.angle, player.x, player.y, camera.position[0], camera.position[1], camera.position[2], camera_anim_prog, action);
+        hc_log("\nangle=%d x=%d y=%d\npx=%f py=%f pz=%f\nanim=%f action=%d animating=%d", player.angle, player.x, player.y, camera.position[0], camera.position[1], camera.position[2], player.camera.progress, action, player.camera.animating);
     }
+            /*
+        if (action == ' ') {
+            dump_maze(maze, 19, 19, player.x, player.y);
+        }
+            */
     if (action == '\0') {
         switch (evt->code) {
             case KEYW:
@@ -84,12 +93,7 @@ void on_key_down(void *e) {
                 break;
             default:
                 hc_warn("unknown key code %d", evt->code);
-                break;
-            /*
-        if (action == ' ') {
-            dump_maze(maze, 19, 19, player.x, player.y);
-        }
-            */
+                return;
         }
     }
 }
@@ -97,57 +101,58 @@ void on_key_down(void *e) {
 void update(void) {
     double delta = hc_clock_step(&gclock);
 
-    if (camera_anim_prog == CAMERA_ANIM_DURATION) {
+    for (int i = 0; i < blocks.length; i++) {
+        hc_object *obj = hc_list_get(&blocks, i);
+        hc_render_object(&camera, obj);
+    }
+
+    if (!player.camera.animating) {
         if (action == 'w' || action == 's') {
+            hc_vec3_set(player.x * 2, 0, player.y * 2, player.camera.position_start);
+
             int old_x = player.x;
             int old_y = player.y;
+
             player.x += (action == 'w' ? 1 : -1) * ((player.angle == 1 ? 1 : 0) - (player.angle == 3 ? 1 : 0));
             player.y += (action == 'w' ? 1 : -1) * ((player.angle == 0 ? 1 : 0) - (player.angle == 2 ? 1 : 0));
             if (maze[player.y * maze_w + player.x]) {
                 player.x = old_x;
                 player.y = old_y;
+                action = '\0';
                 return;
             }
             
-            hc_vec3_copy(camera_position_end, camera_position_start);
-            hc_vec3_set(player.x * 2, 0, player.y * 2, camera_position_end);
-            camera_anim_prog = 0;
+            hc_vec3_set(player.x * 2, 0, player.y * 2, player.camera.position_end);
+
+            player.camera.progress = 0;
+            player.camera.animating = true;
         }
         if (action == 'a' || action == 'd') {
-            player.angle += 4 + (action == 'a' ? -1 : 1);
-            player.angle %= 4;
-            // hc_quaternion_copy(&camera_rotation_end, &camera_rotation_start);
-            hc_quaternion_from_y_rotation(player.angle * M_PI / 2, &camera_rotation_end);
-            hc_quaternion_copy(&camera_rotation_end, &camera.rotation);
-            camera_anim_prog = 0;
+            hc_quaternion_from_y_rotation(player.camera.real_angle * M_PI/2, &player.camera.rotation_start);
+            player.camera.real_angle += (action == 'a' ? -1 : 1);
+            player.angle = (player.camera.real_angle % 4 + 4) % 4;
+            hc_quaternion_from_y_rotation(player.camera.real_angle * M_PI/2, &player.camera.rotation_end);
+            player.camera.progress = 0;
+            player.camera.animating = true;
         }
     } else {
-        camera_anim_prog += delta;
-        if (camera_anim_prog > CAMERA_ANIM_DURATION) camera_anim_prog = CAMERA_ANIM_DURATION;
+        player.camera.progress += delta;
+        if (player.camera.progress > CAMERA_ANIM_DURATION) {
+            player.camera.progress = CAMERA_ANIM_DURATION;
+            player.camera.animating = false;
+        }
 
         if (action == 'a' || action == 'd') {
-            hc_quaternion_slerp(&camera_rotation_start, &camera_rotation_end, camera_anim_prog / CAMERA_ANIM_DURATION, &camera.rotation);
+            hc_quaternion_slerp(&player.camera.rotation_start, &player.camera.rotation_end, player.camera.progress / CAMERA_ANIM_DURATION, &camera.rotation);
         }
         if (action == 'w' || action == 's') {
-            hc_vec3_lerp(camera_position_start, camera_position_end, camera_anim_prog / CAMERA_ANIM_DURATION, camera.position);
+            hc_vec3_lerp(player.camera.position_start, player.camera.position_end, player.camera.progress / CAMERA_ANIM_DURATION, camera.position);
         }
 
-        if (camera_anim_prog == CAMERA_ANIM_DURATION) action = '\0';
-    }
-
-    for (int i = 0; i < blocks.length; i++) {
-        hc_object *obj = hc_list_get(&blocks, i);
-        // hc_render_object(&camera, obj);
-        if (
-            (player.angle == 0 && obj->position[2] > camera.position[2] + 0.85) ||
-            (player.angle == 1 && obj->position[0] > camera.position[0] + 0.85) ||
-            (player.angle == 2 && obj->position[2] < camera.position[2] - 0.85) ||
-            (player.angle == 3 && obj->position[0] < camera.position[0] - 0.85)) {
-            hc_render_object(&camera, obj);
+        if (!player.camera.animating) {
+            action = '\0';
         }
     }
-    // sprintf(format_tmp, "\033[0mangle=%d x=%d y=%d px=%f py=%f pz=%f", player.angle, player.x, player.y, camera.position[0], camera.position[1], camera.position[2]);
-    //hc_console_blit(format_tmp, 20 - strlen(format_tmp) / 2, 30);
 }
 
 void create_maze(int width, int height) {
@@ -172,21 +177,23 @@ int main(void) {
 
     hc_list_new(&blocks);
     create_maze(8, 8);
-    renderer = hc_renderer_sdl;
+    renderer = hc_renderer_console;
     renderer.init();
 
-    hc_set_fov(60, false);
+    hc_set_fov(90, false);
 
     hc_new_object(&camera, &hc_geometry_none, VEC3(2, 0, 2), hc_quaternion_identity, hc_vec3_one);
 
-    hc_quaternion_copy(&camera.rotation, &camera_rotation_start);
+    hc_quaternion_copy(&camera.rotation, &player.camera.rotation_start);
     // hc_quaternion_from_euler_zyx(VEC3(M_PI/2, 0, 0), &camera.rotation);
-    hc_vec3_copy(camera.position, camera_position_start);
+    hc_vec3_copy(camera.position, player.camera.position_start);
     // hc_vec3_copy(VEC3(0, 100, 0), camera.position);
     hc_quaternion_from_y_rotation(M_PI / 2, &camera.rotation);
     player.angle = 1;
     player.x = 1;
     player.y = 1;
+    player.camera.animating = false;
+    player.camera.real_angle = 1;
     
     hc_init(false, -1, renderer, update);
 

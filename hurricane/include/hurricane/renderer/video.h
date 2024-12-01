@@ -1,16 +1,8 @@
-#ifndef HC_VIDEO_RENDER_H
-#define HC_VIDEO_RENDER_H
+#ifndef HC_RENDERER_VIDEO_H
+#define HC_RENDERER_VIDEO_H 
 
-#include "../shared.h"
 #include "renderer.h"
-#include <stdio.h>
-#include <memory.h>
-#include <math.h>
 
-
-void hc_video_init();
-void hc_video_pre_frame();
-void hc_video_frame();
-void hc_video_finish();
+extern const hc_renderer hc_renderer_video;
 
 #endif

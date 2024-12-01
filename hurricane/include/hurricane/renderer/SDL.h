@@ -1,5 +1,5 @@
-#ifndef HC_SDL_H
-#define HC_SDL_H
+#ifndef HC_RENDERER_SDL_H
+#define HC_RENDERER_SDL_H
 
 #include "renderer.h"
 

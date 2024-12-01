@@ -1,6 +1,6 @@
 project('hurricane', 'c',
   version : '0.1',
-  default_options : ['warning_level=3'])
+  default_options : ['warning_level=3', 'optimization=3'])
 
 sdl2_dep = dependency('sdl2',
   required : true)
@@ -32,6 +32,7 @@ hc_files = [
   'util/vec',
   'renderer/SDL',
   'renderer/video',
+  'renderer/console',
   # 'renderer/xlib',
   'loader/obj',
   'loader/stl'
