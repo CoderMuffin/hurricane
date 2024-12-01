@@ -4,8 +4,9 @@
 #include <hurricane/engine.h>
 #include <hurricane/input.h>
 #include <hurricane/renderer/SDL.h>
-#include <SDL2/SDL.h>
+#include <math.h>
 #include <stdio.h>
+#include <SDL2/SDL.h>
 
 Uint32 hc_sdl_image[HC_RENDER_SIZE_Y * HC_RENDER_SIZE_X];
 double hc_sdl_depth_buf[HC_RENDER_SIZE_Y][HC_RENDER_SIZE_X] = {0};

@@ -2,13 +2,18 @@ project('hurricane', 'c',
   version : '0.1',
   default_options : ['warning_level=3'])
 
-sdl2_dep = dependency('sdl2')
+sdl2_dep = dependency('sdl2',
+  required : true)
 
 cc = meson.get_compiler('c')
 m_dep = cc.find_library('m', required : false)
-xlib_dep = dependency('X11')
+# xlib_dep = dependency('X11')
 
-deps = [xlib_dep, m_dep, sdl2_dep]
+deps = [
+  # xlib_dep,
+  m_dep,
+  sdl2_dep
+]
 
 hc_files = [
   'anim',
@@ -27,7 +32,7 @@ hc_files = [
   'util/vec',
   'renderer/SDL',
   'renderer/video',
-  'renderer/xlib',
+  # 'renderer/xlib',
   'loader/obj',
   'loader/stl'
 ]
@@ -40,7 +45,7 @@ endforeach
 hc_inc = include_directories('hurricane/include', is_system : true)
 hc_lib = library('hurricane', hc_sources,
   dependencies : deps,
-  include_directories : hc_inc)
+  include_directories : [hc_inc])
 
 executable('monster_maze',
            'monster_maze.c',
