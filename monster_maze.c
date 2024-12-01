@@ -66,7 +66,7 @@ int maze_h = 0;
 void on_key_down(void *e) {
     hc_input_key_event *evt = e;
     if (evt->code == KEYSPC) {
-        hc_log("\033[0mangle=%d x=%d y=%d px=%f py=%f pz=%f", player.angle, player.x, player.y, camera.position[0], camera.position[1], camera.position[2]);
+        hc_log("\033[0mangle=%d x=%d y=%d px=%f py=%f pz=%f anim=%f action=%d", player.angle, player.x, player.y, camera.position[0], camera.position[1], camera.position[2], camera_anim_prog, action);
     }
     if (action == '\0') {
         switch (evt->code) {
@@ -97,7 +97,7 @@ void on_key_down(void *e) {
 void update(void) {
     double delta = hc_clock_step(&gclock);
 
-    if (camera_anim_prog == CAMERA_ANIM_DURATION || true) {
+    if (camera_anim_prog == CAMERA_ANIM_DURATION) {
         if (action == 'w' || action == 's') {
             int old_x = player.x;
             int old_y = player.y;
@@ -180,10 +180,10 @@ int main(void) {
     hc_new_object(&camera, &hc_geometry_none, VEC3(2, 0, 2), hc_quaternion_identity, hc_vec3_one);
 
     hc_quaternion_copy(&camera.rotation, &camera_rotation_start);
-    hc_quaternion_from_euler_zyx(VEC3(-M_PI/2, 0, 0), &camera.rotation);
+    // hc_quaternion_from_euler_zyx(VEC3(M_PI/2, 0, 0), &camera.rotation);
     hc_vec3_copy(camera.position, camera_position_start);
-    hc_vec3_copy(VEC3(0, 100, 0), camera.position);
-    // hc_quaternion_from_y_rotation(M_PI / 2, &camera.rotation);
+    // hc_vec3_copy(VEC3(0, 100, 0), camera.position);
+    hc_quaternion_from_y_rotation(M_PI / 2, &camera.rotation);
     player.angle = 1;
     player.x = 1;
     player.y = 1;

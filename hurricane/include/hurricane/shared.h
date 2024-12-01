@@ -7,6 +7,7 @@
 #define HC_RENDER_SIZE_Y 300
 #define HC_RENDER_SIZE_STR_X STR(HC_RENDER_SIZE_X)
 #define HC_RENDER_SIZE_STR_Y STR(HC_RENDER_SIZE_Y)
+#define HC_CLIP_NEAR 0.1
 #define DEG2RAD (M_PI / 180)
 #define VEC3(x, y, z) ((double[]){(x), (y), (z)})
 #define QUAT(x, y, z) ((hc_quaternion[]){hc_quaternion_new_euler_zyx(VEC3((z), (y), (x)))})

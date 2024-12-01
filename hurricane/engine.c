@@ -1,6 +1,3 @@
-#ifndef HC_ENGINE
-#define HC_ENGINE
-
 #include <hurricane/object.h>
 #include <hurricane/renderer/renderer.h>
 #include <hurricane/shared.h>
@@ -9,7 +6,6 @@
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 static bool hc_internal_quit = false;
 int debug_triangle_count = 0;
@@ -80,6 +76,8 @@ void hc_render_object(hc_object *camera, hc_object *object) {
     if (depth_az < az && depth_bz < bz && depth_cz < cz)
       continue;
 
+    if (az < HC_CLIP_NEAR || bz < HC_CLIP_NEAR || cz < HC_CLIP_NEAR) continue;
+
     debug_triangle_count++;
 
     double dot = hc_internal_lighting(object, i);
@@ -116,5 +114,3 @@ void hc_init(const bool hc_render_progress, int frames, hc_renderer renderer,
     }
   }
 }
-
-#endif
