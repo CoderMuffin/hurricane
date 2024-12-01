@@ -1,16 +1,13 @@
 #ifndef HC_LIST
 #define HC_LIST
-#include "log.c"
+
 #include <memory.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-typedef struct hc_list {
-  int length;
-  int allocated;
-  void **data;
-} hc_list;
+#include <string.h>
+#include "../include/util/log.h"
+#include "../include/util/list.h"
 
 void hc_list_new(hc_list *l) {
   l->length = 0;

@@ -1,6 +1,6 @@
 #ifndef HC_RENDERER
 #define HC_RENDERER
-#include "../shared.c"
+#include "../include/shared.h"
 
 typedef struct hc_renderer {
   void (*init)();

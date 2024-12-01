@@ -1,18 +1,18 @@
 int logq = 0;
 
-#include "hurricane/engine.c"
-#include "hurricane/shared.c"
-#include "hurricane/util/list.c"
-#include "hurricane/renderer/console.c"
-#include "hurricane/renderer/video.c"
-// #include "hurricane/renderer/xlib.c"
-#include "hurricane/loader/obj.c"
-#include "hurricane/renderer/SDL.c"
-#include "hurricane/input.c"
+#include "hurricane/include/engine.h"
+#include "hurricane/include/shared.h"
+#include "hurricane/include/util/list.h"
+#include "hurricane/include/renderer/console.h"
+#include "hurricane/include/renderer/video.h"
+// #include "hurricane/include/renderer/xlib.h"
+#include "hurricane/include/loader/obj.h"
+#include "hurricane/include/renderer/SDL.h"
+#include "hurricane/include/input.h"
 
-#include "hurricane/anim.c"
-#include "hurricane/util/log.c"
-#include "hurricane/clock.c"
+#include "hurricane/include/anim.h"
+#include "hurricane/include/util/log.h"
+#include "hurricane/include/clock.h"
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -75,10 +75,11 @@ void update() {
     hc_quaternion_rotate(&camera.rotation, VEC3(0,0,-3), camera.position);
   }
   // hc_vec3_add(cube->position, tmpvec, cube->position);
+  double delta = hc_clock_step(&gclock);
   hc_render_object(&camera, &cube);
 
   hc_render_object(&camera, &cube2);
-  double delta = hc_clock_step(&gclock);
+  hc_log("delta %f", delta);
   hc_anim_step(&cube_anim, delta, &cube.rotation);
   // printf("anim: time:%f playing:%d looping:%d\n", cube_anim.time,
   // cube_anim.playing, cube_anim.looping); printf("%f %f %f\n",
@@ -159,14 +160,14 @@ int main(int argc, char **argv) {
   hc_quaternion_from_y_rotation(2.0 * DEG2RAD, &camera_small_right);
   hc_geometry geometry_teapot;
   hc_geometry_from_obj("teapot.obj", &geometry_teapot);
-  hc_new_object(&cube, &geometry_teapot, VEC3(0, 0.8, 0), hc_quaternion_identity,
+  hc_object_new(&cube, &geometry_teapot, VEC3(0, 0.8, 0), hc_quaternion_identity,
                 (double[]){0.5, 0.5, 0.5});
   hc_log("%d faces", geometry_teapot.face_count);
-  hc_new_object(&camera, &hc_geometry_none, VEC3(0, 0, -3),
+  hc_object_new(&camera, &hc_geometry_none, VEC3(0, 0, -3),
                 hc_quaternion_identity, hc_vec3_one);
 
 
-  hc_new_object(&cube2, &hc_geometry_cube, VEC3(1.2, 0, 0), hc_quaternion_identity,
+  hc_object_new(&cube2, &hc_geometry_cube, VEC3(1.2, 0, 0), hc_quaternion_identity,
                 (double[]){1, 0.2, 0.2});
   // hc_init(false, 200, hc_video_pre_frame, hc_video_triangle, hc_video_frame,
   //        update);
@@ -176,7 +177,7 @@ int main(int argc, char **argv) {
   // hc_world_to_screen(&camera, (double[]){4, 0, -1}, tmp);
   // printf("%d %d\n", tmp[0], tmp[1]);
   // exit(1);
-  hc_init(false, -1, renderer, update);
+  hc_init(true, -1, renderer, update);
 
   renderer.finish();
   // hc_sdl_finish();

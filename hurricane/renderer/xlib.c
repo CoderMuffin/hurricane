@@ -1,10 +1,11 @@
+#ifdef HC_ENABLE_X11
 #ifndef HC_XLIB
 #define HC_XLIB
 #include "../X11/Xlib.h"
 #include "../X11/X.h"
-#include "../input.c"
-#include "../shared.c"
-#include "renderer.c"
+#include "../include/input.h"
+#include "../include/shared.h"
+#include "../include/renderer/renderer.h"
 #include <math.h>
 #include <memory.h>
 #include <stdio.h>
@@ -198,4 +199,5 @@ const hc_renderer hc_renderer_xlib = {
     .internal_depth_buf = &hc_xlib_depth_buf
 };
 
+#endif
 #endif

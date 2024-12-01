@@ -1,8 +1,11 @@
+#if 0
 #ifndef HC_VEC_H
 #define HC_VEC_H
 
+//macros
 #include <math.h>
 
+//types
 typedef struct {
   double v[2];
 } hc_vec2;
@@ -10,6 +13,9 @@ typedef struct {
   double v[3];
 } hc_vec3;
 
+//decls
+
+//functions
 hc_vec2 hc_new_vec2(double x, double y);
 hc_vec3 hc_new_vec3(double x, double y, double z);
 hc_vec2 hc_vec2_add(hc_vec2 a, hc_vec2 b);
@@ -29,4 +35,5 @@ double hc_vec3_sqrmag(hc_vec3 v);
 double hc_vec2_mag(hc_vec2 v);
 double hc_vec3_mag(hc_vec3 v);
 
+#endif
 #endif

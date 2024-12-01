@@ -1,16 +1,16 @@
-#include "hurricane/engine.c"
-#include "hurricane/shared.c"
-#include "hurricane/util/list.c"
-#include "hurricane/renderer/console.c"
-#include "hurricane/renderer/video.c"
-// #include "hurricane/renderer/xlib.c"
-// #include "hurricane/renderer/sdl.c"
-#include "hurricane/loader/obj.c"
-#include "hurricane/input.c"
+#include "hurricane/include/engine.h"
+#include "hurricane/include/shared.h"
+#include "hurricane/include/util/list.h"
+#include "hurricane/include/renderer/console.h"
+#include "hurricane/include/renderer/video.h"
+// #include "hurricane/include/renderer/xlib.h"
+// #include "hurricane/include/renderer/sdl.h"
+#include "hurricane/include/loader/obj.h"
+#include "hurricane/include/input.h"
 
-#include "hurricane/anim.c"
-#include "hurricane/util/log.c"
-#include "hurricane/clock.c"
+#include "hurricane/include/anim.h"
+#include "hurricane/include/util/log.h"
+#include "hurricane/include/clock.h"
 #include "maze.c"
 #include <stdbool.h>
 #include <stdio.h>
@@ -126,7 +126,7 @@ void create_maze(int width, int height) {
         for (int x = 0; x < maze_w; x++) {
             if (maze[y * maze_w + x]) { // intentional y*w instead of y*h
                 hc_object *cube = malloc(sizeof(hc_object));
-                hc_new_object(cube, &hc_geometry_cube, VEC3(x*2, 0, y*2), hc_quaternion_identity, hc_vec3_one);
+                hc_object_new(cube, &hc_geometry_cube, VEC3(x*2, 0, y*2), hc_quaternion_identity, hc_vec3_one);
                 hc_list_add(&blocks, cube);
             }
         }
@@ -142,7 +142,7 @@ int main(int argc, char **argv) {
 
     hc_set_fov(60, false);
 
-    hc_new_object(&camera, &hc_geometry_none, VEC3(2, 0, 2), hc_quaternion_identity, hc_vec3_one);
+    hc_object_new(&camera, &hc_geometry_none, VEC3(2, 0, 2), hc_quaternion_identity, hc_vec3_one);
 
     hc_quaternion_copy(&camera.rotation, &camera_rotation_start);
     hc_vec3_copy(camera.position, camera_position_start);

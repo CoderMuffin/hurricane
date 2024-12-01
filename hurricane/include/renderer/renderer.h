@@ -1,8 +1,10 @@
 #ifndef HC_RENDERER_H
 #define HC_RENDERER_H
 
+//macros
 #include "../shared.h"
 
+//types
 typedef struct hc_renderer {
   void (*init)();
   void (*pre_frame)();
@@ -13,5 +15,8 @@ typedef struct hc_renderer {
   double (*internal_depth_buf)[HC_RENDER_SIZE_Y][HC_RENDER_SIZE_X];
 } hc_renderer;
 
+//decls
+
+//functions
 
 #endif

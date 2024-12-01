@@ -1,0 +1,1562 @@
+warning: LF will be replaced by CRLF in .vscode/tasks.json.
+The file will have its original line endings in your working directory
+warning: LF will be replaced by CRLF in hurricane/util/log.c.
+The file will have its original line endings in your working directory
+warning: LF will be replaced by CRLF in hurricane/util/mat.c.
+The file will have its original line endings in your working directory
+[1mdiff --git a/.vscode/settings.json b/.vscode/settings.json[m
+[1mindex 5873977..ea8fcc6 100644[m
+[1m--- a/.vscode/settings.json[m
+[1m+++ b/.vscode/settings.json[m
+[36m@@ -7,6 +7,8 @@[m
+         "iostream": "c",[m
+         "ios": "c",[m
+         "utime.h": "c",[m
+[31m-        "stdbool.h": "c"[m
+[32m+[m[32m        "stdbool.h": "c",[m
+[32m+[m[32m        "console.h": "c",[m
+[32m+[m[32m        "math.h": "c"[m
+     }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/.vscode/tasks.json b/.vscode/tasks.json[m
+[1mindex 721b80d..ea807e3 100644[m
+[1m--- a/.vscode/tasks.json[m
+[1m+++ b/.vscode/tasks.json[m
+[36m@@ -6,8 +6,9 @@[m
+         {[m
+             "label": "build",[m
+             "type": "shell",[m
+[32m+[m[32m            "command": "python hurricane/compile.py && gcc -g -Wall -Werror -O0 -L. -lhurricane main.c -o main.exe"[m
+             // "command": "gcc -g -Wall -Werror -Wno-stringop-truncation -Wno-stringop-overflow -O0 -pthread -lm *.c -o main.exe"[m
+[31m-            "command": "gcc -g -Wall -lmingw32 -Ihurricane/renderer/SDL/include -Lhurricane/renderer/SDL/bin/ -lSDL2 -Lhurricane/renderer/SDL/lib/ -lSDL2main -Werror -Wno-stringop-truncation -Wno-stringop-overflow -O0 -pthread -lm *.c -o main.exe"[m
+[32m+[m[32m            // "command": "gcc -g -Wall -lmingw32 -Ihurricane/renderer/SDL/include -Lhurricane/renderer/SDL/bin/ -lSDL2 -Lhurricane/renderer/SDL/lib/ -lSDL2main -Werror -Wno-stringop-truncation -Wno-stringop-overflow -O0 -pthread -lm *.c -o main.exe"[m
+         }[m
+     ][m
+ }[m
+[1mdiff --git a/genheader.py b/genheader.py[m
+[1mindex 5212e01..181e041 100644[m
+[1m--- a/genheader.py[m
+[1m+++ b/genheader.py[m
+[36m@@ -1,50 +1,45 @@[m
+[32m+[m[32m#not intended to be used routinely, created for a one off operation[m
+[32m+[m[32mprint("overwriting action halted")[m
+[32m+[m[32mexit()[m
+[32m+[m
+ import os[m
+ import re[m
+[31m-from pycparser import c_parser, c_ast[m
+[31m-[m
+[31m-class TypedefVisitor(c_ast.NodeVisitor):[m
+[31m-    def __init__(self):[m
+[31m-        self.typedefs = [][m
+[31m-        self.code_strings = [][m
+[31m-[m
+[31m-    def visit_Typedef(self, node):[m
+[31m-        self.typedefs.append(node)[m
+[31m-        self.code_strings.append(node.coord.file + ':' + str(node.coord.line) + ': ' + node.to_string())[m
+[31m-[m
+[31m-def extract_typedefs_with_code(code):[m
+[31m-    parser = c_parser.CParser()[m
+[31m-    ast = parser.parse(code)[m
+[31m-    typedef_visitor = TypedefVisitor()[m
+[31m-    typedef_visitor.visit(ast)[m
+[31m-    return typedef_visitor.typedefs, typedef_visitor.code_strings[m
+ [m
+ def process_header(file):[m
+[31m-    re_include = re.compile("^(#include .+)$", re.MULTILINE)[m
+[32m+[m[32m    re_include = re.compile("^(#(?:include|define) .+)$", re.MULTILINE)[m
+     re_func = re.compile("^(\w+ \*?\w+\(.*\)) {", re.MULTILINE)[m
+[31m-    re_typedef = re.compile("^(typedef (?:.|\n)*?;(?![^{]*}))", re.MULTILINE)[m
+[32m+[m[32m    re_typedef = re.compile("^((?:typedef|enum) (?:.|\n)*?;(?![^{]*}))", re.MULTILINE)[m
+[32m+[m[32m    re_decl = re.compile("^((?:const )?\w+ *?\w+) ? =(?![^{]*})", re.MULTILINE)[m
+     with open(file.replace("hurricane\\", "hurricane\\include\\").replace(".c", ".h"), "w") as out:[m
+         with open(file, "r") as f:[m
+             content = f.read()[m
+[31m-            guard = re.findall("#ifndef (\w+)", content)[0] + "_H"[m
+[31m-            out.write("#ifndef " + guard + "\n")[m
+[31m-            out.write("#define " + guard + "\n\n")[m
+[32m+[m[32m            guard = re.findall("#ifndef (\w+)", content)[0][m
+[32m+[m[32m            out.write("#ifndef " + guard + "_H\n")[m
+[32m+[m[32m            out.write("#define " + guard + "_H\n\n//macros\n")[m
+ [m
+             for item in re.findall(re_include, content):[m
+[31m-                out.write(item.replace(".c", ".h") + "\n")[m
+[32m+[m[32m                if item == "#define " + guard:[m
+[32m+[m[32m                    continue[m
+[32m+[m[32m                out.write(item.replace(".c", ".h").replace("include/", "") + "\n")[m
+             [m
+[31m-            out.write("\n")[m
+[32m+[m[32m            out.write("\n//types\n")[m
+ [m
+             for item in re.findall(re_typedef, content):[m
+                 out.write(item + "\n")[m
+ [m
+[31m-            out.write("\n")[m
+[32m+[m[32m            out.write("\n//decls\n")[m
+[32m+[m
+[32m+[m[32m            for item in re.findall(re_decl, content):[m
+[32m+[m[32m                out.write(item + ";\n")[m
+[32m+[m
+[32m+[m[32m            out.write("\n//functions\n")[m
+ [m
+             for item in re.findall(re_func, content):[m
+                 out.write(item + ";\n")[m
+ [m
+             out.write("\n#endif\n")[m
+ [m
+[31m-for root, dirs, files in os.walk("hurricane"):[m
+[32m+[m[32mfor root, dirs, files in os.walk("hurricane_GUARD_NO_OVERWRITE"):[m
+     for file in files:[m
+         if file.endswith(".c"):[m
+             header = os.path.join(root, file)[m
+[1mdiff --git a/hurricane/anim.c b/hurricane/anim.c[m
+[1mindex d8736b3..0460610 100644[m
+[1m--- a/hurricane/anim.c[m
+[1m+++ b/hurricane/anim.c[m
+[36m@@ -1,29 +1,14 @@[m
+ #ifndef HC_ANIM[m
+ #define HC_ANIM[m
+[31m-#include "util/quat.c"[m
+[31m-#include "util/vec.c"[m
+[32m+[m[32m#include "include/util/quat.h"[m
+[32m+[m[32m#include "include/util/vec.h"[m
+[32m+[m[32m#include "include/anim.h"[m
+ #include <stdbool.h>[m
+ [m
+[31m-typedef struct hc_keyframe {[m
+[31m-    void *state;[m
+[31m-    double time;[m
+[31m-} hc_keyframe;[m
+[31m-[m
+[31m-typedef struct hc_anim {[m
+[31m-    hc_keyframe *frames;[m
+[31m-    int frame_count;[m
+[31m-    bool looping;[m
+[31m-    double time;[m
+[31m-    int curr_frame;[m
+[31m-    bool playing;[m
+[31m-    void (*animator)(void *, void *, double, int, void *);[m
+[31m-} hc_anim;[m
+[31m-[m
+ void hc_animator_vec3(void *from, void *to, double t, int frame, void *out) {[m
+     hc_vec3_lerp(from, to, t, out);[m
+ }[m
+[31m-void hc_animator_quaternion(void *from, void *to, double t, int frame,[m
+[31m-                            void *out) {[m
+[32m+[m[32mvoid hc_animator_quaternion(void *from, void *to, double t, int frame, void *out) {[m
+     hc_quaternion_slerp(from, to, t, out);[m
+ }[m
+ [m
+[36m@@ -68,8 +53,7 @@[m [mvoid hc_anim_play(hc_anim *anim) {[m
+     anim->playing = true;[m
+ }[m
+ [m
+[31m-void hc_anim_new(hc_anim *output, hc_keyframe frames[], int frame_count,[m
+[31m-                 void (*animator)(void *, void *, double, int, void *)) {[m
+[32m+[m[32mvoid hc_anim_new(hc_anim *output, hc_keyframe frames[], int frame_count, void (*animator)(void *, void *, double, int, void *)) {[m
+     output->animator = animator;[m
+     output->frame_count = frame_count;[m
+     output->frames = frames;[m
+[1mdiff --git a/hurricane/compile.py b/hurricane/compile.py[m
+[1mindex 9e1a74e..7018e02 100644[m
+[1m--- a/hurricane/compile.py[m
+[1m+++ b/hurricane/compile.py[m
+[36m@@ -1,4 +1,62 @@[m
+[31m-import subprocess[m
+[32m+[m[32mimport subprocess, os, threading, sys[m
+[32m+[m[32mfrom concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, Executor[m
+[32m+[m
+[32m+[m[32mclass ThreadPoolVisualiserTask:[m
+[32m+[m[32m    def __init__(self, task, label):[m
+[32m+[m[32m        self.task = task[m
+[32m+[m[32m        self.label = label[m
+[32m+[m
+[32m+[m[32mclass ThreadPoolVisualiser:[m
+[32m+[m[32m    def __init__(self, executor: ThreadPoolExecutor, max_workers: int):[m
+[32m+[m[32m        self.workers = max_workers[m
+[32m+[m[32m        self.threads = {}[m
+[32m+[m[32m        self.lock = threading.Lock()[m
+[32m+[m[32m        self.executor = executor[m
+[32m+[m[32m        self.first_update = True[m
+[32m+[m
+[32m+[m[32m    def update(self):[m
+[32m+[m[32m        if not self.first_update:[m
+[32m+[m[32m            clear_last_n_lines(self.workers, False)[m
+[32m+[m[32m        else:[m
+[32m+[m[32m            self.first_update = False[m
+[32m+[m
+[32m+[m[32m        for thread in self.threads:[m
+[32m+[m[32m            if self.threads[thread] is None:[m
+[32m+[m[32m                print(f"Thread {thread} | Idle", flush=False)[m
+[32m+[m[32m            else:[m
+[32m+[m[32m                print(f"Thread {thread} | " + self.threads[thread], flush=False)[m
+[32m+[m[41m        [m
+[32m+[m[32m        for _ in range(self.workers - len(self.threads)):[m
+[32m+[m[32m            print()[m
+[32m+[m[41m        [m
+[32m+[m[32m        sys.stdout.flush()[m
+[32m+[m
+[32m+[m
+[32m+[m[32m    def run_task(self, task, label: str):[m
+[32m+[m[32m        thread_id = threading.current_thread().ident[m
+[32m+[m
+[32m+[m[32m        with self.lock:[m
+[32m+[m[32m            self.threads[thread_id] = label[m
+[32m+[m[32m            self.update()[m
+[32m+[m
+[32m+[m[32m        task()[m
+[32m+[m
+[32m+[m[32m        with self.lock:[m
+[32m+[m[32m            self.threads[thread_id] = None[m
+[32m+[m[32m            self.update()[m
+[32m+[m
+[32m+[m[32m    def run(self, tasks: list[ThreadPoolVisualiserTask]):[m
+[32m+[m[32m        for task in tasks:[m
+[32m+[m[32m            self.executor.submit(self.run_task, task.task, task.label)[m
+[32m+[m
+[32m+[m[32mbase = os.path.realpath(os.path.join(__file__, "..")).replace("\\", "/")[m
+[32m+[m
+[32m+[m[32mdef clear_last_n_lines(n, flush: bool):[m
+[32m+[m[32m    # Repeat for each of the previous lines[m
+[32m+[m[32m    for _ in range(n):[m
+[32m+[m[32m        print("\x1b[K\x1b[A", end="", flush=flush)[m
+[32m+[m[41m    [m
+[32m+[m[32m    print("\x1b[K", end="", flush=flush)[m
+ [m
+ def get_input(prompt, validator = lambda _: True):[m
+     x = input(prompt)[m
+[36m@@ -7,20 +65,83 @@[m [mdef get_input(prompt, validator = lambda _: True):[m
+         x = input(prompt)[m
+     return x[m
+ [m
+[32m+[m[32mdef join_path(*items):[m
+[32m+[m[32m    return os.path.join(*items).replace("\\", "/")[m
+[32m+[m
+[32m+[m[32mdef get_files(directory):[m
+[32m+[m[32m    paths = [][m
+[32m+[m[32m    for root, dirs, files in os.walk(directory):[m
+[32m+[m[32m        for file in files:[m
+[32m+[m[32m            if file.endswith(".c") or file.endswith(".h"):[m
+[32m+[m[32m                paths.append(join_path(root, file))[m
+[32m+[m
+[32m+[m[32m        if "include" in dirs:[m
+[32m+[m[32m            dirs.remove("include")[m
+[32m+[m[32m        if "build" in dirs:[m
+[32m+[m[32m            dirs.remove("build")[m
+[32m+[m[32m        if "X11" in dirs:[m
+[32m+[m[32m            dirs.remove("X11")[m
+[32m+[m[32m        if "X11_so" in dirs:[m
+[32m+[m[32m            dirs.remove("X11_so")[m
+[32m+[m[32m        if "SDL" in dirs:[m
+[32m+[m[32m            dirs.remove("SDL")[m
+[32m+[m[32m    return paths[m
+[32m+[m
+[32m+[m[32mdef compile_file(*args):[m
+[32m+[m[32m    subprocess.run(args)[m
+[32m+[m
+[32m+[m[32mif get_input("recompile? (y/N) ", lambda x: x.lower() in ["y", "n", ""]).lower() != "y":[m
+[32m+[m[32m    exit()[m
+[32m+[m
+ sdl = get_input("enable sdl? (y/N) ", lambda x: x.lower() in ["y", "n", ""]).lower() == "y"[m
+[32m+[m[32mx11 = get_input("enable x11? (y/N) ", lambda x: x.lower() in ["y", "n", ""]).lower() == "y"[m
+[32m+[m[32mtarget_os = get_input("target os? (windows/unix)", lambda x: x.lower() in ["windows", "linux", ""]).lower() or "windows"[m
+ debug = get_input("include debug information? (Y/n) ", lambda x: x.lower() in ["y", "n", ""]).lower() != "n"[m
+[31m-target = get_input("target? (build/hurricane.dll) ") or "build/hurricane.dll"[m
+[32m+[m[32mtarget = join_path(base, "build")[m
+ [m
+[31m-gcc = ["gcc"][m
+[32m+[m[32mgcc = ["gcc", "-c"][m
+[32m+[m[41m    [m
+[32m+[m[32mif sdl:[m
+[32m+[m[32m    gcc.extend(["-I" + join_path(base, "renderer/SDL/include"), "-L" + join_path(base, "renderer/SDL/bin"), "-lSDL2", "-L" + join_path(base, "renderer/SDL/lib"), "-lSDL2main", "-DHC_ENABLE_SDL2"])[m
+[32m+[m
+[32m+[m[32mif x11:[m
+[32m+[m[32m    gcc.extend(["-lX11", "-lxcb" "-lXau", "-lXdmcp", "-lbsd", "-DHC_ENABLE_X11"])[m
+[32m+[m
+[32m+[m[32mif target_os == "windows":[m
+[32m+[m[32m    gcc.append("-fPIC")[m
+ [m
+ if debug:[m
+     gcc.append("-g")[m
+ [m
+[31m-if sdl:[m
+[31m-    gcc.extend(["-Ihurricane/renderer/SDL/include", "-Lhurricane/renderer/SDL/bin/", "-lSDL2", "-Lhurricane/renderer/SDL/lib/", "-lSDL2main", "-D", "HC_ENABLE_SDL2"])[m
+[32m+[m[32mgcc.append("-Wall")[m
+[32m+[m[32mgcc.append("-Wextra")[m
+[32m+[m[32mgcc.append("-Werror")[m
+[32m+[m[32mgcc.append("-lm")[m
+[32m+[m[32mgcc.append("-pthread")[m
+[32m+[m
+[32m+[m[32mfiles = get_files(base)[m
+[32m+[m[32mobject_files = list(map(lambda x: join_path(target, "object", x.replace(".c", ".o").replace(base, "").lstrip("/")), files)) #duplicate iterator[m
+[32m+[m
+[32m+[m[32mprint()[m
+[32m+[m[32mprint("> " + " ".join(gcc))[m
+[32m+[m
+[32m+[m[32mcompile_thread_count = 4[m
+[32m+[m
+[32m+[m[32mwith ThreadPoolExecutor(max_workers=compile_thread_count) as tpe:[m
+[32m+[m[32m    tpv = ThreadPoolVisualiser(tpe, compile_thread_count)[m
+[32m+[m[32m    tpv.run([ThreadPoolVisualiserTask(lambda: compile_file(*gcc, file, "-o", dest), file) for file, dest in zip(files, object_files)])[m
+[32m+[m
+[32m+[m[32mif target_os == "windows":[m
+[32m+[m[32m    dll_target = join_path(base, "..", "hurricane.dll")[m
+[32m+[m
+[32m+[m[32m    gcc = ["gcc", "-shared", "-o", dll_target, *object_files][m
+[32m+[m
+[32m+[m[32m    if sdl:[m
+[32m+[m[32m        gcc.extend(["-I" + join_path(base, "renderer/SDL/include"), "-L" + join_path(base, "renderer/SDL/bin"), "-lSDL2", "-L" + join_path(base, "renderer/SDL/lib"), "-lSDL2main", "-DHC_ENABLE_SDL2"])[m
+ [m
+[31m-gcc.append("*.c")[m
+[31m-gcc.append("-o")[m
+[31m-gcc.append(target)[m
+[32m+[m[32m    if x11:[m
+[32m+[m[32m        gcc.extend(["-lX11", "-lxcb" "-lXau", "-lXdmcp", "-lbsd", "-DHC_ENABLE_X11"])[m
+ [m
+[31m-subprocess.run(gcc)[m
+[32m+[m[32m    print()[m
+[32m+[m[32m    print("> link all -> " + dll_target.replace(base, ""))[m
+[32m+[m[32m    subprocess.run(gcc)[m
+[1mdiff --git a/hurricane/engine.c b/hurricane/engine.c[m
+[1mindex 9ab3b03..56d8036 100644[m
+[1m--- a/hurricane/engine.c[m
+[1m+++ b/hurricane/engine.c[m
+[36m@@ -1,10 +1,10 @@[m
+ #ifndef HC_ENGINE[m
+ #define HC_ENGINE[m
+[31m-#include "object.c"[m
+[31m-#include "renderer/renderer.c"[m
+[31m-#include "shared.c"[m
+[31m-#include "util/mat.c"[m
+[31m-#include "util/vec.c"[m
+[32m+[m[32m#include "include/object.h"[m
+[32m+[m[32m#include "include/renderer/renderer.h"[m
+[32m+[m[32m#include "include/shared.h"[m
+[32m+[m[32m#include "include/util/mat.h"[m
+[32m+[m[32m#include "include/util/vec.h"[m
+ #include <stdbool.h>[m
+ #include <stdio.h>[m
+ #include <stdlib.h>[m
+[36m@@ -94,8 +94,7 @@[m [mvoid hc_set_fov(double fov, bool use_height) {[m
+                          (2 * tan(fov * M_PI / 360));[m
+ }[m
+ [m
+[31m-void hc_init(const bool hc_render_progress, int frames, hc_renderer renderer,[m
+[31m-             void (*update)()) {[m
+[32m+[m[32mvoid hc_init(const bool hc_render_progress, int frames, hc_renderer renderer, void (*update)()) {[m
+   hc_internal_engine_renderer = renderer;[m
+   int i = 0;[m
+   while (!hc_internal_quit && (frames == -1 || i++ < frames)) {[m
+[36m@@ -111,4 +110,8 @@[m [mvoid hc_init(const bool hc_render_progress, int frames, hc_renderer renderer,[m
+   }[m
+ }[m
+ [m
+[32m+[m[32m// __declspec(dllexport) void exported() {[m
+[32m+[m
+[32m+[m[32m// }[m
+[32m+[m
+ #endif[m
+[1mdiff --git a/hurricane/geometry.c b/hurricane/geometry.c[m
+[1mindex c2b36da..19960a5 100644[m
+[1m--- a/hurricane/geometry.c[m
+[1m+++ b/hurricane/geometry.c[m
+[36m@@ -2,20 +2,14 @@[m
+ #define HC_GEOMETRY[m
+ [m
+ // #define FAST_OBJ_IMPLEMENTATION[m
+[31m-// #include "fast_obj.c"[m
+[31m-#include "util/vec.c"[m
+[32m+[m[32m// #include "include/fast_obj.h"[m
+[32m+[m[32m#include "include/util/vec.h"[m
+[32m+[m[32m#include "include/geometry.h"[m
+ #include <memory.h>[m
+ #include <stdio.h>[m
+ #include <stdlib.h>[m
+ #include <time.h>[m
+ [m
+[31m-typedef struct hc_geometry {[m
+[31m-  double *vertices;[m
+[31m-  unsigned int *faces;[m
+[31m-  unsigned char *colors;[m
+[31m-  unsigned int face_count;[m
+[31m-} hc_geometry;[m
+[31m-[m
+ int hc_getline(char **lineptr, size_t *n, FILE *stream) {[m
+     char *bufptr = NULL;[m
+     char *p = bufptr;[m
+[1mdiff --git a/hurricane/include/anim.h b/hurricane/include/anim.h[m
+[1mindex bf0e63a..507a97d 100644[m
+[1m--- a/hurricane/include/anim.h[m
+[1m+++ b/hurricane/include/anim.h[m
+[36m@@ -1,10 +1,13 @@[m
+ #ifndef HC_ANIM_H[m
+ #define HC_ANIM_H[m
+ [m
+[32m+[m[32m// macros[m
+ #include "util/quat.h"[m
+ #include "util/vec.h"[m
+ #include <stdbool.h>[m
+ [m
+[32m+[m[32m// types[m
+[32m+[m[32mtypedef void (*hc_animator)(void *, void *, double, int, void *);[m
+ typedef struct hc_keyframe {[m
+     void *state;[m
+     double time;[m
+[36m@@ -16,11 +19,16 @@[m [mtypedef struct hc_anim {[m
+     double time;[m
+     int curr_frame;[m
+     bool playing;[m
+[31m-    void (*animator)(void *, void *, double, int, void *);[m
+[32m+[m[32m    hc_animator animator;[m
+ } hc_anim;[m
+ [m
+[32m+[m[32m// decls[m
+[32m+[m
+[32m+[m[32m// functions[m
+ void hc_animator_vec3(void *from, void *to, double t, int frame, void *out);[m
+[32m+[m[32mvoid hc_animator_quaternion(void *from, void *to, double t, int frame, void *out);[m
+ void hc_anim_step(hc_anim *anim, double delta, void *out);[m
+ void hc_anim_play(hc_anim *anim);[m
+[32m+[m[32mvoid hc_anim_new(hc_anim *output, hc_keyframe frames[], int frame_count, hc_animator animator);[m
+ [m
+ #endif[m
+[1mdiff --git a/hurricane/include/clock.h b/hurricane/include/clock.h[m
+[1mindex c989dad..69042bc 100644[m
+[1m--- a/hurricane/include/clock.h[m
+[1m+++ b/hurricane/include/clock.h[m
+[36m@@ -1,14 +1,19 @@[m
+ #ifndef HC_CLOCK_H[m
+ #define HC_CLOCK_H[m
+ [m
+[32m+[m[32m//macros[m
+ #include <time.h>[m
+ #include <sys/utime.h>[m
+ #include <sys/timeb.h>[m
+ [m
+[32m+[m[32m//types[m
+ typedef struct hc_clock {[m
+     struct timeb last_time;[m
+ } hc_clock;[m
+ [m
+[32m+[m[32m//decls[m
+[32m+[m
+[32m+[m[32m//functions[m
+ void hc_clock_new(hc_clock *clock);[m
+ double hc_clock_step(hc_clock *clock);[m
+ [m
+[1mdiff --git a/hurricane/include/engine.h b/hurricane/include/engine.h[m
+[1mindex c5ac5f5..aa3a416 100644[m
+[1m--- a/hurricane/include/engine.h[m
+[1m+++ b/hurricane/include/engine.h[m
+[36m@@ -1,6 +1,7 @@[m
+ #ifndef HC_ENGINE_H[m
+ #define HC_ENGINE_H[m
+ [m
+[32m+[m[32m//macros[m
+ #include "object.h"[m
+ #include "renderer/renderer.h"[m
+ #include "shared.h"[m
+[36m@@ -10,10 +11,21 @@[m
+ #include <stdio.h>[m
+ #include <stdlib.h>[m
+ [m
+[32m+[m[32m//types[m
+ [m
+[32m+[m[32m//decls[m
+[32m+[m[32mbool hc_internal_quit;[m
+[32m+[m[32mvoid (*hc_render_triangle_call)(int, int, double, int, int, double, int, int,[m
+[32m+[m[32m                                double, unsigned char, unsigned char,[m
+[32m+[m[32m                                unsigned char);[m
+[32m+[m[32mint debug_triangle_count;[m
+[32m+[m[32mdouble hc_internal_eye_dist;[m
+[32m+[m
+[32m+[m[32m//functions[m
+ void hc_geometry_to_world(hc_object *object, int index, double out[3]);[m
+ double hc_internal_lighting(hc_object *object, int i);[m
+ void hc_render_object(hc_object *camera, hc_object *object);[m
+ void hc_set_fov(double fov, bool use_height);[m
+[32m+[m[32mvoid hc_init(const bool hc_render_progress, int frames, hc_renderer renderer, void (*update)());[m
+ [m
+ #endif[m
+[1mdiff --git a/hurricane/include/file.h b/hurricane/include/file.h[m
+[1mindex bd90367..23f942b 100644[m
+[1m--- a/hurricane/include/file.h[m
+[1m+++ b/hurricane/include/file.h[m
+[36m@@ -1,7 +1,13 @@[m
+ #ifndef HC_FILE_H[m
+ #define HC_FILE_H[m
+ [m
+[32m+[m[32m//macros[m
+[32m+[m[32m#define HC_APP_DIRECTORY "./"[m
+ [m
+[32m+[m[32m//types[m
+ [m
+[32m+[m[32m//decls[m
+[32m+[m
+[32m+[m[32m//functions[m
+ [m
+ #endif[m
+[1mdiff --git a/hurricane/include/geometry.h b/hurricane/include/geometry.h[m
+[1mindex 09468f6..ec3f393 100644[m
+[1m--- a/hurricane/include/geometry.h[m
+[1m+++ b/hurricane/include/geometry.h[m
+[36m@@ -1,12 +1,14 @@[m
+ #ifndef HC_GEOMETRY_H[m
+ #define HC_GEOMETRY_H[m
+ [m
+[32m+[m[32m//macros[m
+ #include "util/vec.h"[m
+ #include <memory.h>[m
+ #include <stdio.h>[m
+ #include <stdlib.h>[m
+ #include <time.h>[m
+ [m
+[32m+[m[32m//types[m
+ typedef struct hc_geometry {[m
+   double *vertices;[m
+   unsigned int *faces;[m
+[36m@@ -14,6 +16,13 @@[m [mtypedef struct hc_geometry {[m
+   unsigned int face_count;[m
+ } hc_geometry;[m
+ [m
+[32m+[m[32m//decls[m
+[32m+[m[32mextern hc_geometry hc_geometry_none;[m
+[32m+[m[32mextern hc_geometry hc_geometry_sphere5;[m
+[32m+[m[32mextern hc_geometry hc_geometry_cube;[m
+[32m+[m[32mextern hc_geometry hc_geometry_mobius;[m
+[32m+[m
+[32m+[m[32m//functions[m
+ int hc_getline(char **lineptr, size_t *n, FILE *stream);[m
+ [m
+ #endif[m
+[1mdiff --git a/hurricane/include/input.h b/hurricane/include/input.h[m
+[1mindex 44cb5f6..36422f9 100644[m
+[1m--- a/hurricane/include/input.h[m
+[1m+++ b/hurricane/include/input.h[m
+[36m@@ -1,9 +1,11 @@[m
+ #ifndef HC_INPUT_H[m
+ #define HC_INPUT_H[m
+ [m
+[32m+[m[32m//macros[m
+ #include <stdbool.h>[m
+ #include <stdlib.h>[m
+ [m
+[32m+[m[32m//types[m
+ typedef struct linked_list {[m
+   void *node;[m
+   struct linked_list *next;[m
+[36m@@ -11,7 +13,11 @@[m [mtypedef struct linked_list {[m
+ typedef struct hc_input_key_event {[m
+   unsigned int code;[m
+ } hc_input_key_event;[m
+[32m+[m[32menum hc_input_event_type { HC_INPUT_KEYDOWN, HC_INPUT_KEYUP };[m
+ [m
+[32m+[m[32m//decls[m
+[32m+[m
+[32m+[m[32m//functions[m
+ int hc_input_subscribe(void (*callback)(void *), enum hc_input_event_type evt);[m
+ void hc_input_unsubscribe(int id);[m
+ void hc_internal_keydown(unsigned int key);[m
+[1mdiff --git a/hurricane/include/legacy_render.h b/hurricane/include/legacy_render.h[m
+[1mindex 1842373..7926963 100644[m
+[1m--- a/hurricane/include/legacy_render.h[m
+[1m+++ b/hurricane/include/legacy_render.h[m
+[36m@@ -1,13 +1,21 @@[m
+[32m+[m[32m#if 0[m
+ #ifndef HC_RENDER_H[m
+ #define HC_RENDER_H[m
+ [m
+[32m+[m[32m//macros[m
+ #include <stdio.h>[m
+ #include "util/vec.h"[m
+ #include <stdlib.h>[m
+[32m+[m[32m#define CHAR_SIZE (sizeof(char)*1)[m
+ [m
+[32m+[m[32m//types[m
+ [m
+[32m+[m[32m//decls[m
+[32m+[m
+[32m+[m[32m//functions[m
+ void hc_init_render(int sx, int sy);[m
+ char map_char(int v);[m
+ void hc_render(int *buf);[m
+ [m
+ #endif[m
+[32m+[m[32m#endif[m
+[1mdiff --git a/hurricane/include/loader/obj.h b/hurricane/include/loader/obj.h[m
+[1mindex 3ff9087..0a1e193 100644[m
+[1m--- a/hurricane/include/loader/obj.h[m
+[1m+++ b/hurricane/include/loader/obj.h[m
+[36m@@ -1,10 +1,14 @@[m
+ #ifndef HC_OBJ_H[m
+ #define HC_OBJ_H[m
+ [m
+[32m+[m[32m//macros[m
+ #include "../geometry.h"[m
+[31m-#include "../util/log.h"[m
+ [m
+[32m+[m[32m//types[m
+ [m
+[32m+[m[32m//decls[m
+[32m+[m
+[32m+[m[32m//functions[m
+ void hc_geometry_from_obj(char *file, hc_geometry *output);[m
+ [m
+ #endif[m
+[1mdiff --git a/hurricane/include/loader/stl.h b/hurricane/include/loader/stl.h[m
+[1mindex 6c8428e..92c7262 100644[m
+[1m--- a/hurricane/include/loader/stl.h[m
+[1m+++ b/hurricane/include/loader/stl.h[m
+[36m@@ -1,9 +1,14 @@[m
+ #ifndef HC_STL_H[m
+ #define HC_STL_H[m
+ [m
+[32m+[m[32m//macros[m
+ #include "../geometry.h"[m
+ [m
+[32m+[m[32m//types[m
+ [m
+[32m+[m[32m//decls[m
+[32m+[m
+[32m+[m[32m//functions[m
+ void hc_geometry_from_stl(char *file, hc_geometry *out);[m
+ [m
+ #endif[m
+[1mdiff --git a/hurricane/include/object.h b/hurricane/include/object.h[m
+[1mindex 53e0317..086b06b 100644[m
+[1m--- a/hurricane/include/object.h[m
+[1m+++ b/hurricane/include/object.h[m
+[36m@@ -1,11 +1,13 @@[m
+ #ifndef HC_OBJECT_H[m
+ #define HC_OBJECT_H[m
+ [m
+[32m+[m[32m//macros[m
+ #include "geometry.h"[m
+ #include "util/quat.h"[m
+ #include "util/vec.h"[m
+ #include <stdlib.h>[m
+ [m
+[32m+[m[32m//types[m
+ typedef struct hc_object {[m
+   double position[3];[m
+   hc_quaternion rotation;[m
+[36m@@ -13,6 +15,9 @@[m [mtypedef struct hc_object {[m
+   const hc_geometry *geometry;[m
+ } hc_object;[m
+ [m
+[31m-void hc_new_object(hc_object *object, const hc_geometry *geometry, const double position[3], const hc_quaternion rotation, const double scale[3]);[m
+[32m+[m[32m//decls[m
+[32m+[m
+[32m+[m[32m//functions[m
+[32m+[m[32mvoid hc_object_new(hc_object *object, const hc_geometry *geometry, const double position[3], const hc_quaternion rotation, const double scale[3]);[m
+ [m
+ #endif[m
+[1mdiff --git a/hurricane/include/renderer/SDL.h b/hurricane/include/renderer/SDL.h[m
+[1mindex 5678793..dc9bbf1 100644[m
+[1m--- a/hurricane/include/renderer/SDL.h[m
+[1m+++ b/hurricane/include/renderer/SDL.h[m
+[36m@@ -1,12 +1,17 @@[m
+ #ifndef HC_SDL_H[m
+ #define HC_SDL_H[m
+ [m
+[32m+[m[32m//macros[m
+ #include "../engine.h"[m
+ #include "../input.h"[m
+[31m-#include <SDL2/SDL.h>[m
+ #include <stdio.h>[m
+ [m
+[32m+[m[32m//types[m
+ [m
+[32m+[m[32m//decls[m
+[32m+[m[32mextern const hc_renderer hc_renderer_sdl;[m
+[32m+[m
+[32m+[m[32m//functions[m
+ void hc_sdl_pre_frame();[m
+ void hc_sdl_frame();[m
+ void hc_sdl_finish();[m
+[1mdiff --git a/hurricane/include/renderer/console.h b/hurricane/include/renderer/console.h[m
+[1mindex a5343a1..bd29f07 100644[m
+[1m--- a/hurricane/include/renderer/console.h[m
+[1m+++ b/hurricane/include/renderer/console.h[m
+[36m@@ -1,6 +1,7 @@[m
+ #ifndef HC_RENDER_H[m
+ #define HC_RENDER_H[m
+ [m
+[32m+[m[32m//macros[m
+ #include "../shared.h"[m
+ #include <stdio.h>[m
+ #include <stdlib.h>[m
+[36m@@ -8,8 +9,14 @@[m
+ #include <string.h>[m
+ #include <math.h>[m
+ #include "renderer.h"[m
+[32m+[m[32m#define CHAR_SIZE (sizeof(char) * 30)[m
+ [m
+[32m+[m[32m//types[m
+ [m
+[32m+[m[32m//decls[m
+[32m+[m[32mextern const hc_renderer hc_renderer_console;[m
+[32m+[m
+[32m+[m[32m//functions[m
+ void *hc_internal_console_input_handler(void *_);[m
+ void hc_console_init();[m
+ void hc_console_pre_frame();[m
+[1mdiff --git a/hurricane/include/renderer/renderer.h b/hurricane/include/renderer/renderer.h[m
+[1mindex b9934d6..bb238b0 100644[m
+[1m--- a/hurricane/include/renderer/renderer.h[m
+[1m+++ b/hurricane/include/renderer/renderer.h[m
+[36m@@ -1,8 +1,10 @@[m
+ #ifndef HC_RENDERER_H[m
+ #define HC_RENDERER_H[m
+ [m
+[32m+[m[32m//macros[m
+ #include "../shared.h"[m
+ [m
+[32m+[m[32m//types[m
+ typedef struct hc_renderer {[m
+   void (*init)();[m
+   void (*pre_frame)();[m
+[36m@@ -13,5 +15,8 @@[m [mtypedef struct hc_renderer {[m
+   double (*internal_depth_buf)[HC_RENDER_SIZE_Y][HC_RENDER_SIZE_X];[m
+ } hc_renderer;[m
+ [m
+[32m+[m[32m//decls[m
+[32m+[m
+[32m+[m[32m//functions[m
+ [m
+ #endif[m
+[1mdiff --git a/hurricane/include/renderer/video.h b/hurricane/include/renderer/video.h[m
+[1mindex 958edf7..dcb9645 100644[m
+[1m--- a/hurricane/include/renderer/video.h[m
+[1m+++ b/hurricane/include/renderer/video.h[m
+[36m@@ -1,13 +1,19 @@[m
+ #ifndef HC_VIDEO_RENDER_H[m
+ #define HC_VIDEO_RENDER_H[m
+ [m
+[32m+[m[32m//macros[m
+ #include "../shared.h"[m
+ #include "renderer.h"[m
+ #include <stdio.h>[m
+ #include <memory.h>[m
+ #include <math.h>[m
+ [m
+[32m+[m[32m//types[m
+ [m
+[32m+[m[32m//decls[m
+[32m+[m[32mextern const hc_renderer hc_renderer_video;[m
+[32m+[m
+[32m+[m[32m//functions[m
+ void hc_video_init();[m
+ void hc_video_pre_frame();[m
+ void hc_video_frame();[m
+[1mdiff --git a/hurricane/include/renderer/xlib.h b/hurricane/include/renderer/xlib.h[m
+[1mindex abeae66..523b268 100644[m
+[1m--- a/hurricane/include/renderer/xlib.h[m
+[1m+++ b/hurricane/include/renderer/xlib.h[m
+[36m@@ -1,16 +1,22 @@[m
+ #ifndef HC_XLIB_H[m
+ #define HC_XLIB_H[m
+ [m
+[32m+[m[32m//macros[m
+ #include "../X11/Xlib.h"[m
+ #include "../X11/X.h"[m
+ #include "../input.h"[m
+ #include "../shared.h"[m
+[31m-#include "renderer.h"[m
+[32m+[m[32m#include "../renderer/renderer.h"[m
+ #include <math.h>[m
+ #include <memory.h>[m
+ #include <stdio.h>[m
+ [m
+[32m+[m[32m//types[m
+ [m
+[32m+[m[32m//decls[m
+[32m+[m[32mextern const hc_renderer hc_renderer_xlib;[m
+[32m+[m
+[32m+[m[32m//functions[m
+ void hc_xlib_process_event(Display *display, Window window);[m
+ void hc_xlib_init();[m
+ void hc_xlib_pre_frame();[m
+[1mdiff --git a/hurricane/include/scene.h b/hurricane/include/scene.h[m
+[1mindex e7d102c..03cb831 100644[m
+[1m--- a/hurricane/include/scene.h[m
+[1m+++ b/hurricane/include/scene.h[m
+[36m@@ -1,7 +1,12 @@[m
+ #ifndef HC_SCENE_H[m
+ #define HC_SCENE_H[m
+ [m
+[32m+[m[32m//macros[m
+ [m
+[32m+[m[32m//types[m
+ [m
+[32m+[m[32m//decls[m
+[32m+[m
+[32m+[m[32m//functions[m
+ [m
+ #endif[m
+[1mdiff --git a/hurricane/include/shared.h b/hurricane/include/shared.h[m
+[1mindex 4c5893e..e14fc90 100644[m
+[1m--- a/hurricane/include/shared.h[m
+[1m+++ b/hurricane/include/shared.h[m
+[36m@@ -1,9 +1,27 @@[m
+ #ifndef HC_SHARED_H[m
+ #define HC_SHARED_H[m
+ [m
+[32m+[m[32m//macros[m
+[32m+[m[32m#define STR_HELPER(x) #x[m
+[32m+[m[32m#define STR(x) STR_HELPER(x)[m
+[32m+[m[32m#define HC_RENDER_SIZE_X 512[m
+[32m+[m[32m#define HC_RENDER_SIZE_Y 512[m
+[32m+[m[32m#define HC_RENDER_SIZE_STR_X STR(HC_RENDER_SIZE_X)[m
+[32m+[m[32m#define HC_RENDER_SIZE_STR_Y STR(HC_RENDER_SIZE_Y)[m
+[32m+[m[32m#define DEG2RAD (M_PI / 180)[m
+[32m+[m[32m#define VEC3(x, y, z) ((double[]){(x), (y), (z)})[m
+[32m+[m[32m#define QUAT(x, y, z) ((hc_quaternion[]){hc_quaternion_new_euler_zyx(VEC3((z), (y), (x)))})[m
+ [m
+[32m+[m[32m//types[m
+ [m
+[32m+[m[32m//decls[m
+[32m+[m[32mextern int hc_render_bg[3];[m
+[32m+[m
+[32m+[m[32m//functions[m
+ void swap_int(int *a, int *b);[m
+ void swap_dbl(double *a, double *b);[m
+[32m+[m[32mdouble calculate_depth(double x0, double y0, double z0, double x1, double y1,[m
+[32m+[m[32m                       double z1, double x2, double y2, double z2, double px,[m
+[32m+[m[32m                       double py);[m
+ [m
+ #endif[m
+[1mdiff --git a/hurricane/include/tiny_obj.h b/hurricane/include/tiny_obj.h[m
+[1mdeleted file mode 100644[m
+[1mindex 118ee70..0000000[m
+[1m--- a/hurricane/include/tiny_obj.h[m
+[1m+++ /dev/null[m
+[36m@@ -1,38 +0,0 @@[m
+[31m-typedef struct;[m
+[31m-typedef struct;[m
+[31m-typedef struct;[m
+[31m-typedef struct;[m
+[31m-static void skip_space(const char **token);[m
+[31m-static void skip_space_and_cr(const char **token);[m
+[31m-static int until_space(const char *token);[m
+[31m-static size_t length_until_newline(const char *token, size_t n);[m
+[31m-static size_t length_until_line_feed(const char *token, size_t n);[m
+[31m-static int my_atoi(const char *c);[m
+[31m-static int fixIndex(int idx, size_t n);[m
+[31m-static tinyobj_vertex_index_t parseRawTriple(const char **token);[m
+[31m-static int parseInt(const char **token);[m
+[31m-static int tryParseDouble(const char *s, const char *s_end, double *result);[m
+[31m-static float parseFloat(const char **token);[m
+[31m-static void parseFloat2(float *x, float *y, const char **token);[m
+[31m-static void parseFloat3(float *x, float *y, float *z, const char **token);[m
+[31m-static size_t my_strnlen(const char *s, size_t n);[m
+[31m-static char *my_strdup(const char *s, size_t max_length);[m
+[31m-static char *my_strndup(const char *s, size_t len);[m
+[31m-char *dynamic_fgets(char **buf, size_t *size, FILE *file);[m
+[31m-static void initMaterial(tinyobj_material_t *material);[m
+[31m-typedef struct hash_table_entry_t;[m
+[31m-typedef struct;[m
+[31m-static unsigned long hash_djb2(const unsigned char *str);[m
+[31m-static void create_hash_table(size_t start_capacity, hash_table_t *hash_table);[m
+[31m-static void destroy_hash_table(hash_table_t *hash_table);[m
+[31m-static void hash_table_maybe_grow(size_t new_n, hash_table_t *hash_table);[m
+[31m-static int hash_table_exists(const char *name, hash_table_t *hash_table);[m
+[31m-static long hash_table_get(const char *name, hash_table_t *hash_table);[m
+[31m-static int is_line_ending(const char *p, size_t i, size_t end_i);[m
+[31m-typedef struct;[m
+[31m-typedef enum;[m
+[31m-typedef struct;[m
+[31m-static size_t basename_len(const char *filename, size_t filename_length);[m
+[31m-void tinyobj_attrib_init(tinyobj_attrib_t *attrib);[m
+[31m-void tinyobj_attrib_free(tinyobj_attrib_t *attrib);[m
+[31m-void tinyobj_shapes_free(tinyobj_shape_t *shapes, size_t num_shapes);[m
+[1mdiff --git a/hurricane/include/util/legacy_vec.h b/hurricane/include/util/legacy_vec.h[m
+[1mindex 3ba7485..29f947d 100644[m
+[1m--- a/hurricane/include/util/legacy_vec.h[m
+[1m+++ b/hurricane/include/util/legacy_vec.h[m
+[36m@@ -1,8 +1,11 @@[m
+[32m+[m[32m#if 0[m
+ #ifndef HC_VEC_H[m
+ #define HC_VEC_H[m
+ [m
+[32m+[m[32m//macros[m
+ #include <math.h>[m
+ [m
+[32m+[m[32m//types[m
+ typedef struct {[m
+   double v[2];[m
+ } hc_vec2;[m
+[36m@@ -10,6 +13,9 @@[m [mtypedef struct {[m
+   double v[3];[m
+ } hc_vec3;[m
+ [m
+[32m+[m[32m//decls[m
+[32m+[m
+[32m+[m[32m//functions[m
+ hc_vec2 hc_new_vec2(double x, double y);[m
+ hc_vec3 hc_new_vec3(double x, double y, double z);[m
+ hc_vec2 hc_vec2_add(hc_vec2 a, hc_vec2 b);[m
+[36m@@ -30,3 +36,4 @@[m [mdouble hc_vec2_mag(hc_vec2 v);[m
+ double hc_vec3_mag(hc_vec3 v);[m
+ [m
+ #endif[m
+[32m+[m[32m#endif[m
+[1mdiff --git a/hurricane/include/util/list.h b/hurricane/include/util/list.h[m
+[1mindex 03a9ec8..164db69 100644[m
+[1m--- a/hurricane/include/util/list.h[m
+[1m+++ b/hurricane/include/util/list.h[m
+[36m@@ -1,18 +1,23 @@[m
+ #ifndef HC_LIST_H[m
+ #define HC_LIST_H[m
+ [m
+[31m-#include "log.h"[m
+[32m+[m[32m//macros[m
+[32m+[m[32m#include "../util/log.h"[m
+ #include <memory.h>[m
+ #include <stdbool.h>[m
+ #include <stdio.h>[m
+ #include <stdlib.h>[m
+ [m
+[32m+[m[32m//types[m
+ typedef struct hc_list {[m
+   int length;[m
+   int allocated;[m
+   void **data;[m
+ } hc_list;[m
+ [m
+[32m+[m[32m//decls[m
+[32m+[m
+[32m+[m[32m//functions[m
+ void hc_list_new(hc_list *l);[m
+ void hc_list_add(hc_list *l, void *item);[m
+ void *hc_list_get(hc_list *l, int i);[m
+[1mdiff --git a/hurricane/include/util/log.h b/hurricane/include/util/log.h[m
+[1mindex 338fdc9..8e8fe3d 100644[m
+[1m--- a/hurricane/include/util/log.h[m
+[1m+++ b/hurricane/include/util/log.h[m
+[36m@@ -1,7 +1,30 @@[m
+ #ifndef HC_LOG_H[m
+ #define HC_LOG_H[m
+ [m
+[32m+[m[32mextern const char *const hc_log_levels[4];[m
+ [m
+[32m+[m[32m#define hc_log_handler(level, file, line, fmt, ...)                            \[m
+[32m+[m[32m  printf("[%s] %s:%d: " fmt "\n", hc_log_levels[level], file,                  \[m
+[32m+[m[32m         line __VA_OPT__(, ) __VA_ARGS__)[m
+[32m+[m[32m#define hc_log(fmt, ...)                                                       \[m
+[32m+[m[32m  hc_log_handler(0, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)[m
+[32m+[m[32m#define hc_info(fmt, ...)                                                      \[m
+[32m+[m[32m  hc_log_handler(1, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)[m
+[32m+[m[32m#define hc_warn(fmt, ...)                                                      \[m
+[32m+[m[32m  hc_log_handler(2, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)[m
+[32m+[m[32m#define hc_error(fmt, ...)                                                     \[m
+[32m+[m[32m  hc_log_handler(3, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)[m
+ [m
+[32m+[m[32m#define hc_internal_log_handler(level, func, fmt, ...)                         \[m
+[32m+[m[32m  printf("[\033[35mHurricane\033[0m] <\033[36m%s\033[0m> %s " fmt "\n",        \[m
+[32m+[m[32m         func, hc_log_levels[level] __VA_OPT__(, ) __VA_ARGS__)[m
+[32m+[m[32m#define hc_internal_log(fmt, ...)                                              \[m
+[32m+[m[32m  hc_internal_log_handler(0, __func__, fmt __VA_OPT__(, ) __VA_ARGS__)[m
+[32m+[m[32m#define hc_internal_info(fmt, ...)                                             \[m
+[32m+[m[32m  hc_internal_log_handler(1, __func__, fmt __VA_OPT__(, ) __VA_ARGS__)[m
+[32m+[m[32m#define hc_internal_warn(fmt, ...)                                             \[m
+[32m+[m[32m  hc_internal_log_handler(2, __func__, fmt __VA_OPT__(, ) __VA_ARGS__)[m
+[32m+[m[32m#define hc_internal_error(fmt, ...)                                            \[m
+[32m+[m[32m  hc_internal_log_handler(3, __func__, fmt __VA_OPT__(, ) __VA_ARGS__)[m
+ [m
+ #endif[m
+[1mdiff --git a/hurricane/include/util/mat.h b/hurricane/include/util/mat.h[m
+[1mindex 7eac554..6cebd24 100644[m
+[1m--- a/hurricane/include/util/mat.h[m
+[1m+++ b/hurricane/include/util/mat.h[m
+[36m@@ -1,9 +1,14 @@[m
+ #ifndef HC_MAT_H[m
+ #define HC_MAT_H[m
+ [m
+[31m-#include "vec.h"[m
+[32m+[m[32m//macros[m
+[32m+[m[32m#include "../util/vec.h"[m
+ [m
+[32m+[m[32m//types[m
+ [m
+[32m+[m[32m//decls[m
+[32m+[m
+[32m+[m[32m//functions[m
+ void hc_mat4x4_identity(double out[4][4]);[m
+ void hc_mat4x4_print(const double mat[4][4]);[m
+ void hc_mat4x4_mul(double a[4][4], double b[4][4], double out[4][4]);[m
+[1mdiff --git a/hurricane/include/util/quat.h b/hurricane/include/util/quat.h[m
+[1mindex e241450..accc5d7 100644[m
+[1m--- a/hurricane/include/util/quat.h[m
+[1m+++ b/hurricane/include/util/quat.h[m
+[36m@@ -1,23 +1,34 @@[m
+ #ifndef HC_QUATERNION_H[m
+ #define HC_QUATERNION_H[m
+ [m
+[32m+[m[32m//macros[m
+ #include <assert.h>[m
+ #include <math.h>[m
+ #include <stdlib.h>[m
+ #include <stdbool.h>[m
+ #include <stdint.h>[m
+ #include <stdio.h>[m
+[32m+[m[32m#define QUATERNION_EPS (1e-4)[m
+[32m+[m[32m#ifndef M_PI[m
+[32m+[m[32m#define M_PI (3.14159265358979323846)[m
+[32m+[m[32m#endif[m
+ [m
+[32m+[m[32m//types[m
+ typedef struct hc_quaternion {[m
+   double w;    /**< Scalar part */[m
+   double v[3]; /**< Vector part */[m
+ } hc_quaternion;[m
+ [m
+[32m+[m[32m//decls[m
+[32m+[m[32mextern const hc_quaternion hc_quaternion_identity;[m
+[32m+[m
+[32m+[m[32m//functions[m
+ void hc_quaternion_set_identity(hc_quaternion *q);[m
+ void hc_quaternion_invert(const hc_quaternion *q, hc_quaternion *output);[m
+ void hc_quaternion_copy(const hc_quaternion *q, hc_quaternion *output);[m
+ bool hc_quaternion_eq(const hc_quaternion *q1, const hc_quaternion *q2);[m
+ void hc_quaternion_fprint(FILE *file, hc_quaternion *q);[m
+[32m+[m[32mvoid hc_quaternion_from_axis_angle(const double axis[3], const double angle, hc_quaternion *output);[m
+ double hc_quaternion_to_axis_angle(hc_quaternion *q, double output[3]);[m
+ void hc_quaternion_from_x_rotation(double angle, hc_quaternion *output);[m
+ void hc_quaternion_from_y_rotation(double angle, hc_quaternion *output);[m
+[36m@@ -28,7 +39,9 @@[m [mvoid hc_quaternion_to_euler_zyx(hc_quaternion *q, double output[3]);[m
+ void hc_quaternion_conjugate(hc_quaternion *q, hc_quaternion *output);[m
+ double hc_quaternion_norm(hc_quaternion *q);[m
+ void hc_quaternion_normalize(hc_quaternion *q, hc_quaternion *output);[m
+[32m+[m[32mvoid hc_quaternion_mul(hc_quaternion *q1, hc_quaternion *q2, hc_quaternion *output);[m
+ void hc_quaternion_rotate(const hc_quaternion *q, double v[3], double output[3]);[m
+ void hc_quaternion_rotate_inverse(const hc_quaternion *q, double v[3], double output[3]);[m
+[32m+[m[32mvoid hc_quaternion_slerp(hc_quaternion *q1, hc_quaternion *q2, double t, hc_quaternion *output);[m
+ [m
+ #endif[m
+[1mdiff --git a/hurricane/include/util/vec.h b/hurricane/include/util/vec.h[m
+[1mindex 66d6681..8bd2220 100644[m
+[1m--- a/hurricane/include/util/vec.h[m
+[1m+++ b/hurricane/include/util/vec.h[m
+[36m@@ -1,9 +1,23 @@[m
+ #ifndef HC_VEC_H[m
+ #define HC_VEC_H[m
+ [m
+[32m+[m[32m//macros[m
+ #include <math.h>[m
+ [m
+[32m+[m[32m//types[m
+ [m
+[32m+[m[32m//decls[m
+[32m+[m[32mextern const double hc_vec3_zero[3];[m
+[32m+[m[32mextern const double hc_vec3_one[3];[m
+[32m+[m
+[32m+[m[32mextern const double hc_vec3_forward[3];[m
+[32m+[m[32mextern const double hc_vec3_backward[3];[m
+[32m+[m[32mextern const double hc_vec3_left[3];[m
+[32m+[m[32mextern const double hc_vec3_right[3];[m
+[32m+[m[32mextern const double hc_vec3_up[3];[m
+[32m+[m[32mextern const double hc_vec3_down[3];[m
+[32m+[m
+[32m+[m[32m//functions[m
+ void hc_vec3_set(double x, double y, double z, double out[3]);[m
+ void hc_vec3_copy(const double from[3], double to[3]);[m
+ void hc_vec3_add(const double a[3], const double b[3], double out[3]);[m
+[36m@@ -16,6 +30,7 @@[m [mdouble hc_vec3_sqrmag(const double v[3]);[m
+ double hc_vec3_mag(const double v[3]);[m
+ void hc_vec3_cross(const double a[3], const double b[3], double out[3]);[m
+ void hc_vec3_normalize(const double in[3], double out[3]);[m
+[32m+[m[32mvoid hc_vec3_lerp(const double a[3], const double b[3], double f, double out[3]);[m
+ double hc_vec3_dot(const double a[3], const double b[3]);[m
+ [m
+ #endif[m
+[1mdiff --git a/hurricane/legacy_render.c b/hurricane/legacy_render.c[m
+[1mindex 029e030..4d28334 100644[m
+[1m--- a/hurricane/legacy_render.c[m
+[1m+++ b/hurricane/legacy_render.c[m
+[36m@@ -1,7 +1,8 @@[m
+[32m+[m[32m#if 0[m
+ #ifndef HC_RENDER[m
+ #define HC_RENDER[m
+ #include <stdio.h>[m
+[31m-#include "util/vec.c"[m
+[32m+[m[32m#include "include/util/vec.h"[m
+ #include <stdlib.h>[m
+ #define CHAR_SIZE (sizeof(char)*1)[m
+ [m
+[36m@@ -41,3 +42,4 @@[m [mvoid hc_render(int *buf) {[m
+ }[m
+ [m
+ #endif[m
+[32m+[m[32m#endif[m
+[1mdiff --git a/hurricane/loader/obj.c b/hurricane/loader/obj.c[m
+[1mindex 22e462a..6e8c12f 100644[m
+[1m--- a/hurricane/loader/obj.c[m
+[1m+++ b/hurricane/loader/obj.c[m
+[36m@@ -1,7 +1,8 @@[m
+ #ifndef HC_OBJ[m
+ #define HC_OBJ[m
+[31m-#include "../geometry.c"[m
+[31m-#include "../util/log.c"[m
+[32m+[m[32m#include <string.h>[m
+[32m+[m[32m#include "../include/geometry.h"[m
+[32m+[m[32m#include "../include/util/log.h"[m
+ [m
+ void hc_geometry_from_obj(char *file, hc_geometry *output) {[m
+   FILE *fp = fopen(file, "r");[m
+[1mdiff --git a/hurricane/loader/stl.c b/hurricane/loader/stl.c[m
+[1mindex 48572d4..986a89e 100644[m
+[1m--- a/hurricane/loader/stl.c[m
+[1m+++ b/hurricane/loader/stl.c[m
+[36m@@ -1,6 +1,6 @@[m
+ #ifndef HC_STL[m
+ #define HC_STL[m
+[31m-#include "../geometry.c"[m
+[32m+[m[32m#include "../include/geometry.h"[m
+ [m
+ void hc_geometry_from_stl(char *file, hc_geometry *out) {}[m
+ [m
+[1mdiff --git a/hurricane/object.c b/hurricane/object.c[m
+[1mindex cfd299c..4ec0a21 100644[m
+[1m--- a/hurricane/object.c[m
+[1m+++ b/hurricane/object.c[m
+[36m@@ -1,18 +1,12 @@[m
+ #ifndef HC_OBJECT[m
+ #define HC_OBJECT[m
+[31m-#include "geometry.c"[m
+[31m-#include "util/quat.c"[m
+[31m-#include "util/vec.c"[m
+[32m+[m[32m#include "include/geometry.h"[m
+[32m+[m[32m#include "include/util/quat.h"[m
+[32m+[m[32m#include "include/object.h"[m
+[32m+[m[32m#include "include/util/vec.h"[m
+ #include <stdlib.h>[m
+ [m
+[31m-typedef struct hc_object {[m
+[31m-  double position[3];[m
+[31m-  hc_quaternion rotation;[m
+[31m-  double scale[3];[m
+[31m-  const hc_geometry *geometry;[m
+[31m-} hc_object;[m
+[31m-[m
+[31m-void hc_new_object(hc_object *object, const hc_geometry *geometry, const double position[3], const hc_quaternion rotation, const double scale[3]) {[m
+[32m+[m[32mvoid hc_object_new(hc_object *object, const hc_geometry *geometry, const double position[3], const hc_quaternion rotation, const double scale[3]) {[m
+   assert(object != NULL);[m
+   hc_vec3_copy(position, object->position);[m
+   hc_quaternion_copy(&rotation, &object->rotation);[m
+[1mdiff --git a/hurricane/renderer/SDL.c b/hurricane/renderer/SDL.c[m
+[1mindex 8b9bdbc..806ed63 100644[m
+[1m--- a/hurricane/renderer/SDL.c[m
+[1m+++ b/hurricane/renderer/SDL.c[m
+[36m@@ -2,8 +2,8 @@[m
+ #ifndef HC_SDL[m
+ #define HC_SDL[m
+ [m
+[31m-#include "../engine.c"[m
+[31m-#include "../input.c"[m
+[32m+[m[32m#include "../include/engine.h"[m
+[32m+[m[32m#include "../include/input.h"[m
+ #include <SDL2/SDL.h>[m
+ #include <stdio.h>[m
+ [m
+[1mdiff --git a/hurricane/renderer/console.c b/hurricane/renderer/console.c[m
+[1mindex 958bd27..6aeac3b 100644[m
+[1m--- a/hurricane/renderer/console.c[m
+[1m+++ b/hurricane/renderer/console.c[m
+[36m@@ -1,12 +1,13 @@[m
+ #ifndef HC_RENDER[m
+ #define HC_RENDER[m
+[31m-#include "../shared.c"[m
+[32m+[m[32m#include "../include/shared.h"[m
+ #include <stdio.h>[m
+ #include <stdlib.h>[m
+[31m-#include "../input.c"[m
+[32m+[m[32m#include "../include/input.h"[m
+ #include <string.h>[m
+ #include <math.h>[m
+[31m-#include "renderer.c"[m
+[32m+[m[32m#include "../include/renderer/renderer.h"[m
+[32m+[m
+ #define CHAR_SIZE (sizeof(char) * 30)[m
+ [m
+ unsigned char *hc_console_buf;[m
+[1mdiff --git a/hurricane/renderer/renderer.c b/hurricane/renderer/renderer.c[m
+[1mindex e1ba747..5b35bee 100644[m
+[1m--- a/hurricane/renderer/renderer.c[m
+[1m+++ b/hurricane/renderer/renderer.c[m
+[36m@@ -1,6 +1,6 @@[m
+ #ifndef HC_RENDERER[m
+ #define HC_RENDERER[m
+[31m-#include "../shared.c"[m
+[32m+[m[32m#include "../include/shared.h"[m
+ [m
+ typedef struct hc_renderer {[m
+   void (*init)();[m
+[1mdiff --git a/hurricane/renderer/video.c b/hurricane/renderer/video.c[m
+[1mindex 960f7b9..24f8b2a 100644[m
+[1m--- a/hurricane/renderer/video.c[m
+[1m+++ b/hurricane/renderer/video.c[m
+[36m@@ -1,7 +1,7 @@[m
+ #ifndef HC_VIDEO_RENDER[m
+ #define HC_VIDEO_RENDER[m
+[31m-#include "../shared.c"[m
+[31m-#include "renderer.c"[m
+[32m+[m[32m#include "../include/shared.h"[m
+[32m+[m[32m#include "../include/renderer/renderer.h"[m
+ #include <stdio.h>[m
+ #include <memory.h>[m
+ #include <math.h>[m
+[1mdiff --git a/hurricane/renderer/xlib.c b/hurricane/renderer/xlib.c[m
+[1mindex fd7c376..4cf95ed 100644[m
+[1m--- a/hurricane/renderer/xlib.c[m
+[1m+++ b/hurricane/renderer/xlib.c[m
+[36m@@ -1,10 +1,11 @@[m
+[32m+[m[32m#ifdef HC_ENABLE_X11[m
+ #ifndef HC_XLIB[m
+ #define HC_XLIB[m
+ #include "../X11/Xlib.h"[m
+ #include "../X11/X.h"[m
+[31m-#include "../input.c"[m
+[31m-#include "../shared.c"[m
+[31m-#include "renderer.c"[m
+[32m+[m[32m#include "../include/input.h"[m
+[32m+[m[32m#include "../include/shared.h"[m
+[32m+[m[32m#include "../include/renderer/renderer.h"[m
+ #include <math.h>[m
+ #include <memory.h>[m
+ #include <stdio.h>[m
+[36m@@ -199,3 +200,4 @@[m [mconst hc_renderer hc_renderer_xlib = {[m
+ };[m
+ [m
+ #endif[m
+[32m+[m[32m#endif[m
+[1mdiff --git a/hurricane/scene.c b/hurricane/scene.c[m
+[1mindex 41a0b25..69e34ea 100644[m
+[1m--- a/hurricane/scene.c[m
+[1m+++ b/hurricane/scene.c[m
+[36m@@ -1,7 +1,7 @@[m
+ #ifndef HC_SCENE[m
+ #define HC_SCENE[m
+[31m-// #include "util/list.c"[m
+[31m-// #include "object.c"[m
+[32m+[m[32m// #include "include/util/list.h"[m
+[32m+[m[32m// #include "include/object.h"[m
+ // #include [m
+ // typedef struct hc_scene {[m
+ //     hc_list objects;[m
+[1mdiff --git a/hurricane/shared.c b/hurricane/shared.c[m
+[1mindex 9ef4313..2c9caac 100644[m
+[1m--- a/hurricane/shared.c[m
+[1m+++ b/hurricane/shared.c[m
+[36m@@ -1,14 +1,6 @@[m
+ #ifndef HC_SHARED[m
+ #define HC_SHARED[m
+[31m-#define STR_HELPER(x) #x[m
+[31m-#define STR(x) STR_HELPER(x)[m
+[31m-#define HC_RENDER_SIZE_X 40[m
+[31m-#define HC_RENDER_SIZE_Y 40[m
+[31m-#define HC_RENDER_SIZE_STR_X STR(HC_RENDER_SIZE_X)[m
+[31m-#define HC_RENDER_SIZE_STR_Y STR(HC_RENDER_SIZE_Y)[m
+[31m-#define DEG2RAD (M_PI / 180)[m
+[31m-#define VEC3(x, y, z) ((double[]){(x), (y), (z)})[m
+[31m-#define QUAT(x, y, z) ((hc_quaternion[]){hc_quaternion_new_euler_zyx(VEC3((z), (y), (x)))})[m
+[32m+[m[32m#include "include/shared.h"[m
+ [m
+ int hc_render_bg[3] = {255, 255, 255};[m
+ [m
+[1mdiff --git a/hurricane/util/legacy_vec.c b/hurricane/util/legacy_vec.c[m
+[1mindex f509bd7..f41c4ce 100644[m
+[1m--- a/hurricane/util/legacy_vec.c[m
+[1m+++ b/hurricane/util/legacy_vec.c[m
+[36m@@ -1,3 +1,4 @@[m
+[32m+[m[32m#if 0[m
+ #ifndef HC_VEC[m
+ #define HC_VEC[m
+ #include <math.h>[m
+[36m@@ -116,3 +117,4 @@[m [mdouble hc_vec3_mag(hc_vec3 v) {[m
+ }[m
+ [m
+ #endif[m
+[32m+[m[32m#endif[m
+[1mdiff --git a/hurricane/util/list.c b/hurricane/util/list.c[m
+[1mindex 8bed3e2..a7d1b5a 100644[m
+[1m--- a/hurricane/util/list.c[m
+[1m+++ b/hurricane/util/list.c[m
+[36m@@ -1,16 +1,13 @@[m
+ #ifndef HC_LIST[m
+ #define HC_LIST[m
+[31m-#include "log.c"[m
+[32m+[m
+ #include <memory.h>[m
+ #include <stdbool.h>[m
+ #include <stdio.h>[m
+ #include <stdlib.h>[m
+[31m-[m
+[31m-typedef struct hc_list {[m
+[31m-  int length;[m
+[31m-  int allocated;[m
+[31m-  void **data;[m
+[31m-} hc_list;[m
+[32m+[m[32m#include <string.h>[m
+[32m+[m[32m#include "../include/util/log.h"[m
+[32m+[m[32m#include "../include/util/list.h"[m
+ [m
+ void hc_list_new(hc_list *l) {[m
+   l->length = 0;[m
+[1mdiff --git a/hurricane/util/log.c b/hurricane/util/log.c[m
+[1mindex d7860d0..0b92aa0 100644[m
+[1m--- a/hurricane/util/log.c[m
+[1m+++ b/hurricane/util/log.c[m
+[36m@@ -1,32 +1,9 @@[m
+[31m-#ifndef HC_LOG[m
+[31m-#define HC_LOG[m
+[31m-[m
+[31m-const char *const hc_log_levels[4] = {[m
+[31m-    "\033[32mLOG\033[0m", "\033[34mINFO\033[0m", "\033[33mWARN\033[0m",[m
+[31m-    "\033[31mERROR\033[0m"};[m
+[32m+[m[32m#ifndef HC_LOG[m
+[32m+[m[32m#define HC_LOG[m
+ [m
+[31m-#define hc_log_handler(level, file, line, fmt, ...)                            \[m
+[31m-  printf("[%s] %s:%d: " fmt "\n", hc_log_levels[level], file,                  \[m
+[31m-         line __VA_OPT__(, ) __VA_ARGS__)[m
+[31m-#define hc_log(fmt, ...)                                                       \[m
+[31m-  hc_log_handler(0, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)[m
+[31m-#define hc_info(fmt, ...)                                                      \[m
+[31m-  hc_log_handler(1, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)[m
+[31m-#define hc_warn(fmt, ...)                                                      \[m
+[31m-  hc_log_handler(2, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)[m
+[31m-#define hc_error(fmt, ...)                                                     \[m
+[31m-  hc_log_handler(3, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)[m
+[32m+[m[32m#include "../include/util/log.h"[m
+[32m+[m[32mconst char *const hc_log_levels[4] = {[m
+[32m+[m[32m    "\033[32mLOG\033[0m", "\033[34mINFO\033[0m", "\033[33mWARN\033[0m",[m
+[32m+[m[32m    "\033[31mERROR\033[0m"};[m
+ [m
+[31m-#define hc_internal_log_handler(level, func, fmt, ...)                         \[m
+[31m-  printf("[\033[35mHurricane\033[0m] <\033[36m%s\033[0m> %s " fmt "\n",        \[m
+[31m-         func, hc_log_levels[level] __VA_OPT__(, ) __VA_ARGS__)[m
+[31m-#define hc_internal_log(fmt, ...)                                              \[m
+[31m-  hc_internal_log_handler(0, __func__, fmt __VA_OPT__(, ) __VA_ARGS__)[m
+[31m-#define hc_internal_info(fmt, ...)                                             \[m
+[31m-  hc_internal_log_handler(1, __func__, fmt __VA_OPT__(, ) __VA_ARGS__)[m
+[31m-#define hc_internal_warn(fmt, ...)                                             \[m
+[31m-  hc_internal_log_handler(2, __func__, fmt __VA_OPT__(, ) __VA_ARGS__)[m
+[31m-#define hc_internal_error(fmt, ...)                                            \[m
+[31m-  hc_internal_log_handler(3, __func__, fmt __VA_OPT__(, ) __VA_ARGS__)[m
+[31m-[m
+[31m-#endif[m
+[32m+[m[32m#endif[m
+[1mdiff --git a/hurricane/util/mat.c b/hurricane/util/mat.c[m
+[1mindex 220c5c6..0867d58 100644[m
+[1m--- a/hurricane/util/mat.c[m
+[1m+++ b/hurricane/util/mat.c[m
+[36m@@ -1,6 +1,8 @@[m
+ #ifndef HC_MAT[m
+ #define HC_MAT[m
+[31m-#include "vec.c"[m
+[32m+[m[32m#include "../include/util/vec.h"[m
+[32m+[m[32m#include <stdio.h>[m
+[32m+[m[32m#include <assert.h>[m
+ [m
+ void hc_mat4x4_identity(double out[4][4]) {[m
+   for (short i = 0; i < 4; ++i) {[m
+[1mdiff --git a/hurricane/util/quat.c b/hurricane/util/quat.c[m
+[1mindex bc3b2f7..6a24001 100644[m
+[1m--- a/hurricane/util/quat.c[m
+[1m+++ b/hurricane/util/quat.c[m
+[36m@@ -7,17 +7,7 @@[m
+ #include <stdbool.h>[m
+ #include <stdint.h>[m
+ #include <stdio.h>[m
+[31m-[m
+[31m-#define QUATERNION_EPS (1e-4)[m
+[31m-[m
+[31m-typedef struct hc_quaternion {[m
+[31m-  double w;    /**< Scalar part */[m
+[31m-  double v[3]; /**< Vector part */[m
+[31m-} hc_quaternion;[m
+[31m-[m
+[31m-#ifndef M_PI[m
+[31m-#define M_PI (3.14159265358979323846)[m
+[31m-#endif[m
+[32m+[m[32m#include "../include/util/quat.h"[m
+ [m
+ const hc_quaternion hc_quaternion_identity = {1, {0, 0, 0}};[m
+ [m
+[36m@@ -58,8 +48,7 @@[m [mvoid hc_quaternion_fprint(FILE *file, hc_quaternion *q) {[m
+   fprintf(file, "(%.3f, %.3f, %.3f, %.3f)", q->w, q->v[0], q->v[1], q->v[2]);[m
+ }[m
+ [m
+[31m-void hc_quaternion_from_axis_angle(const double axis[3], const double angle,[m
+[31m-                                   hc_quaternion *output) {[m
+[32m+[m[32mvoid hc_quaternion_from_axis_angle(const double axis[3], const double angle, hc_quaternion *output) {[m
+   assert(output != NULL);[m
+   // Formula from[m
+   // http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleTohc_quaternion/[m
+[36m@@ -187,8 +176,7 @@[m [mvoid hc_quaternion_normalize(hc_quaternion *q, hc_quaternion *output) {[m
+                     output);[m
+ }[m
+ [m
+[31m-void hc_quaternion_mul(hc_quaternion *q1, hc_quaternion *q2,[m
+[31m-                            hc_quaternion *output) {[m
+[32m+[m[32mvoid hc_quaternion_mul(hc_quaternion *q1, hc_quaternion *q2, hc_quaternion *output) {[m
+   assert(output != NULL);[m
+   hc_quaternion result;[m
+ [m
+[36m@@ -285,8 +273,7 @@[m [mvoid hc_quaternion_rotate_inverse(const hc_quaternion *q, double v[3], double ou[m
+   output[2] = result[2];[m
+ }[m
+ [m
+[31m-void hc_quaternion_slerp(hc_quaternion *q1, hc_quaternion *q2, double t,[m
+[31m-                         hc_quaternion *output) {[m
+[32m+[m[32mvoid hc_quaternion_slerp(hc_quaternion *q1, hc_quaternion *q2, double t, hc_quaternion *output) {[m
+   hc_quaternion result;[m
+ [m
+   // Based on[m
+[1mdiff --git a/hurricane/util/vec.c b/hurricane/util/vec.c[m
+[1mindex 194c272..0950b65 100644[m
+[1m--- a/hurricane/util/vec.c[m
+[1m+++ b/hurricane/util/vec.c[m
+[36m@@ -91,8 +91,7 @@[m [mvoid hc_vec3_normalize(const double in[3], double out[3]) {[m
+ }[m
+ [m
+ /// Linearly interpolates between two vectors by f, storing the result in out.[m
+[31m-void hc_vec3_lerp(const double a[3], const double b[3], double f,[m
+[31m-                  double out[3]) {[m
+[32m+[m[32mvoid hc_vec3_lerp(const double a[3], const double b[3], double f, double out[3]) {[m
+   out[0] = a[0] * (1.0 - f) + (b[0] * f);[m
+   out[1] = a[1] * (1.0 - f) + (b[1] * f);[m
+   out[2] = a[2] * (1.0 - f) + (b[2] * f);[m
+[1mdiff --git a/main.c b/main.c[m
+[1mindex eb89221..ec7b435 100644[m
+[1m--- a/main.c[m
+[1m+++ b/main.c[m
+[36m@@ -1,18 +1,18 @@[m
+ int logq = 0;[m
+ [m
+[31m-#include "hurricane/engine.c"[m
+[31m-#include "hurricane/shared.c"[m
+[31m-#include "hurricane/util/list.c"[m
+[31m-#include "hurricane/renderer/console.c"[m
+[31m-#include "hurricane/renderer/video.c"[m
+[31m-// #include "hurricane/renderer/xlib.c"[m
+[31m-#include "hurricane/loader/obj.c"[m
+[31m-#include "hurricane/renderer/SDL.c"[m
+[31m-#include "hurricane/input.c"[m
+[31m-[m
+[31m-#include "hurricane/anim.c"[m
+[31m-#include "hurricane/util/log.c"[m
+[31m-#include "hurricane/clock.c"[m
+[32m+[m[32m#include "hurricane/include/engine.h"[m
+[32m+[m[32m#include "hurricane/include/shared.h"[m
+[32m+[m[32m#include "hurricane/include/util/list.h"[m
+[32m+[m[32m#include "hurricane/include/renderer/console.h"[m
+[32m+[m[32m#include "hurricane/include/renderer/video.h"[m
+[32m+[m[32m// #include "hurricane/include/renderer/xlib.h"[m
+[32m+[m[32m#include "hurricane/include/loader/obj.h"[m
+[32m+[m[32m#include "hurricane/include/renderer/SDL.h"[m
+[32m+[m[32m#include "hurricane/include/input.h"[m
+[32m+[m
+[32m+[m[32m#include "hurricane/include/anim.h"[m
+[32m+[m[32m#include "hurricane/include/util/log.h"[m
+[32m+[m[32m#include "hurricane/include/clock.h"[m
+ #include <stdbool.h>[m
+ #include <stdio.h>[m
+ [m
+[36m@@ -75,10 +75,11 @@[m [mvoid update() {[m
+     hc_quaternion_rotate(&camera.rotation, VEC3(0,0,-3), camera.position);[m
+   }[m
+   // hc_vec3_add(cube->position, tmpvec, cube->position);[m
+[32m+[m[32m  double delta = hc_clock_step(&gclock);[m
+   hc_render_object(&camera, &cube);[m
+ [m
+   hc_render_object(&camera, &cube2);[m
+[31m-  double delta = hc_clock_step(&gclock);[m
+[32m+[m[32m  hc_log("delta %f", delta);[m
+   hc_anim_step(&cube_anim, delta, &cube.rotation);[m
+   // printf("anim: time:%f playing:%d looping:%d\n", cube_anim.time,[m
+   // cube_anim.playing, cube_anim.looping); printf("%f %f %f\n",[m
+[36m@@ -159,14 +160,14 @@[m [mint main(int argc, char **argv) {[m
+   hc_quaternion_from_y_rotation(2.0 * DEG2RAD, &camera_small_right);[m
+   hc_geometry geometry_teapot;[m
+   hc_geometry_from_obj("teapot.obj", &geometry_teapot);[m
+[31m-  hc_new_object(&cube, &geometry_teapot, VEC3(0, 0.8, 0), hc_quaternion_identity,[m
+[32m+[m[32m  hc_object_new(&cube, &geometry_teapot, VEC3(0, 0.8, 0), hc_quaternion_identity,[m
+                 (double[]){0.5, 0.5, 0.5});[m
+   hc_log("%d faces", geometry_teapot.face_count);[m
+[31m-  hc_new_object(&camera, &hc_geometry_none, VEC3(0, 0, -3),[m
+[32m+[m[32m  hc_object_new(&camera, &hc_geometry_none, VEC3(0, 0, -3),[m
+                 hc_quaternion_identity, hc_vec3_one);[m
+ [m
+ [m
+[31m-  hc_new_object(&cube2, &hc_geometry_cube, VEC3(1.2, 0, 0), hc_quaternion_identity,[m
+[32m+[m[32m  hc_object_new(&cube2, &hc_geometry_cube, VEC3(1.2, 0, 0), hc_quaternion_identity,[m
+                 (double[]){1, 0.2, 0.2});[m
+   // hc_init(false, 200, hc_video_pre_frame, hc_video_triangle, hc_video_frame,[m
+   //        update);[m
+[36m@@ -176,7 +177,7 @@[m [mint main(int argc, char **argv) {[m
+   // hc_world_to_screen(&camera, (double[]){4, 0, -1}, tmp);[m
+   // printf("%d %d\n", tmp[0], tmp[1]);[m
+   // exit(1);[m
+[31m-  hc_init(false, -1, renderer, update);[m
+[32m+[m[32m  hc_init(true, -1, renderer, update);[m
+ [m
+   renderer.finish();[m
+   // hc_sdl_finish();[m
+[1mdiff --git a/monster_maze.c b/monster_maze.c[m
+[1mindex 8c61e69..6e80024 100644[m
+[1m--- a/monster_maze.c[m
+[1m+++ b/monster_maze.c[m
+[36m@@ -1,16 +1,16 @@[m
+[31m-#include "hurricane/engine.c"[m
+[31m-#include "hurricane/shared.c"[m
+[31m-#include "hurricane/util/list.c"[m
+[31m-#include "hurricane/renderer/console.c"[m
+[31m-#include "hurricane/renderer/video.c"[m
+[31m-// #include "hurricane/renderer/xlib.c"[m
+[31m-// #include "hurricane/renderer/sdl.c"[m
+[31m-#include "hurricane/loader/obj.c"[m
+[31m-#include "hurricane/input.c"[m
+[31m-[m
+[31m-#include "hurricane/anim.c"[m
+[31m-#include "hurricane/util/log.c"[m
+[31m-#include "hurricane/clock.c"[m
+[32m+[m[32m#include "hurricane/include/engine.h"[m
+[32m+[m[32m#include "hurricane/include/shared.h"[m
+[32m+[m[32m#include "hurricane/include/util/list.h"[m
+[32m+[m[32m#include "hurricane/include/renderer/console.h"[m
+[32m+[m[32m#include "hurricane/include/renderer/video.h"[m
+[32m+[m[32m// #include "hurricane/include/renderer/xlib.h"[m
+[32m+[m[32m// #include "hurricane/include/renderer/sdl.h"[m
+[32m+[m[32m#include "hurricane/include/loader/obj.h"[m
+[32m+[m[32m#include "hurricane/include/input.h"[m
+[32m+[m
+[32m+[m[32m#include "hurricane/include/anim.h"[m
+[32m+[m[32m#include "hurricane/include/util/log.h"[m
+[32m+[m[32m#include "hurricane/include/clock.h"[m
+ #include "maze.c"[m
+ #include <stdbool.h>[m
+ #include <stdio.h>[m
+[36m@@ -126,7 +126,7 @@[m [mvoid create_maze(int width, int height) {[m
+         for (int x = 0; x < maze_w; x++) {[m
+             if (maze[y * maze_w + x]) { // intentional y*w instead of y*h[m
+                 hc_object *cube = malloc(sizeof(hc_object));[m
+[31m-                hc_new_object(cube, &hc_geometry_cube, VEC3(x*2, 0, y*2), hc_quaternion_identity, hc_vec3_one);[m
+[32m+[m[32m                hc_object_new(cube, &hc_geometry_cube, VEC3(x*2, 0, y*2), hc_quaternion_identity, hc_vec3_one);[m
+                 hc_list_add(&blocks, cube);[m
+             }[m
+         }[m
+[36m@@ -142,7 +142,7 @@[m [mint main(int argc, char **argv) {[m
+ [m
+     hc_set_fov(60, false);[m
+ [m
+[31m-    hc_new_object(&camera, &hc_geometry_none, VEC3(2, 0, 2), hc_quaternion_identity, hc_vec3_one);[m
+[32m+[m[32m    hc_object_new(&camera, &hc_geometry_none, VEC3(2, 0, 2), hc_quaternion_identity, hc_vec3_one);[m
+ [m
+     hc_quaternion_copy(&camera.rotation, &camera_rotation_start);[m
+     hc_vec3_copy(camera.position, camera_position_start);[m
+[1mdiff --git a/output.mp4 b/output.mp4[m
+[1mindex 2c9be0f..a7420fd 100644[m
+Binary files a/output.mp4 and b/output.mp4 differ

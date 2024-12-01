@@ -1,7 +1,8 @@
 #ifndef HC_OBJ
 #define HC_OBJ
-#include "../geometry.c"
-#include "../util/log.c"
+#include <string.h>
+#include "../include/geometry.h"
+#include "../include/util/log.h"
 
 void hc_geometry_from_obj(char *file, hc_geometry *output) {
   FILE *fp = fopen(file, "r");

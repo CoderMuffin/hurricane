@@ -1,7 +1,7 @@
 #ifndef HC_SCENE
 #define HC_SCENE
-// #include "util/list.c"
-// #include "object.c"
+// #include "include/util/list.h"
+// #include "include/object.h"
 // #include 
 // typedef struct hc_scene {
 //     hc_list objects;

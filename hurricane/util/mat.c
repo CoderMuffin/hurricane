@@ -1,6 +1,8 @@
 #ifndef HC_MAT
 #define HC_MAT
-#include "vec.c"
+#include "../include/util/vec.h"
+#include <stdio.h>
+#include <assert.h>
 
 void hc_mat4x4_identity(double out[4][4]) {
   for (short i = 0; i < 4; ++i) {

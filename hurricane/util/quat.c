@@ -7,17 +7,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-
-#define QUATERNION_EPS (1e-4)
-
-typedef struct hc_quaternion {
-  double w;    /**< Scalar part */
-  double v[3]; /**< Vector part */
-} hc_quaternion;
-
-#ifndef M_PI
-#define M_PI (3.14159265358979323846)
-#endif
+#include "../include/util/quat.h"
 
 const hc_quaternion hc_quaternion_identity = {1, {0, 0, 0}};
 
@@ -58,8 +48,7 @@ void hc_quaternion_fprint(FILE *file, hc_quaternion *q) {
   fprintf(file, "(%.3f, %.3f, %.3f, %.3f)", q->w, q->v[0], q->v[1], q->v[2]);
 }
 
-void hc_quaternion_from_axis_angle(const double axis[3], const double angle,
-                                   hc_quaternion *output) {
+void hc_quaternion_from_axis_angle(const double axis[3], const double angle, hc_quaternion *output) {
   assert(output != NULL);
   // Formula from
   // http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleTohc_quaternion/
@@ -187,8 +176,7 @@ void hc_quaternion_normalize(hc_quaternion *q, hc_quaternion *output) {
                     output);
 }
 
-void hc_quaternion_mul(hc_quaternion *q1, hc_quaternion *q2,
-                            hc_quaternion *output) {
+void hc_quaternion_mul(hc_quaternion *q1, hc_quaternion *q2, hc_quaternion *output) {
   assert(output != NULL);
   hc_quaternion result;
 
@@ -285,8 +273,7 @@ void hc_quaternion_rotate_inverse(const hc_quaternion *q, double v[3], double ou
   output[2] = result[2];
 }
 
-void hc_quaternion_slerp(hc_quaternion *q1, hc_quaternion *q2, double t,
-                         hc_quaternion *output) {
+void hc_quaternion_slerp(hc_quaternion *q1, hc_quaternion *q2, double t, hc_quaternion *output) {
   hc_quaternion result;
 
   // Based on

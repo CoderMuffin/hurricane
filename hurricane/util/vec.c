@@ -91,8 +91,7 @@ void hc_vec3_normalize(const double in[3], double out[3]) {
 }
 
 /// Linearly interpolates between two vectors by f, storing the result in out.
-void hc_vec3_lerp(const double a[3], const double b[3], double f,
-                  double out[3]) {
+void hc_vec3_lerp(const double a[3], const double b[3], double f, double out[3]) {
   out[0] = a[0] * (1.0 - f) + (b[0] * f);
   out[1] = a[1] * (1.0 - f) + (b[1] * f);
   out[2] = a[2] * (1.0 - f) + (b[2] * f);

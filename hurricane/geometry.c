@@ -2,19 +2,13 @@
 #define HC_GEOMETRY
 
 // #define FAST_OBJ_IMPLEMENTATION
-// #include "fast_obj.c"
-#include "util/vec.c"
+// #include "include/fast_obj.h"
+#include "include/util/vec.h"
+#include "include/geometry.h"
 #include <memory.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-
-typedef struct hc_geometry {
-  double *vertices;
-  unsigned int *faces;
-  unsigned char *colors;
-  unsigned int face_count;
-} hc_geometry;
 
 int hc_getline(char **lineptr, size_t *n, FILE *stream) {
     char *bufptr = NULL;

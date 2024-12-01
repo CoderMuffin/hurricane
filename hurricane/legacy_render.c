@@ -1,7 +1,8 @@
+#if 0
 #ifndef HC_RENDER
 #define HC_RENDER
 #include <stdio.h>
-#include "util/vec.c"
+#include "include/util/vec.h"
 #include <stdlib.h>
 #define CHAR_SIZE (sizeof(char)*1)
 
@@ -40,4 +41,5 @@ void hc_render(int *buf) {
   printf("\033[0;0H%s",hc_render_buf);
 }
 
+#endif
 #endif

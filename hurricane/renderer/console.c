@@ -1,12 +1,13 @@
 #ifndef HC_RENDER
 #define HC_RENDER
-#include "../shared.c"
+#include "../include/shared.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "../input.c"
+#include "../include/input.h"
 #include <string.h>
 #include <math.h>
-#include "renderer.c"
+#include "../include/renderer/renderer.h"
+
 #define CHAR_SIZE (sizeof(char) * 30)
 
 unsigned char *hc_console_buf;

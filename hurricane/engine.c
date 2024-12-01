@@ -1,10 +1,10 @@
 #ifndef HC_ENGINE
 #define HC_ENGINE
-#include "object.c"
-#include "renderer/renderer.c"
-#include "shared.c"
-#include "util/mat.c"
-#include "util/vec.c"
+#include "include/object.h"
+#include "include/renderer/renderer.h"
+#include "include/shared.h"
+#include "include/util/mat.h"
+#include "include/util/vec.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -94,8 +94,7 @@ void hc_set_fov(double fov, bool use_height) {
                          (2 * tan(fov * M_PI / 360));
 }
 
-void hc_init(const bool hc_render_progress, int frames, hc_renderer renderer,
-             void (*update)()) {
+void hc_init(const bool hc_render_progress, int frames, hc_renderer renderer, void (*update)()) {
   hc_internal_engine_renderer = renderer;
   int i = 0;
   while (!hc_internal_quit && (frames == -1 || i++ < frames)) {
@@ -110,5 +109,9 @@ void hc_init(const bool hc_render_progress, int frames, hc_renderer renderer,
     }
   }
 }
+
+// __declspec(dllexport) void exported() {
+
+// }
 
 #endif

@@ -1,50 +1,45 @@
+#not intended to be used routinely, created for a one off operation
+print("overwriting action halted")
+exit()
+
 import os
 import re
-from pycparser import c_parser, c_ast
-
-class TypedefVisitor(c_ast.NodeVisitor):
-    def __init__(self):
-        self.typedefs = []
-        self.code_strings = []
-
-    def visit_Typedef(self, node):
-        self.typedefs.append(node)
-        self.code_strings.append(node.coord.file + ':' + str(node.coord.line) + ': ' + node.to_string())
-
-def extract_typedefs_with_code(code):
-    parser = c_parser.CParser()
-    ast = parser.parse(code)
-    typedef_visitor = TypedefVisitor()
-    typedef_visitor.visit(ast)
-    return typedef_visitor.typedefs, typedef_visitor.code_strings
 
 def process_header(file):
-    re_include = re.compile("^(#include .+)$", re.MULTILINE)
+    re_include = re.compile("^(#(?:include|define) .+)$", re.MULTILINE)
     re_func = re.compile("^(\w+ \*?\w+\(.*\)) {", re.MULTILINE)
-    re_typedef = re.compile("^(typedef (?:.|\n)*?;(?![^{]*}))", re.MULTILINE)
+    re_typedef = re.compile("^((?:typedef|enum) (?:.|\n)*?;(?![^{]*}))", re.MULTILINE)
+    re_decl = re.compile("^((?:const )?\w+ *?\w+) ? =(?![^{]*})", re.MULTILINE)
     with open(file.replace("hurricane\\", "hurricane\\include\\").replace(".c", ".h"), "w") as out:
         with open(file, "r") as f:
             content = f.read()
-            guard = re.findall("#ifndef (\w+)", content)[0] + "_H"
-            out.write("#ifndef " + guard + "\n")
-            out.write("#define " + guard + "\n\n")
+            guard = re.findall("#ifndef (\w+)", content)[0]
+            out.write("#ifndef " + guard + "_H\n")
+            out.write("#define " + guard + "_H\n\n//macros\n")
 
             for item in re.findall(re_include, content):
-                out.write(item.replace(".c", ".h") + "\n")
+                if item == "#define " + guard:
+                    continue
+                out.write(item.replace(".c", ".h").replace("include/", "") + "\n")
             
-            out.write("\n")
+            out.write("\n//types\n")
 
             for item in re.findall(re_typedef, content):
                 out.write(item + "\n")
 
-            out.write("\n")
+            out.write("\n//decls\n")
+
+            for item in re.findall(re_decl, content):
+                out.write(item + ";\n")
+
+            out.write("\n//functions\n")
 
             for item in re.findall(re_func, content):
                 out.write(item + ";\n")
 
             out.write("\n#endif\n")
 
-for root, dirs, files in os.walk("hurricane"):
+for root, dirs, files in os.walk("hurricane_GUARD_NO_OVERWRITE"):
     for file in files:
         if file.endswith(".c"):
             header = os.path.join(root, file)

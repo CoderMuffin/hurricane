@@ -1,3 +1,4 @@
+#if 0
 #ifndef HC_VEC
 #define HC_VEC
 #include <math.h>
@@ -115,4 +116,5 @@ double hc_vec3_mag(hc_vec3 v) {
   return sqrt(v.v[0] * v.v[0] + v.v[1] * v.v[1] + v.v[2] * v.v[2]);
 }
 
+#endif
 #endif

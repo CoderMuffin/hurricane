@@ -2,8 +2,8 @@
 #ifndef HC_SDL
 #define HC_SDL
 
-#include "../engine.c"
-#include "../input.c"
+#include "../include/engine.h"
+#include "../include/input.h"
 #include <SDL2/SDL.h>
 #include <stdio.h>
 
