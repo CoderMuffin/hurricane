@@ -15,7 +15,8 @@ int logq = 0;
 #include <hurricane/util/log.h>
 #include <hurricane/clock.h>
 #include <stdbool.h>
-#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 
 #if 1
   #define KEYW 119
@@ -38,7 +39,6 @@ hc_object camera;
 hc_object cube2;
 hc_clock gclock;
 hc_anim cube_anim;
-hc_quaternion tick;
 hc_quaternion camera_small_left;
 hc_quaternion camera_small_right;
 hc_renderer renderer;
@@ -73,17 +73,19 @@ void update() {
   }
   if (w_down || s_down || a_down || d_down) {
     hc_quaternion_from_euler_zyx(VEC3(x_rot, y_rot, 0), &camera.rotation);
-    // hc_quaternion_rotate(&camera.rotation, VEC3(0,0,-3), camera.position);
+    hc_quaternion_rotate(&camera.rotation, VEC3(0,0,-3), camera.position);
   }
   // hc_vec3_add(cube->position, tmpvec, cube->position);
   hc_render_object(&camera, &cube);
 
   hc_render_object(&camera, &cube2);
   double delta = hc_clock_step(&gclock);
-  hc_anim_step(&cube_anim, delta, &cube.rotation);
+  hc_anim_step(&cube_anim, delta*0.1, &cube.rotation);
   // printf("anim: time:%f playing:%d looping:%d\n", cube_anim.time,
   // cube_anim.playing, cube_anim.looping); printf("%f %f %f\n",
   // cube.position[0], cube.position[1], cube.position[2]);
+  printf("\r%f", 1/delta);
+  fflush(stdout);
   if (logq) {
     logq = false;
   }
@@ -118,7 +120,7 @@ void on_key_down(void *e) {
     logq = 1;
   } else {
     hc_error("unknown key %d", evt->code);
-    exit(1);
+    // exit(1);
   }
 }
 
@@ -154,14 +156,12 @@ int main(void) {
   cube_anim.looping = true;
 
   hc_set_fov(70, false);
-  hc_quaternion_from_euler_zyx(
-      (double[3]){0 / 180 * M_PI, 2.0 / 180 * M_PI, 0 / 180 * M_PI}, &tick);
   hc_quaternion_from_y_rotation(-2.0 * DEG2RAD, &camera_small_left);
   hc_quaternion_from_y_rotation(2.0 * DEG2RAD, &camera_small_right);
   hc_geometry geometry_teapot;
   hc_geometry_from_obj("teapot.obj", &geometry_teapot);
   hc_new_object(&cube, &geometry_teapot, VEC3(0, 0.8, 0), hc_quaternion_identity,
-                (double[]){0.5, 0.5, 0.5});
+                VEC3(0.5, 0.5, 0.5));
   hc_log("%d faces", geometry_teapot.face_count);
   hc_new_object(&camera, &hc_geometry_none, VEC3(0, 0, -3),
                 hc_quaternion_identity, hc_vec3_one);

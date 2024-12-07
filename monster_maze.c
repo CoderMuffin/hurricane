@@ -177,7 +177,7 @@ int main(void) {
 
     hc_list_new(&blocks);
     create_maze(8, 8);
-    renderer = hc_renderer_console;
+    renderer = hc_renderer_sdl;
     renderer.init();
 
     hc_set_fov(90, false);

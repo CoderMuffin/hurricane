@@ -151,7 +151,7 @@ void hc_console_triangle(int x0, int y0, double z0, int x1, int y1, double z1,
 }
 
 char *map_char(unsigned char *vs) {
-  sprintf(map_buf, "\033[38;2;%d;%d;%dm\xdb", vs[0], vs[1], vs[2]);
+  sprintf(map_buf, "\033[38;2;%d;%d;%dm█", vs[0], vs[1], vs[2]);
   return map_buf;
 }
 
@@ -187,7 +187,7 @@ void hc_console_frame() {
     advance++;
   }
   hc_console_char_buf[advance] = '\0';
-  printf("\033[0;0H%s", hc_console_char_buf);
+  printf("\033[H%s", hc_console_char_buf);
 }
 
 void hc_console_finish() {}

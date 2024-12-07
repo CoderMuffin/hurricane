@@ -48,7 +48,7 @@ hc_lib = library('hurricane', hc_sources,
   dependencies : deps,
   include_directories : [hc_inc])
 
-executable('monster_maze',
-           'monster_maze.c',
+executable('main',
+           'main.c',
            link_with : hc_lib,
            include_directories : hc_inc)
