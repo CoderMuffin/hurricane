@@ -1,5 +1,3 @@
-#ifndef HC_ANIM
-#define HC_ANIM
 #include <hurricane/util/quat.h>
 #include <hurricane/util/vec.h>
 #include <hurricane/anim.h>
@@ -63,5 +61,3 @@ void hc_anim_new(hc_anim *output, hc_keyframe frames[], int frame_count,
     output->looping = false;
     output->playing = true;
 }
-
-#endif

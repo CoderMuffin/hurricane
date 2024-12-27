@@ -1,6 +1,3 @@
-#ifndef HC_LIST
-#define HC_LIST
-
 #include <hurricane/util/log.h>
 #include <memory.h>
 #include <stdbool.h>
@@ -48,5 +45,3 @@ void hc_list_remove(hc_list *l, int i) {
   memmove(l->data + i, l->data + i + 1, (l->length - i + 1) * sizeof(void *));
   l->length--;
 }
-
-#endif

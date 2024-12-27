@@ -1,5 +1,3 @@
-#ifndef HC_VEC
-#define HC_VEC
 #include <math.h>
 
 typedef struct {
@@ -114,5 +112,3 @@ double hc_vec2_mag(hc_vec2 v) { return sqrt(v.v[0] * v.v[0] + v.v[1] * v.v[1]); 
 double hc_vec3_mag(hc_vec3 v) {
   return sqrt(v.v[0] * v.v[0] + v.v[1] * v.v[1] + v.v[2] * v.v[2]);
 }
-
-#endif

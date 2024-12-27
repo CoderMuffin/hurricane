@@ -1,5 +1,3 @@
-#ifndef HC_QUATERNION
-#define HC_QUATERNION
 #include <hurricane/util/quat.h>
 #include <assert.h>
 #include <math.h>
@@ -316,5 +314,3 @@ void hc_quaternion_slerp(hc_quaternion *q1, hc_quaternion *q2, double t,
   }
   *output = result;
 }
-
-#endif

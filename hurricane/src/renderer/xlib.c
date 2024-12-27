@@ -1,6 +1,3 @@
-#ifndef HC_XLIB
-#define HC_XLIB
-
 #include <X11/Xlib.h>
 #include <X11/X.h>
 #include <stdlib.h>
@@ -195,5 +192,3 @@ const hc_renderer hc_renderer_xlib = {
     .finish = hc_xlib_finish,
     .internal_depth_buf = &hc_xlib_depth_buf
 };
-
-#endif

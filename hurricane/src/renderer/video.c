@@ -1,6 +1,3 @@
-#ifndef HC_VIDEO_RENDER
-#define HC_VIDEO_RENDER
-
 #include <hurricane/shared.h>
 #include <hurricane/renderer/renderer.h>
 #include <stdio.h>
@@ -113,4 +110,3 @@ const hc_renderer hc_renderer_video = {
     .finish = hc_video_finish,
     .internal_depth_buf = &hc_video_depth_buf
 };
-#endif

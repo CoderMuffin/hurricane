@@ -1,6 +1,3 @@
-#ifndef HC_SDL
-#define HC_SDL
-
 #include <hurricane/engine.h>
 #include <hurricane/input.h>
 #include <hurricane/renderer/SDL.h>
@@ -152,5 +149,3 @@ const hc_renderer hc_renderer_sdl = {
     .finish = hc_sdl_finish,
     .internal_depth_buf = &hc_sdl_depth_buf
 };
-
-#endif

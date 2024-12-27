@@ -1,6 +1,3 @@
-#ifndef HC_SHARED
-#define HC_SHARED
-
 #include <hurricane/shared.h>
 
 void swap_int(int *a, int *b) {
@@ -45,5 +42,3 @@ void hc_sleep(long ms) {
   usleep(ms*1000);
 #endif
 }
-
-#endif

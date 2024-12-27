@@ -1,0 +1,8 @@
+scene system
+vec with xyz not floats
+sort out shared.c
+game storage system (playerprefs?)
+fix obj.c import
+refactor rendering system
+sort out massive duplication in triangle rendering (maybe have wrapper macro)
+sort out mat.c (remove?) (also [4][4] is going to be diabolical, do not use)

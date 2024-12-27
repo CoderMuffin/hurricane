@@ -1,6 +1,3 @@
-#ifndef HC_VEC
-#define HC_VEC
-
 #include <math.h>
 
 const double hc_vec3_zero[3] = {0, 0, 0};
@@ -103,5 +100,3 @@ void hc_vec3_lerp(const double a[3], const double b[3], double f,
 double hc_vec3_dot(const double a[3], const double b[3]) {
   return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
-
-#endif

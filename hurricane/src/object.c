@@ -1,6 +1,3 @@
-#ifndef HC_OBJECT
-#define HC_OBJECT
-
 #include <hurricane/geometry.h>
 #include <hurricane/util/quat.h>
 #include <hurricane/util/vec.h>
@@ -21,5 +18,3 @@ void hc_new_object(hc_object *object, const hc_geometry *geometry, const double 
   hc_vec3_copy(scale, object->scale);
   object->geometry = geometry;
 }
-
-#endif

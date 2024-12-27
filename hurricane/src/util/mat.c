@@ -1,6 +1,4 @@
-#ifndef HC_MAT
-#define HC_MAT
-
+/*
 #include <math.h>
 #include <assert.h>
 #include <stdio.h>
@@ -86,5 +84,4 @@ void hc_mat4x4_mul_vec(double m[4][4], double v[3], double out[3]) {
   out[1] = b / w;
   out[2] = c / w;
 }
-
-#endif
+*/

@@ -1,6 +1,3 @@
-#ifndef HC_RENDER
-#define HC_RENDER
-
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -200,5 +197,3 @@ const hc_renderer hc_renderer_console = {
     .finish = hc_console_finish,
     .internal_depth_buf = &hc_console_depth_buf
 };
-
-#endif
