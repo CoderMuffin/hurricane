@@ -1,3 +1,4 @@
+#include <hurricane/geometry.h>
 int logq = 0;
 
 #include <hurricane/engine.h>
@@ -160,7 +161,7 @@ int main(void) {
   hc_quaternion_from_y_rotation(2.0 * DEG2RAD, &camera_small_right);
   hc_geometry geometry_teapot;
   hc_geometry_from_obj("teapot.obj", &geometry_teapot);
-  hc_new_object(&cube, &geometry_teapot, VEC3(0, 0.8, 0), hc_quaternion_identity,
+  hc_new_object(&cube, &hc_geometry_sphere5, VEC3(0, 0.8, 0), hc_quaternion_identity,
                 VEC3(0.5, 0.5, 0.5));
   hc_log("%d faces", geometry_teapot.face_count);
   hc_new_object(&camera, &hc_geometry_none, VEC3(0, 0, -3),
