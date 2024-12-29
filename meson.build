@@ -19,12 +19,10 @@ hc_files = [
   'anim',
   'clock',
   'engine',
-  'file',
   'geometry',
   'input',
   'log',
   'object',
-  'scene',
   'shared',
   'util/list',
   'util/mat',
@@ -40,7 +38,7 @@ hc_files = [
 
 hc_sources = []
 foreach hc_file : hc_files
-  hc_sources += 'hurricane/' + hc_file + '.c'
+  hc_sources += 'hurricane/src/' + hc_file + '.c'
 endforeach
 
 hc_inc = include_directories('hurricane/include', is_system : true)
