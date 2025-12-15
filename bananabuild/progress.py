@@ -1,4 +1,4 @@
-import threading, time
+import threading, time, builtins
 from typing import Optional
 
 class ProgressBar:
@@ -13,8 +13,23 @@ class ProgressBar:
 
         self.print_queue = []
 
+        self._original_print = print
+
         self.thread = threading.Thread(target=self._run, daemon=True)
         self.thread.start()
+
+    def __enter__(self):
+        self._original_print = builtins.print
+        builtins.print = self.print
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        builtins.print = self._original_print
+        self.stop_event.set()
+        self.thread.join(timeout=0.2)
+        self.render()
+        print("\r\033[K", end="", flush=True)
+        return False
 
     def _run(self):
         while not self.stop_event.is_set():
@@ -36,15 +51,9 @@ class ProgressBar:
         msg = f"[{bar}] {self.current}/{self.total} {elapsed:5.1f}s {self.text}"
 
         while len(self.print_queue) > 0:
-            msg = " ".join(self.print_queue.pop(0)) + "\n" + msg
+            msg = " ".join(map(str, self.print_queue.pop())) + "\n" + msg
 
-        print("\r" + msg, end="", flush=True)
+        self._original_print("\r\033[K" + msg, end="", flush=True)
 
     def print(self, *args):
         self.print_queue.append(args)
-
-    def done(self):
-        self.stop_event.set()
-        self.thread.join(timeout=0.2)
-        self.render()
-        print()

@@ -5,6 +5,7 @@ TOOL_DIR = Path(os.path.realpath(__file__)).parent.resolve()
 ROOT = TOOL_DIR.parent.resolve()
 BUILD_DIR = TOOL_DIR / ".bbcache"
 LOCK = threading.Lock()
+VERSION = "0.0.1"
 
 def sh(cmd: list[str]) -> str:
     p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
