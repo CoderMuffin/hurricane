@@ -9,10 +9,6 @@
 
 #define QUATERNION_EPS (1e-4)
 
-#ifndef M_PI
-#define M_PI (3.14159265358979323846)
-#endif
-
 const hc_quaternion hc_quaternion_identity = {1, {0, 0, 0}};
 
 void hc_quaternion_set(double w, double v1, double v2, double v3,

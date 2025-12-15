@@ -7,7 +7,7 @@
 #include <memory.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "renderer.h"
+#include "renderer_util.h"
 
 double hc_xlib_depth_buf[HC_RENDER_SIZE_Y][HC_RENDER_SIZE_X] = {0};
 XImage *hc_xlib_image;

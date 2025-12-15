@@ -85,3 +85,4 @@ void hc_mat4x4_mul_vec(double m[4][4], double v[3], double out[3]) {
   out[2] = c / w;
 }
 */
+int a = 3;

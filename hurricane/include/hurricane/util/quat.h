@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include "../shared.h"
 
 typedef struct hc_quaternion {
   double w;    /**< Scalar part */

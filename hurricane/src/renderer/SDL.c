@@ -1,93 +1,99 @@
-#include "renderer.h"
+#include "renderer_util.h"
 #include <SDL2/SDL.h>
 #include <hurricane/engine.h>
 #include <hurricane/input.h>
 #include <hurricane/renderer/SDL.h>
+#include <hurricane/renderer/renderer.h>
 #include <math.h>
 #include <stdio.h>
 
-Uint32 hc_sdl_image[HC_RENDER_SIZE_Y * HC_RENDER_SIZE_X];
-double hc_sdl_depth_buf[HC_RENDER_SIZE_Y][HC_RENDER_SIZE_X] = {0};
+static Uint32 *image;
+static double *depth_buf = {0};
+static hc_renderer_config config;
 
-SDL_Window *hc_sdl_window;
-SDL_Renderer *hc_sdl_renderer;
-SDL_Texture *hc_sdl_bitmap;
-SDL_Event hc_sdl_event;
+static SDL_Window *window;
+static SDL_Renderer *renderer;
+static SDL_Texture *bitmap;
+static SDL_Event event;
 
-void hc_sdl_init() {
+static void init(hc_renderer_config renderer_config) {
+  config = renderer_config;
+  image = malloc(sizeof(Uint32) * config.width * config.height);
+  depth_buf = malloc(sizeof(double) * config.width * config.height);
+
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
     fprintf(stderr, "SDL_Init Error: %s\n", SDL_GetError());
     return;
   }
-  hc_sdl_window = SDL_CreateWindow("Hello World!", 100, 100, HC_RENDER_SIZE_X,
-                                   HC_RENDER_SIZE_Y, SDL_WINDOW_SHOWN);
-  if (hc_sdl_window == NULL) {
+  window = SDL_CreateWindow("Hello World!", 100, 100, config.width,
+                                   config.height, SDL_WINDOW_SHOWN);
+  if (window == NULL) {
     fprintf(stderr, "SDL_CreateWindow Error: %s\n", SDL_GetError());
     return;
   }
-  hc_sdl_renderer = SDL_CreateRenderer(
-      hc_sdl_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-  if (hc_sdl_renderer == NULL) {
+  renderer = SDL_CreateRenderer(
+      window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+  if (renderer == NULL) {
     fprintf(stderr, "SDL_CreateRenderer Error: %s\n", SDL_GetError());
-    SDL_DestroyWindow(hc_sdl_window);
+    SDL_DestroyWindow(window);
     SDL_Quit();
     return;
   }
-  hc_sdl_bitmap = SDL_CreateTexture(hc_sdl_renderer, SDL_PIXELFORMAT_ARGB8888,
-                                    SDL_TEXTUREACCESS_STATIC, HC_RENDER_SIZE_X,
-                                    HC_RENDER_SIZE_Y);
+  bitmap = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
+                                    SDL_TEXTUREACCESS_STATIC, config.width,
+                                    config.height);
 }
 
-void hc_sdl_pre_frame() {
-  for (int y = 0; y < HC_RENDER_SIZE_Y; y++)
-    for (int x = 0; x < HC_RENDER_SIZE_X; x++) {
-      hc_sdl_image[y * HC_RENDER_SIZE_X + x] =
-          (hc_render_bg[0] << 16) + (hc_render_bg[1] << 8) + hc_render_bg[2];
-      hc_sdl_depth_buf[y][x] = INFINITY;
+static void pre_frame() {
+  for (int y = 0; y < config.height; y++)
+    for (int x = 0; x < config.width; x++) {
+      image[y * config.width + x] =
+          (config.clear[0] << 16) + (config.clear[1] << 8) + config.clear[2];
+      depth_buf[y * config.width + x] = INFINITY;
     }
 }
 
-void hc_sdl_triangle(int x0, int y0, double z0, int x1, int y1, double z1,
+void triangle(int x0, int y0, double z0, int x1, int y1, double z1,
                      int x2, int y2, double z2, unsigned char r,
                      unsigned char g, unsigned char b) {
   HC_INTERNAL_BUF_TRIANGLE(
-      x0, y0, z0, x1, y1, z1, x2, y2, z2, r, g, b,
+      x0, y0, z0, x1, y1, z1, x2, y2, z2, r, g, b, config.width, config.height,
       HC_INTERNAL_DEPTH_BUF_CHECK(
-          x0, y0, z0, x1, y1, z1, x2, y2, z2, r, g, b, hc_sdl_depth_buf,
-          hc_sdl_image[y * HC_RENDER_SIZE_X + x] = (r << 16) + (g << 8) + b;))
+          x0, y0, z0, x1, y1, z1, x2, y2, z2, r, g, b, config.width, depth_buf,
+          image[y * config.width + x] = (r << 16) + (g << 8) + b;))
 }
 
-void hc_sdl_frame() {
-  while (SDL_PollEvent(&hc_sdl_event)) {
-    switch (hc_sdl_event.type) {
+static void frame() {
+  while (SDL_PollEvent(&event)) {
+    switch (event.type) {
     case SDL_KEYDOWN:
-      hc_internal_keydown(hc_sdl_event.key.keysym.sym);
+      hc_internal_keydown(event.key.keysym.sym);
       break;
     case SDL_KEYUP:
-      hc_internal_keyup(hc_sdl_event.key.keysym.sym);
+      hc_internal_keyup(event.key.keysym.sym);
       break;
     case SDL_QUIT:
       hc_quit();
       break;
     }
   }
-  SDL_UpdateTexture(hc_sdl_bitmap, NULL, hc_sdl_image,
-                    HC_RENDER_SIZE_X * sizeof(Uint32));
-  SDL_RenderClear(hc_sdl_renderer);
-  SDL_RenderCopy(hc_sdl_renderer, hc_sdl_bitmap, NULL, NULL);
-  SDL_RenderPresent(hc_sdl_renderer);
+  SDL_UpdateTexture(bitmap, NULL, image,
+                    config.width * sizeof(Uint32));
+  SDL_RenderClear(renderer);
+  SDL_RenderCopy(renderer, bitmap, NULL, NULL);
+  SDL_RenderPresent(renderer);
 }
 
-void hc_sdl_finish() {
-  SDL_DestroyTexture(hc_sdl_bitmap);
-  SDL_DestroyRenderer(hc_sdl_renderer);
-  SDL_DestroyWindow(hc_sdl_window);
+static void finish() {
+  SDL_DestroyTexture(bitmap);
+  SDL_DestroyRenderer(renderer);
+  SDL_DestroyWindow(window);
   SDL_Quit();
 }
 
-const hc_renderer hc_renderer_sdl = {.init = hc_sdl_init,
-                                     .pre_frame = hc_sdl_pre_frame,
-                                     .triangle = hc_sdl_triangle,
-                                     .frame = hc_sdl_frame,
-                                     .finish = hc_sdl_finish,
-                                     .internal_depth_buf = &hc_sdl_depth_buf};
+const hc_renderer hc_renderer_sdl = {.init = init,
+                                     .pre_frame = pre_frame,
+                                     .triangle = triangle,
+                                     .frame = frame,
+                                     .finish = finish,
+                                     .internal_depth_buf = &depth_buf};

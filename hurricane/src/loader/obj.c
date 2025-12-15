@@ -27,7 +27,7 @@ void hc_geometry_from_obj(char *file, hc_geometry *output) {
   output->colors = malloc(sizeof(int) * 10000 * 3); //todo: needs fix?
 
   while ((read = hc_getline(&line, &len, fp)) != -1) {
-    char *n0, *n1, *n2, *n3;
+    char *n0, *n1, *n2;
     n0 = strtok(line + 2, " ");
     n1 = strtok(NULL, " ");
     n2 = strtok(NULL, " ");

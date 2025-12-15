@@ -3,6 +3,7 @@
 
 extern const char *const hc_log_levels[4];
 
+
 #define hc_log_handler(level, file, line, fmt, ...)                            \
   printf("[%s] %s:%d: " fmt "\n", hc_log_levels[level], file,                  \
          line __VA_OPT__(, ) __VA_ARGS__)
