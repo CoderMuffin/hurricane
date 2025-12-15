@@ -8,10 +8,13 @@ LOCK = threading.Lock()
 VERSION = "0.0.1"
 
 def sh(cmd: list[str]) -> str:
-    p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    if p.returncode != 0:
-        raise RuntimeError(p.stderr)
-    return p.stdout
+    try:
+        p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if p.returncode != 0:
+            raise RuntimeError(p.stderr)
+        return p.stdout
+    except FileNotFoundError:
+        raise FileNotFoundError(" ".join(cmd))
 
 def glob(dir: Path, pattern: str, exclude: list[str] = []):
     exclude_paths = [Path(dir / p).resolve() for p in exclude]

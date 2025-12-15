@@ -1,13 +1,11 @@
 #ifndef HC_SHARED_H
 #define HC_SHARED_H
 
+#include <math.h>
+
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 #define HC_CLIP_NEAR 0.1
-
-#ifndef M_PI
-#define M_PI (3.14159265358979323846)
-#endif
 
 #define DEG2RAD (M_PI / 180)
 #define VEC3(x, y, z) ((double[]){(x), (y), (z)})

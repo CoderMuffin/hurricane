@@ -28,7 +28,8 @@ class ProgressBar:
         self.stop_event.set()
         self.thread.join(timeout=0.2)
         self.render()
-        print("\r\033[K", end="", flush=True)
+        elapsed = time.time() - self.start
+        print(f"\r\033[KDone in {elapsed:.1f}s", flush=True)
         return False
 
     def _run(self):

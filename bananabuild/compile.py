@@ -29,10 +29,12 @@ def compile_one(compiler: str, src: Path, obj: Path, cflags: list[str], state: d
 
     save_deps(state, src, deps)
 
-def compile_all(sources: list[Path], dest: str, compiler="gcc", libs=[], cflags=[], ldflags=[], workers=os.cpu_count()):
+def compile_all(sources: list[Path], dest: Path, *, compiler="gcc", libs=[], cflags=[], ldflags=[], workers=os.cpu_count()):
     state = load_state()
     objects = []
     errors = []
+
+    os.makedirs(dest.parent, exist_ok=True)
 
     print(f"BananaBuild {VERSION}")
     print(f"Using {workers} workers")
@@ -84,7 +86,7 @@ def compile_all(sources: list[Path], dest: str, compiler="gcc", libs=[], cflags=
             return 1
 
         # link
-        cmd = [compiler, *map(str, objects), "-o", ROOT / dest, *ldflags]
+        cmd = [compiler, *map(str, objects), "-o", dest, *ldflags]
         print("[ld] Linking...")
 
         try:
@@ -94,5 +96,5 @@ def compile_all(sources: list[Path], dest: str, compiler="gcc", libs=[], cflags=
             print(e)
             return 1
 
-    print(f"Done. Executable at {ROOT / dest}")
+    print(f"Executable at {dest}")
     return 0

@@ -1,6 +1,5 @@
 // #define FAST_OBJ_IMPLEMENTATION
 // #include "fast_obj.c"
-#include <memory.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

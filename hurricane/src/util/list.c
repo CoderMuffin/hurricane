@@ -1,5 +1,4 @@
 #include <hurricane/util/log.h>
-#include <memory.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
