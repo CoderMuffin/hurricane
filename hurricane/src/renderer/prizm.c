@@ -1,4 +1,5 @@
 #include <fxcg/display.h>
+#include <fxcg/keyboard.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,17 +12,18 @@
 
 static uint16_t *hc_prizm_buf;
 
-static double *depth_buf = {0};
+static double *depth_buf = NULL;
 static hc_renderer_config config;
 
 static void init(hc_renderer_config renderer_config) {
+  config = renderer_config;
   depth_buf = malloc(sizeof(double) * config.width * config.height);
   Bdisp_EnableColor(1);
   hc_prizm_buf = GetVRAMAddress();
 }
 
 static uint16_t prizm_color(unsigned char r, unsigned char g, unsigned char b) {
-  return ((r/(2<<3)) << 11) + ((g/(2<<2)) << 5) + ((b/(2<<3)));
+  return ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3);
 }
 
 static void pre_frame() {
