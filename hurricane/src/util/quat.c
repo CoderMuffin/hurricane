@@ -43,6 +43,10 @@ bool hc_quaternion_eq(const hc_quaternion *q1, const hc_quaternion *q2) {
   return equalW && equalV0 && equalV1 && equalV2;
 }
 
+void hc_quaternion_fprint(FILE *file, hc_quaternion *q) {
+  fprintf(file, "(%.3f, %.3f, %.3f, %.3f)", q->w, q->v[0], q->v[1], q->v[2]);
+}
+
 void hc_quaternion_from_axis_angle(const double axis[3], const double angle,
                                    hc_quaternion *output) {
   assert(output != NULL);

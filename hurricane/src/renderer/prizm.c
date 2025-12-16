@@ -43,7 +43,9 @@ static void triangle(int x0, int y0, double z0, int x1, int y1, double z1,
         ))
 }
 
+static int key;
 static void frame() {
+  GetKey(&key);
   Bdisp_PutDisp_DD();
 }
 

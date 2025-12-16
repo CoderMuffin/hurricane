@@ -6,7 +6,7 @@ fxcgsdk = Path("C:\\Working\\PrizmSDK-win-0.6")
 libfxcg = Path("C:\\Working\\libfxcg")
 fxcg_cflags = [
     "-I", str(libfxcg/"include"),
-    '-fno-lto',
+    '-flto',
     '-mb',
     '-m4a-nofpu',
     '-mhitachi',
@@ -16,7 +16,7 @@ fxcg_cflags = [
     '-DTARGET_PRIZM=1',
     '-DNDEBUG',
     '-ffast-math',
-    '-O0'
+    '-O3'
 ]
 fxcg_ldflags = [
     "-L" + str(libfxcg/"libc"),
@@ -25,7 +25,7 @@ fxcg_ldflags = [
     "-lfxcg",
     '-lgcc',
     '-nostdlib',
-    '-fno-lto',
+    '-flto',
     '-Wl,-static',
     '-Wl,-gc-sections',
     '-T' + str(libfxcg/'toolchain'/'prizm.x')
@@ -40,7 +40,7 @@ def cg50example():
         compiler=str(fxcgsdk/"bin"/"sh3eb-elf-gcc.exe"),
         cflags=fxcg_cflags + [         
             "-I", str(ROOT/"hurricane"/"include"), 
-            "-I", str(ROOT/"lutgen"),  
+            "-I", str(ROOT/"taylor_math"),  
             "-Wall", "-Wpedantic", "-Werror",
             "-fdiagnostics-color=always"
         ],
