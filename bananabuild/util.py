@@ -54,4 +54,4 @@ def bbmain(fn):
         if "-v" in sys.argv or "--verbose" in sys.argv:
             raise
         else:
-            print("\x1b[31m" + str(e) + " \x1b[36m(run with -v for verbose error output)\x1b[0m")
+            print("\x1b[31m" + str(e).rstrip() + " \x1b[36m(run with -v for verbose error output)\x1b[0m")

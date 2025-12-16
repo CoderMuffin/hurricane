@@ -1,6 +1,7 @@
 from pathlib import Path
 from util import ROOT, glob, bbmain
-from subprocess import run
+from subprocess import check_output
+import shutil
 from compile import compile_all
 
 fxcgsdk = Path("C:\\Working\\PrizmSDK-win-0.6")
@@ -32,25 +33,6 @@ fxcg_ldflags = [
     '-T' + str(libfxcg/'toolchain'/'prizm.x')
 ]
 
-def cg50example():
-    executable = ROOT / "build/example"
-    
-    compile_all(
-        glob(ROOT/"example", "*.c"),
-        executable,
-        compiler=str(fxcgsdk/"bin"/"sh3eb-elf-gcc.exe"),
-        cflags=fxcg_cflags + [         
-            "-I", str(ROOT/"hurricane"/"include"), 
-            "-I", str(ROOT/"taylor_math"),  
-            "-Wall", "-Wpedantic", "-Werror",
-            "-fdiagnostics-color=always"
-        ],
-        ldflags=fxcg_ldflags,
-        incremental=False
-    )
-    run(fxcgsdk/"bin"/"mkg3a.exe", executable)
-
-
 def cg50main():
     executable = ROOT / "build/hc"
     
@@ -76,11 +58,14 @@ def cg50main():
         ],
         ldflags=fxcg_ldflags
     )
-    run(fxcgsdk/"bin"/"mkg3a.exe", executable)
+    print(check_output([fxcgsdk/"bin"/"mkg3a.exe", executable]))
+    shutil.copy(str(executable) + ".g3a", "E:\\hc.g3a")
+    print(check_output('powershell $driveEject = New-Object -comObject Shell.Application; $driveEject.Namespace(17).ParseName("""E:""").InvokeVerb("""Eject""")'))
+
 
 
 def main():
-    executable = ROOT / "build/hc"
+    executable = ROOT / "build/hc.exe"
     compile_all(
         glob(ROOT, "*.c", exclude=[
             "example/src/example.c",
@@ -104,7 +89,7 @@ def main():
             "-fno-builtin-math",
         ]
     )
-    run(executable)
+    print(check_output(executable))
 
 if __name__ == "__main__":
-    bbmain(main)
+    bbmain(cg50main)
