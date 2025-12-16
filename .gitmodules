@@ -1,0 +1,3 @@
+[submodule "bananabuild"]
+	path = bananabuild
+	url = https://github.com/CoderMuffin/bananabuild
