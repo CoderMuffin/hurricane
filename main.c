@@ -118,8 +118,6 @@ int main(void) {
   };
   hc_input_subscribe(on_key_down, HC_INPUT_KEYDOWN);
   hc_input_subscribe(on_key_up, HC_INPUT_KEYUP);
-  // hc_anim_new(&cube_anim, (hc_keyframe[]){{VEC3(-2,0,5),0}, {VEC3(-2,1,5),1},
-  // {VEC3(-2,0,5),2}}, 3, hc_animator_vec3);
 
   hc_anim_new(&cube_anim,
               (hc_keyframe[]){{QUAT(M_PI, 0, 0), 0},
@@ -129,9 +127,6 @@ int main(void) {
   cube_anim.looping = true;
 
   hc_set_fov(70, rc, false);
-  // hc_geometry geometry_teapot;
-  // hc_geometry_from_obj("teapot.obj", &geometry_teapot);
-  // hc_log("%d faces", geometry_teapot.face_count);
   hc_new_object(&cube, &hc_geometry_sphere5, VEC3(0, 0.8, 0), hc_quaternion_identity,
                 VEC3(0.5, 0.5, 0.5));
   hc_new_object(&camera, &hc_geometry_none, VEC3(0, 0, -3),
@@ -140,16 +135,6 @@ int main(void) {
 
   hc_new_object(&cube2, &hc_geometry_cube, VEC3(1.2, 0, 0), hc_quaternion_identity,
                 (double[]){1, 0.2, 0.2});
-  // hc_init(false, 200, hc_video_pre_frame, hc_video_triangle, hc_video_frame,
-  //        update);
-  // hc_init(false, -1, hc_console_pre_frame, hc_console_triangle,
-  // hc_console_frame, update);
-  // int tmp[2];
-  // hc_world_to_screen(&camera, (double[]){4, 0, -1}, tmp);
-  // printf("%d %d\n", tmp[0], tmp[1]);
-  // exit(1);
-  hc_init(false, 200, hc_renderer_prizm, rc, update);
-  // hc_sdl_finish();
-  // hc_video_finish();
+  hc_init(false, 1000, hc_renderer_prizm, rc, update);
   return 0;
 }

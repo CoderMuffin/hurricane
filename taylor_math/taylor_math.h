@@ -1,5 +1,5 @@
-#ifndef MINI_MATH_H
-#define MINI_MATH_H
+#ifndef TAYLOR_MATH_H
+#define TAYLOR_MATH_H
 
 #include <math.h>
 
@@ -18,7 +18,11 @@ double atan2(double y, double x);
 double sqrt(double x);
 double fabs(double x);
 double copysign(double x, double y);
+
+#undef isnan
 int isnan(double x);
+
+#undef isfinite
 int isfinite(double x);
 
 #endif
