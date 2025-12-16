@@ -52,9 +52,10 @@ class ProgressBar:
         msg = f"[{bar}] {self.current}/{self.total} {elapsed:5.1f}s {self.text}"
 
         while len(self.print_queue) > 0:
-            msg = " ".join(map(str, self.print_queue.pop())) + "\n" + msg
+            args, kwargs = self.print_queue.pop()
+            msg = " ".join(map(str, args)) + kwargs["end"] + msg
 
         self._original_print("\r\033[K" + msg, end="", flush=True)
 
-    def print(self, *args):
-        self.print_queue.append(args)
+    def print(self, *args, end="\n"):
+        self.print_queue.append((args, { "end": end }))

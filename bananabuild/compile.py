@@ -3,7 +3,7 @@ from pathlib import Path
 import os
 
 from progress import ProgressBar
-from util import sh, BUILD_DIR, ROOT, VERSION
+from util import sh, BUILD_DIR, ROOT
 from incremental import scan_deps, save_deps, needs_rebuild, load_state, save_state
 
 def pkg_config(lib: str):
@@ -20,10 +20,10 @@ def compile_one(compiler: str, src: Path, obj: Path, cflags: list[str], state: d
 
     obj.parent.mkdir(parents=True, exist_ok=True)
     cmd = [compiler, "-c", str(src), "-o", str(obj), *cflags]
-    print(f"[cc] {src}")
+    print(f"[cc] {" ".join(cmd)}")
 
     try:
-        sh(cmd)
+        print(sh(cmd), end="")
     except Exception as e:
         return e
 
@@ -36,20 +36,15 @@ def compile_all(sources: list[Path], dest: Path, *, compiler="gcc", libs=[], cfl
 
     os.makedirs(dest.parent, exist_ok=True)
 
-    print(f"BananaBuild {VERSION}")
     print(f"Using {workers} workers")
     
     with ProgressBar(len(sources)) as progress:
         print("Resolving dependencies...")
 
-        try:
-            for lib in libs:
-                lib_cflags, lib_ldflags = pkg_config(lib)
-                cflags.extend(lib_cflags)
-                ldflags.extend(lib_ldflags)
-        except Exception as e:
-            print("\033[31m" + str(e).strip())
-            return 1
+        for lib in libs:
+            lib_cflags, lib_ldflags = pkg_config(lib)
+            cflags.extend(lib_cflags)
+            ldflags.extend(lib_ldflags)
 
         print("Compiling...")
 
@@ -83,19 +78,13 @@ def compile_all(sources: list[Path], dest: Path, *, compiler="gcc", libs=[], cfl
             print(error)
 
         if len(errors) > 0:
-            print(f"Error in {len(errors)} file(s), exiting")
-            return 1
+            raise Exception(f"Error in {len(errors)} file(s)")
 
         # link
-        cmd = [compiler, *map(str, objects), "-o", dest, *ldflags]
-        print("[ld] Linking...")
+        cmd = [compiler, *map(str, objects), "-o", str(dest), *ldflags]
+        print(f"[ld] {" ".join(cmd)}")
 
-        try:
-            sh(cmd)
-        except Exception as e:
-            print("Link failed:")
-            print(e)
-            return 1
+        sh(cmd)
 
     print(f"Executable at {dest}")
     return 0

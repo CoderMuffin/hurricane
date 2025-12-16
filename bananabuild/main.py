@@ -1,5 +1,6 @@
 from pathlib import Path
-from util import ROOT, glob, sh
+from util import ROOT, glob, bbmain
+from subprocess import run
 from compile import compile_all
 
 fxcgsdk = Path("C:\\Working\\PrizmSDK-win-0.6")
@@ -47,8 +48,7 @@ def cg50example():
         ldflags=fxcg_ldflags,
         incremental=False
     )
-    sh([str(fxcgsdk/"bin"/"mkg3a.exe"), str(executable)])
-
+    run(fxcgsdk/"bin"/"mkg3a.exe", executable)
 
 
 def cg50main():
@@ -69,25 +69,42 @@ def cg50main():
         compiler=str(fxcgsdk/"bin"/"sh3eb-elf-gcc.exe"),
         cflags=fxcg_cflags + [
             "-I", str(ROOT/"hurricane"/"include"),
-            "-I", str(ROOT/"lutgen"),
+            "-I", str(ROOT/"taylor_math"),
             
             "-Wall", "-Wpedantic", "-Werror",
             "-fdiagnostics-color=always"
         ],
         ldflags=fxcg_ldflags
     )
-    sh([str(fxcgsdk/"bin"/"mkg3a.exe"), str(executable)])
+    run(fxcgsdk/"bin"/"mkg3a.exe", executable)
 
 
 def main():
     executable = ROOT / "build/hc"
     compile_all(
-        glob(ROOT, "*.c", exclude=["monster_maze.c", "hurricane/src/renderer/console.c", "hurricane/src/renderer/video.c", "hurricane/src/renderer/xlib.c", "hurricane/src/util/legacy_vec.c"]),
+        glob(ROOT, "*.c", exclude=[
+            "example/src/example.c",
+            "monster_maze.c",
+            "maze.c",
+            "hurricane/src/renderer/prizm.c",
+            "hurricane/src/renderer/console.c",
+            "hurricane/src/renderer/video.c",
+            "hurricane/src/renderer/xlib.c",
+            "hurricane/src/util/legacy_vec.c",
+        ]),
         executable,
         libs=["sdl2"],
-        cflags=["-I", str(ROOT / "hurricane/include"), "-Wall", "-Wpedantic", "-Werror", "-fdiagnostics-color=always", "-g"]
+        cflags=[
+            "-I", str(ROOT / "hurricane/include"), 
+            "-I", str(ROOT / "taylor_math"),
+            "-Wall", "-Wpedantic", "-Werror", "-fdiagnostics-color=always", "-g"
+        ],
+        ldflags=[
+            "-fno-builtin",
+            "-fno-builtin-math",
+        ]
     )
-    sh(executable)
+    run(executable)
 
 if __name__ == "__main__":
-    cg50main()
+    bbmain(main)
