@@ -15,11 +15,12 @@
     
     int gettimeofday(struct timeval * tp, struct timezone * tzp);
 #else
-    #include <sys/time.h>
+   // #include <sys/time.h>
 #endif
 
 typedef struct hc_clock {
-    struct timeval last_time;
+    //struct timeval last_time;
+    short x;
 } hc_clock;
 
 // Source - https://stackoverflow.com/a/26085827

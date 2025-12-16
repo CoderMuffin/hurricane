@@ -1,7 +1,6 @@
 #ifndef HC_QUATERNION_H
 #define HC_QUATERNION_H
 
-#include <stdio.h>
 #include <stdbool.h>
 #include "../shared.h"
 
@@ -14,7 +13,6 @@ void hc_quaternion_set_identity(hc_quaternion *q);
 void hc_quaternion_invert(const hc_quaternion *q, hc_quaternion *output);
 void hc_quaternion_copy(const hc_quaternion *q, hc_quaternion *output);
 bool hc_quaternion_eq(const hc_quaternion *q1, const hc_quaternion *q2);
-void hc_quaternion_fprint(FILE *file, hc_quaternion *q);
 double hc_quaternion_to_axis_angle(hc_quaternion *q, double output[3]);
 void hc_quaternion_from_x_rotation(double angle, hc_quaternion *output);
 void hc_quaternion_from_y_rotation(double angle, hc_quaternion *output);

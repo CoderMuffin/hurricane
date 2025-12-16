@@ -1,7 +1,6 @@
 #include <hurricane/util/quat.h>
 #include <assert.h>
-#include <math.h>
-#include <stdlib.h>
+#include <taylor_math.h>
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -42,10 +41,6 @@ bool hc_quaternion_eq(const hc_quaternion *q1, const hc_quaternion *q2) {
   bool equalV1 = fabs(q1->v[1] - q2->v[1]) <= QUATERNION_EPS;
   bool equalV2 = fabs(q1->v[2] - q2->v[2]) <= QUATERNION_EPS;
   return equalW && equalV0 && equalV1 && equalV2;
-}
-
-void hc_quaternion_fprint(FILE *file, hc_quaternion *q) {
-  fprintf(file, "(%.3f, %.3f, %.3f, %.3f)", q->w, q->v[0], q->v[1], q->v[2]);
 }
 
 void hc_quaternion_from_axis_angle(const double axis[3], const double angle,

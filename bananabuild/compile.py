@@ -11,10 +11,10 @@ def pkg_config(lib: str):
     libs = sh(["pkg-config", "--libs", lib]).split()
     return cflags, libs
 
-def compile_one(compiler: str, src: Path, obj: Path, cflags: list[str], state: dict):
+def compile_one(compiler: str, src: Path, obj: Path, cflags: list[str], state: dict, incremental: bool):
     deps = scan_deps(compiler, src, cflags)
 
-    if not needs_rebuild(src, obj, deps, state):
+    if incremental and not needs_rebuild(src, obj, deps, state):
         print(f"[skip] {src}")
         return
 
@@ -29,7 +29,7 @@ def compile_one(compiler: str, src: Path, obj: Path, cflags: list[str], state: d
 
     save_deps(state, src, deps)
 
-def compile_all(sources: list[Path], dest: Path, *, compiler="gcc", libs=[], cflags=[], ldflags=[], workers=os.cpu_count()):
+def compile_all(sources: list[Path], dest: Path, *, compiler="gcc", libs=[], cflags=[], ldflags=[], workers=os.cpu_count(), incremental=True):
     state = load_state()
     objects = []
     errors = []
@@ -66,6 +66,7 @@ def compile_all(sources: list[Path], dest: Path, *, compiler="gcc", libs=[], cfl
                         obj,
                         cflags,
                         state,
+                        incremental
                     )
                 )
 

@@ -2,7 +2,7 @@
 #define RENDERER_H
 
 #include <stdlib.h>
-#include <math.h>
+#include <taylor_math.h>
 
 #define HC_INTERNAL_DEPTH_BUF_CHECK(x0, y0, z0, x1, y1, z1, x2, y2, z2, r, g,  \
                                     b, width, buf, fn)                         \

@@ -1,4 +1,4 @@
-#include <math.h>
+#include <taylor_math.h>
 
 const double hc_vec3_zero[3] = {0, 0, 0};
 const double hc_vec3_one[3] = {1, 1, 1};

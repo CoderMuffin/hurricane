@@ -30,7 +30,6 @@ void *hc_list_get(hc_list *l, int i) {
     hc_internal_error("Index %d out of bounds for list of "
                       "length %d",
                       i, l->length);
-    fflush(stdout);
   }
   return l->data[i];
 }

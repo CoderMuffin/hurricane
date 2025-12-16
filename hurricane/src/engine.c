@@ -5,7 +5,7 @@
 #include <hurricane/util/vec.h>
 #include <hurricane/util/log.h>
 #include <hurricane/engine.h>
-#include <math.h>
+#include <taylor_math.h>
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -110,10 +110,6 @@ void hc_init(const bool hc_render_progress, int frames, hc_renderer renderer, hc
     update();
     // printf("Triangles: %d\n", debug_triangle_count);
     hc_internal_engine_renderer.frame();
-    if (hc_render_progress) {
-      printf("\rProcessing frame %d/%d", i, frames);
-      fflush(stdout);
-    }
   }
 
   hc_internal_engine_renderer.finish();

@@ -16,6 +16,26 @@ def sh(cmd: list[str]) -> str:
     except FileNotFoundError:
         raise FileNotFoundError(" ".join(cmd))
 
+from pathlib import Path
+import fnmatch
+
 def glob(dir: Path, pattern: str, exclude: list[str] = []):
-    exclude_paths = [Path(dir / p).resolve() for p in exclude]
-    return [x.resolve() for x in dir.rglob(pattern) if x.resolve() not in exclude_paths]
+    """
+    Recursively find files matching 'pattern' in 'dir', excluding any that match
+    glob patterns in 'exclude'.
+    """
+    result = []
+
+    # Resolve exclude patterns relative to dir
+    exclude_patterns = [str(Path(dir / p).resolve()) for p in exclude]
+
+    for candidate in [x.resolve() for x in dir.rglob(pattern)]:
+        # Check if candidate matches any exclude pattern
+        if any(fnmatch.fnmatch(str(candidate), pat) for pat in exclude_patterns):
+            continue
+        result.append(candidate)
+
+    # Optional: warn about unused exclude patterns (harder with globs)
+    # We'll skip this because it's ambiguous with globs
+
+    return result

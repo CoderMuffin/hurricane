@@ -14,13 +14,13 @@ void swap_dbl(double *a, double *b) {
 #ifdef _WIN32
 #include <windows.h>
 #else
-#include <unistd.h>
+//#include <unistd.h>
 #endif
 
 void hc_sleep(long ms) {
 #ifdef _WIN32
   Sleep(ms);
 #else
-  usleep(ms*1000);
+  //usleep(ms*1000);
 #endif
 }

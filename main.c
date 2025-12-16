@@ -3,11 +3,8 @@
 #include <hurricane/shared.h>
 #include <hurricane/util/vec.h>
 #include <hurricane/util/list.h>
-#include <hurricane/renderer/console.h>
-#include <hurricane/renderer/video.h>
-#include <hurricane/renderer/xlib.h>
 #include <hurricane/loader/obj.h>
-#include <hurricane/renderer/SDL.h>
+#include <hurricane/renderer/prizm.h>
 #include <hurricane/input.h>
 
 #include <hurricane/anim.h>
@@ -42,17 +39,18 @@ hc_anim cube_anim;
 double tmpvec[3] = {0.02, 0.02, 0};
 double tmpvecupdate[3];
 
-double curr_second;
-int frames = 0;
-void fps(double delta) {
-  curr_second += delta;
-  frames++;
-  if (curr_second >= 1) {
-    curr_second -= 1;
-    printf("\r%d", frames);
-    frames = 0;
-  }
-}
+// double curr_second;
+// int frames = 0;
+// void fps(double delta) {
+//   curr_second += delta;
+//   frames++;
+//   if (curr_second >= 1) {
+//     curr_second -= 1;
+//     printf("\r%d", frames);
+//     fflush(stdout);
+//     frames = 0;
+//   }
+// }
 
 void update() {
   if (w_down) {
@@ -80,8 +78,7 @@ void update() {
   // printf("anim: time:%f playing:%d looping:%d\n", cube_anim.time,
   // cube_anim.playing, cube_anim.looping); printf("%f %f %f\n",
   // cube.position[0], cube.position[1], cube.position[2]);
-  fps(delta);
-  fflush(stdout);
+  //fps(delta);
 }
 
 void on_key_up(void *e) {
@@ -116,8 +113,8 @@ int main(void) {
   hc_clock_new(&gclock);
   hc_renderer_config rc = (hc_renderer_config) {
     .clear = {0, 0, 0},
-    .width = 800,
-    .height = 800
+    .width = 50,
+    .height = 50
   };
   hc_input_subscribe(on_key_down, HC_INPUT_KEYDOWN);
   hc_input_subscribe(on_key_up, HC_INPUT_KEYUP);
@@ -132,11 +129,11 @@ int main(void) {
   cube_anim.looping = true;
 
   hc_set_fov(70, rc, false);
-  hc_geometry geometry_teapot;
-  hc_geometry_from_obj("teapot.obj", &geometry_teapot);
-  hc_new_object(&cube, &geometry_teapot, VEC3(0, 0.8, 0), hc_quaternion_identity,
+  // hc_geometry geometry_teapot;
+  // hc_geometry_from_obj("teapot.obj", &geometry_teapot);
+  // hc_log("%d faces", geometry_teapot.face_count);
+  hc_new_object(&cube, &hc_geometry_sphere5, VEC3(0, 0.8, 0), hc_quaternion_identity,
                 VEC3(0.5, 0.5, 0.5));
-  hc_log("%d faces", geometry_teapot.face_count);
   hc_new_object(&camera, &hc_geometry_none, VEC3(0, 0, -3),
                 hc_quaternion_identity, hc_vec3_one);
 
@@ -151,7 +148,7 @@ int main(void) {
   // hc_world_to_screen(&camera, (double[]){4, 0, -1}, tmp);
   // printf("%d %d\n", tmp[0], tmp[1]);
   // exit(1);
-  hc_init(false, -1, hc_renderer_sdl, rc, update);
+  hc_init(false, 200, hc_renderer_prizm, rc, update);
   // hc_sdl_finish();
   // hc_video_finish();
   return 0;
