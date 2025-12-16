@@ -29,7 +29,7 @@ class ProgressBar:
         self.thread.join(timeout=0.2)
         self.render()
         elapsed = time.time() - self.start
-        print(f"\r\033[KDone in {elapsed:.1f}s", flush=True)
+        print(f"\r\033[K{'Done' if exc_type is None else 'Failed'} in {elapsed:.1f}s", flush=True)
         return False
 
     def _run(self):

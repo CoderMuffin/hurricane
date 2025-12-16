@@ -1,5 +1,6 @@
 from pathlib import Path
 import threading, os, subprocess
+from typing import Sequence
 import fnmatch
 
 TOOL_DIR = Path(os.path.realpath(__file__)).parent.resolve()
@@ -8,30 +9,25 @@ BUILD_DIR = TOOL_DIR / ".bbcache"
 LOCK = threading.Lock()
 VERSION = "0.0.1"
 
-def sh(cmd: str | Path | list[str | Path], *args: list[str | Path]) -> str:
-    if not isinstance(cmd, list):
-        cmd = [cmd, *args]
-    elif len(args) > 0:
-        raise Exception("Cannot specify args when using cmd as a list. Use the first argument list for all arguments.")
-
-    cmd = list(map(str, cmd))
-    
+def run(cmd: str | Sequence[str | Path], *, silent=False, **kwargs) -> str:
     try:
-        p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        if p.returncode != 0:
-            raise RuntimeError(p.stderr)
-        return p.stdout
+        with subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, **kwargs) as process:
+            output = ""
+            for line in process.stdout:
+                output += line
+                if not silent:
+                    print(line, end='')
+
+            if process.returncode != 0:
+                raise RuntimeError(output)
+
+            return output
     except FileNotFoundError:
-        raise FileNotFoundError(" ".join(cmd))
+        raise FileNotFoundError(cmd if isinstance(cmd, str) else " ".join(map(str, cmd)))
 
 def glob(dir: Path, pattern: str, exclude: list[str] = []):
-    """
-    Recursively find files matching 'pattern' in 'dir', excluding any that match
-    glob patterns in 'exclude'.
-    """
     result = []
 
-    # Resolve exclude patterns relative to dir
     exclude_patterns = [str(Path(dir / p).resolve()) for p in exclude]
 
     for candidate in [x.resolve() for x in dir.rglob(pattern)]:
@@ -39,9 +35,6 @@ def glob(dir: Path, pattern: str, exclude: list[str] = []):
         if any(fnmatch.fnmatch(str(candidate), pat) for pat in exclude_patterns):
             continue
         result.append(candidate)
-
-    # Optional: warn about unused exclude patterns (harder with globs)
-    # We'll skip this because it's ambiguous with globs
 
     return result
 
@@ -54,4 +47,5 @@ def bbmain(fn):
         if "-v" in sys.argv or "--verbose" in sys.argv:
             raise
         else:
-            print("\x1b[31m" + str(e).rstrip() + " \x1b[36m(run with -v for verbose error output)\x1b[0m")
+            print("\x1b[31;1m" + str(type(e).__name__) + "\x1b[0;31m " + str(e).rstrip() + " \x1b[36m(run with -v for verbose error output)\x1b[0m")
+            

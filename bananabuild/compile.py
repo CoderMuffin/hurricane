@@ -3,12 +3,12 @@ from pathlib import Path
 import os
 
 from progress import ProgressBar
-from util import sh, BUILD_DIR, ROOT
+from util import run, BUILD_DIR, ROOT
 from incremental import scan_deps, save_deps, needs_rebuild, load_state, save_state
 
 def pkg_config(lib: str):
-    cflags = sh(["pkg-config", "--cflags", lib]).split()
-    libs = sh(["pkg-config", "--libs", lib]).split()
+    cflags = run(["pkg-config", "--cflags", lib], silent=True).split()
+    libs = run(["pkg-config", "--libs", lib], silent=True).split()
     return cflags, libs
 
 def compile_one(compiler: str, src: Path, obj: Path, cflags: list[str], state: dict):
@@ -20,10 +20,10 @@ def compile_one(compiler: str, src: Path, obj: Path, cflags: list[str], state: d
 
     obj.parent.mkdir(parents=True, exist_ok=True)
     cmd = [compiler, "-c", str(src), "-o", str(obj), *cflags]
-    print(f"[cc] {" ".join(cmd)}")
+    print(f"[cc] {' '.join(cmd)}")
 
     try:
-        print(sh(cmd), end="")
+        run(cmd)
     except Exception as e:
         return e
 
@@ -81,9 +81,9 @@ def compile_all(sources: list[Path], dest: Path, *, compiler="gcc", libs=[], cfl
 
         # link
         cmd = [compiler, *map(str, objects), "-o", str(dest), *ldflags]
-        print(f"[ld] {" ".join(cmd)}")
+        print(f"[ld] {' '.join(cmd)}")
 
-        sh(cmd)
+        run(cmd)
 
     print(f"Executable at {dest}")
     return 0

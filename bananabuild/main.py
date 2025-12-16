@@ -1,6 +1,5 @@
 from pathlib import Path
-from util import ROOT, glob, bbmain
-from subprocess import check_output
+from util import ROOT, glob, bbmain, run
 import shutil
 from compile import compile_all
 
@@ -58,10 +57,9 @@ def cg50main():
         ],
         ldflags=fxcg_ldflags
     )
-    print(check_output([fxcgsdk/"bin"/"mkg3a.exe", executable]))
+    run([fxcgsdk/"bin"/"mkg3a.exe", executable])
     shutil.copy(str(executable) + ".g3a", "E:\\hc.g3a")
-    print(check_output('powershell $driveEject = New-Object -comObject Shell.Application; $driveEject.Namespace(17).ParseName("""E:""").InvokeVerb("""Eject""")'))
-
+    run('powershell $driveEject = New-Object -comObject Shell.Application; $driveEject.Namespace(17).ParseName("""E:""").InvokeVerb("""Eject""")', shell=True)
 
 
 def main():
@@ -89,7 +87,7 @@ def main():
             "-fno-builtin-math",
         ]
     )
-    print(check_output(executable))
+    run([executable])
 
 if __name__ == "__main__":
     bbmain(cg50main)

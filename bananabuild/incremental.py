@@ -1,7 +1,7 @@
 from pathlib import Path
 import json, hashlib, threading
 
-from util import BUILD_DIR, sh, TOOL_DIR, glob
+from util import BUILD_DIR, run, TOOL_DIR, glob
 
 SCRIPTS = glob(TOOL_DIR, "*.py")
 DEPS_FILE = BUILD_DIR / "deps.json"
@@ -25,7 +25,7 @@ def hash_file(path: Path) -> str:
 
 def scan_deps(compiler: str, src: Path, cflags: list[str]) -> set[str]:
     """Return set of dependency file paths using compiler -MM"""
-    out = sh([compiler, "-MM", *cflags, str(src)])
+    out = run([compiler, "-MM", *cflags, str(src)])
     # format: file.o: dep1 dep2 dep3
     deps = out.split(":", 1)[1]
     return {d.strip() for d in deps.replace("\\\n", " ").split()}
