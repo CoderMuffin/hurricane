@@ -25,7 +25,7 @@ def hash_file(path: Path) -> str:
 
 def scan_deps(compiler: str, src: Path, cflags: list[str]) -> set[str]:
     """Return set of dependency file paths using compiler -MM"""
-    out = run([compiler, "-MM", *cflags, str(src)])
+    out = run([compiler, "-MM", *cflags, str(src)], silent=True)
     # format: file.o: dep1 dep2 dep3
     deps = out.split(":", 1)[1]
     return {d.strip() for d in deps.replace("\\\n", " ").split()}

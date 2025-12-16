@@ -10,6 +10,8 @@ LOCK = threading.Lock()
 VERSION = "0.0.1"
 
 def run(cmd: str | Sequence[str | Path], *, silent=False, **kwargs) -> str:
+    cmd_str = cmd if isinstance(cmd, str) else " ".join(map(str, cmd))
+
     try:
         with subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, **kwargs) as process:
             output = ""
@@ -18,12 +20,14 @@ def run(cmd: str | Sequence[str | Path], *, silent=False, **kwargs) -> str:
                 if not silent:
                     print(line, end='')
 
+            process.wait()
+
             if process.returncode != 0:
-                raise RuntimeError(output)
+                raise RuntimeError(f"util.run: command failed with exit code {process.returncode}\ncommand: \x1b[0m{cmd_str}\n\noutput:\n{output}")
 
             return output
     except FileNotFoundError:
-        raise FileNotFoundError(cmd if isinstance(cmd, str) else " ".join(map(str, cmd)))
+        raise FileNotFoundError(f"util.run: command not found\ncommand: \x1b[0m{cmd_str}")
 
 def glob(dir: Path, pattern: str, exclude: list[str] = []):
     result = []
@@ -47,5 +51,5 @@ def bbmain(fn):
         if "-v" in sys.argv or "--verbose" in sys.argv:
             raise
         else:
-            print("\x1b[31;1m" + str(type(e).__name__) + "\x1b[0;31m " + str(e).rstrip() + " \x1b[36m(run with -v for verbose error output)\x1b[0m")
+            print("\x1b[31;1m" + str(type(e).__name__) + "\x1b[0;31m: " + str(e).rstrip() + " \x1b[36m(run with -v for verbose error output)\x1b[0m")
             

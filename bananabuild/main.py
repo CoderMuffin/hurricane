@@ -79,15 +79,16 @@ def main():
         libs=["sdl2"],
         cflags=[
             "-I", str(ROOT / "hurricane/include"), 
-            "-I", str(ROOT / "taylor_math"),
+            "-O3",
+            "-flto",
             "-Wall", "-Wpedantic", "-Werror", "-fdiagnostics-color=always", "-g"
         ],
         ldflags=[
-            "-fno-builtin",
-            "-fno-builtin-math",
+            "-lm",
+            "-flto"
         ]
     )
     run([executable])
 
 if __name__ == "__main__":
-    bbmain(cg50main)
+    bbmain(main)
