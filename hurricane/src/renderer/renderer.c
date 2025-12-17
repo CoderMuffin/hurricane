@@ -5,7 +5,7 @@ double calculate_depth(double x0, double y0, double z0, double x1, double y1,
                        double py) {
   double w_denom = (y1 - y2) * (x0 - x2) + (x2 - x1) * (y0 - y2);
 
-  if (fabs(w_denom) < 3.0) {
+  if (fabs(w_denom) < 0.1) {
     return INFINITY;
   }
 

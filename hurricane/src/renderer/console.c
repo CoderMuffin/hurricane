@@ -31,15 +31,15 @@ void *hc_internal_console_input_handler(void *_) {
 
 static void init(hc_renderer_config renderer_config) {
   config = renderer_config;
-  printf("\033[H\033[J");
+  printf("\033[H\033[J\033[?25l");
   pthread_t input_thread;
   pthread_create(&input_thread, NULL, hc_internal_console_input_handler, NULL);
   buf = calloc(config.width * config.height * 3, sizeof(unsigned char));
-  char_buf =
-      malloc((config.width * 2 + 1) * config.height * CHAR_SIZE + 1);
+  char_buf = malloc((config.width * 2 + 1) * config.height * CHAR_SIZE + 1);
   text_buf = malloc(config.width * config.height * sizeof(char) + 1);
   map_buf = malloc(CHAR_SIZE);
   depth_buf = malloc(config.width * config.height * sizeof(double));
+  setvbuf(stdout, NULL, _IOFBF, (config.width + 1) * config.height * 24); // probably max 24 chars per map_buf out idk
 }
 
 static void pre_frame(void) {
@@ -57,8 +57,8 @@ static void triangle(int x0, int y0, double z0, int x1, int y1, double z1,
                      unsigned char g, unsigned char b) {
   HC_INTERNAL_BUF_TRIANGLE(
       x0, y0, z0, x1, y1, z1, x2, y2, z2, config.width, config.height,
-      HC_INTERNAL_DEPTH_BUF_CHECK(x0, y0, z0, x1, y1, z1, x2, y2, z2, config.width,
-                                  depth_buf,
+      HC_INTERNAL_DEPTH_BUF_CHECK(x0, y0, z0, x1, y1, z1, x2, y2, z2,
+                                  config.width, depth_buf,
                                   buf[(y * config.width + x) * 3 + 0] = r;
                                   buf[(y * config.width + x) * 3 + 1] = g;
                                   buf[(y * config.width + x) * 3 + 2] = b;))
@@ -94,15 +94,20 @@ static void frame(void) {
         advance += strlen(to_write);
       }
     }
-    // printf("newline %d\n", ((y+1) * config.width) * 2 + y);
     char_buf[advance] = '\n';
     advance++;
   }
   char_buf[advance] = '\0';
   printf("\033[H%s", char_buf);
+  fflush(stdout);
 }
 
-static void finish(void) {}
+static void finish(void) {
+  free(map_buf);
+  free(depth_buf);
+  free(char_buf);
+  printf("\033[?25h");
+}
 
 const hc_renderer hc_renderer_console = {.init = init,
                                          .pre_frame = pre_frame,
