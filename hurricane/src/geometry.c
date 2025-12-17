@@ -57,10 +57,10 @@ int hc_getline(char **lineptr, size_t *n, FILE *stream) {
     return p - bufptr - 1;
 }
 
-hc_geometry hc_geometry_none = {
+const hc_geometry hc_geometry_none = {
     .vertices = NULL, .faces = NULL, .colors = NULL, .face_count = 0};
 
-hc_geometry hc_geometry_sphere5 = {
+const hc_geometry hc_geometry_sphere5 = {
     .vertices =
         (double[]){
             -0.5257311121191336,
@@ -1061,7 +1061,7 @@ hc_geometry hc_geometry_sphere5 = {
             10,  207, 2,   8,   84},
     .face_count = 500};
 
-hc_geometry hc_geometry_cube = {
+const hc_geometry hc_geometry_cube = {
     .vertices = (double[]){1,  -1, 1, 1,  -1, -1, 1,  1, -1, 1,  1, 1,
                            -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1},
     .faces =
@@ -1098,7 +1098,7 @@ hc_geometry hc_geometry_cube = {
         },
     .face_count = 12};
 
-hc_geometry hc_geometry_mobius = {
+const hc_geometry hc_geometry_mobius = {
     .vertices =
         (double[]){
             5.0,

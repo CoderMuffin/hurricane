@@ -10,17 +10,12 @@
 #include <stdio.h>
 
 static bool hc_internal_quit = false;
-int debug_triangle_count = 0;
 static hc_renderer hc_internal_engine_renderer;
 static hc_renderer_config hc_internal_engine_renderer_config;
 
-double hc_internal_eye_dist = 400 / (2 * 0.7); // 70 fov default
-void (*hc_render_triangle_call)(int, int, double, int, int, double, int, int,
-                                double, unsigned char, unsigned char,
-                                unsigned char);
-
-double hc_internal_frame_tmp_vec[3];
-double hc_internal_world_transform_tmp_vec[3];
+static double hc_internal_eye_dist = 400 / (2 * 0.7); // 70 fov default
+static double hc_internal_frame_tmp_vec[3];
+static double hc_internal_world_transform_tmp_vec[3];
 
 void hc_geometry_to_world(hc_object *object, int index, double out[3]) {
   hc_vec3_vmul(object->geometry->vertices + object->geometry->faces[index] * 3,
@@ -77,8 +72,6 @@ void hc_render_object(hc_object *camera, hc_object *object) {
     hc_geometry_to_world(object, i + 2, hc_internal_frame_tmp_vec);
     hc_world_to_screen(camera, hc_internal_engine_renderer_config, hc_internal_frame_tmp_vec, c, &cz);
 
-    debug_triangle_count++;
-
     double dot = hc_internal_lighting(object, i);
 
     hc_internal_engine_renderer.triangle(a[0], a[1], az, b[0], b[1], bz, c[0],
@@ -94,10 +87,10 @@ void hc_set_fov(double fov, hc_renderer_config renderer_config, bool use_height)
                          (2 * tan(fov * M_PI / 360));
 }
 
-void hc_quit() { hc_internal_quit = true; }
+void hc_quit(void) { hc_internal_quit = true; }
 
 void hc_init(const bool hc_render_progress, int frames, hc_renderer renderer, hc_renderer_config renderer_config,
-             void (*update)()) {
+             void (*update)(void)) {
   hc_internal_engine_renderer = renderer;
   hc_internal_engine_renderer_config = renderer_config;
 
@@ -105,10 +98,8 @@ void hc_init(const bool hc_render_progress, int frames, hc_renderer renderer, hc
 
   int i = 0;
   while (!hc_internal_quit && (frames == -1 || i++ < frames)) {
-    debug_triangle_count = 0;
     hc_internal_engine_renderer.pre_frame();
     update();
-    // printf("Triangles: %d\n", debug_triangle_count);
     hc_internal_engine_renderer.frame();
   }
 

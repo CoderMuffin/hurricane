@@ -113,8 +113,8 @@ int main(void) {
   hc_clock_new(&gclock);
   hc_renderer_config rc = (hc_renderer_config) {
     .clear = {0, 0, 0},
-    .width = 50,
-    .height = 50
+    .width = 30,
+    .height = 30
   };
   hc_input_subscribe(on_key_down, HC_INPUT_KEYDOWN);
   hc_input_subscribe(on_key_up, HC_INPUT_KEYUP);

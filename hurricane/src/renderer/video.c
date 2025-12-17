@@ -9,12 +9,10 @@ unsigned char hc_video_buf[HC_RENDER_SIZE_Y][HC_RENDER_SIZE_X][3] = {0};
 double hc_video_depth_buf[HC_RENDER_SIZE_Y][HC_RENDER_SIZE_X] = {0};
 FILE *hc_video_pipe;
 
-// void swap_int(int *a, int *b) {
-//   int temp = *b;
-//   *b = *a;
-//   *a = temp;
-// }
-void hc_video_init() {
+static hc_renderer_config config;
+
+void hc_video_init(hc_renderer_config renderer_config) {
+  config = renderer_config;
   // printf(("ideo -pix_fmt rgb24 " "-s " HC_RENDER_SIZE_STR_X "x"
   // HC_RENDER_SIZE_STR_Y " "));
   hc_video_pipe = popen("ffmpeg -fflags +discardcorrupt -hide_banner -y -f "
@@ -37,8 +35,8 @@ void hc_video_triangle(int x0, int y0, double z0, int x1, int y1, double z1,
                        int x2, int y2, double z2, unsigned char r,
                        unsigned char g, unsigned char b) {
   HC_INTERNAL_BUF_TRIANGLE(
-      x0, y0, z0, x1, y1, z1, x2, y2, z2, r, g, b,
-      HC_INTERNAL_DEPTH_BUF_CHECK(x0, y0, z0, x1, y1, z1, x2, y2, z2, r, g, b,
+      x0, y0, z0, x1, y1, z1, x2, y2, z2, config.width, config.height,
+      HC_INTERNAL_DEPTH_BUF_CHECK(x0, y0, z0, x1, y1, z1, x2, y2, z2, config.width,
                                   hc_video_depth_buf, hc_video_buf[y][x][0] = r;
                                   hc_video_buf[y][x][1] = g;
                                   hc_video_buf[y][x][2] = b;))
