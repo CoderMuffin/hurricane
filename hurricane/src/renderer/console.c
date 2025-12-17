@@ -16,7 +16,7 @@ char *text_buf;
 char *map_buf;
 hc_renderer_config config;
 
-double **depth_buf;
+double *depth_buf;
 
 void *hc_internal_console_input_handler(void *_) {
   int old = getchar();
@@ -42,17 +42,13 @@ static void init(hc_renderer_config renderer_config) {
   depth_buf = malloc(config.width * config.height * sizeof(double));
 }
 
-static void pre_frame() {
+static void pre_frame(void) {
   for (int i = 0; i < config.width * config.height; i++) {
     buf[i * 3] = config.clear[0];
     buf[i * 3 + 1] = config.clear[1];
     buf[i * 3 + 2] = config.clear[2];
     text_buf[i] = 0;
-  }
-  for (int y = 0; y < config.height; y++) {
-    for (int x = 0; x < config.width; x++) {
-      depth_buf[y][x] = INFINITY;
-    }
+    depth_buf[i] = INFINITY;
   }
 }
 
@@ -60,24 +56,24 @@ static void triangle(int x0, int y0, double z0, int x1, int y1, double z1,
                      int x2, int y2, double z2, unsigned char r,
                      unsigned char g, unsigned char b) {
   HC_INTERNAL_BUF_TRIANGLE(
-      x0, y0, z0, x1, y1, z1, x2, y2, z2, r, g, b, config.width, config.height,
-      HC_INTERNAL_DEPTH_BUF_CHECK(x0, y0, z0, x1, y1, z1, x2, y2, z2, r, g, b,
+      x0, y0, z0, x1, y1, z1, x2, y2, z2, config.width, config.height,
+      HC_INTERNAL_DEPTH_BUF_CHECK(x0, y0, z0, x1, y1, z1, x2, y2, z2, config.width,
                                   depth_buf,
                                   buf[(y * config.width + x) * 3 + 0] = r;
                                   buf[(y * config.width + x) * 3 + 1] = g;
                                   buf[(y * config.width + x) * 3 + 2] = b;))
 }
 
-char *map_char(unsigned char *vs) {
+static char *map_char(unsigned char *vs) {
   sprintf(map_buf, "\033[38;2;%d;%d;%dm█", vs[0], vs[1], vs[2]);
   return map_buf;
 }
 
-static void blit(char *text, int x, int y) {
+void blit(char *text, int x, int y) {
   strncpy(text_buf + y * config.width + x, text, strlen(text));
 }
 
-static void frame() {
+static void frame(void) {
   int advance = 0;
   for (int y = 0; y < config.height; y++) {
     for (int x = 0; x < config.width; x++) {
@@ -106,7 +102,7 @@ static void frame() {
   printf("\033[H%s", char_buf);
 }
 
-static void finish() {}
+static void finish(void) {}
 
 const hc_renderer hc_renderer_console = {.init = init,
                                          .pre_frame = pre_frame,

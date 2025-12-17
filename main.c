@@ -151,7 +151,7 @@ int main(void) {
   // hc_world_to_screen(&camera, (double[]){4, 0, -1}, tmp);
   // printf("%d %d\n", tmp[0], tmp[1]);
   // exit(1);
-  hc_init(false, -1, hc_renderer_sdl, rc, update);
+  hc_init(false, -1, hc_renderer_xlib, rc, update);
   // hc_sdl_finish();
   // hc_video_finish();
   return 0;

@@ -1,7 +1,9 @@
 #ifndef HC_RENDERER_H
 #define HC_RENDERER_H
 
-#include "../shared.h"
+double calculate_depth(double x0, double y0, double z0, double x1, double y1,
+                       double z1, double x2, double y2, double z2, double px,
+                       double py);
 
 typedef struct hc_renderer_config {
   int width;
