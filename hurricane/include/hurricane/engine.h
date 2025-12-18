@@ -7,10 +7,9 @@
 
 void hc_geometry_to_world(hc_object *object, int index, double out[3]);
 double hc_internal_lighting(hc_object *object, int i);
-void hc_render_object(hc_object *camera, hc_object *object);
+void hc_render_object(const hc_renderer *const renderer, const hc_renderer_config *const renderer_config, hc_object *camera, hc_object *object);
 void hc_set_fov(double fov, hc_renderer_config renderer_config, bool use_height);
-void hc_init(const bool hc_render_progress, int frames, hc_renderer renderer, hc_renderer_config renderer_config,
-             void (*update)());
+bool hc_should_quit();
 void hc_quit();
 
 #endif

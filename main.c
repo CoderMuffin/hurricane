@@ -17,6 +17,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#define renderer hc_renderer_sdl
+
 #if 1
   #define KEYW 119
   #define KEYA 97
@@ -42,6 +44,11 @@ hc_anim cube_anim;
 double tmpvec[3] = {0.02, 0.02, 0};
 double tmpvecupdate[3];
 
+  const hc_renderer_config rc = {
+    .clear = {0, 0, 0},
+    .width = 100,
+    .height = 100
+  };
 double curr_second;
 int frames = 0;
 void fps(double delta) {
@@ -72,9 +79,11 @@ void update() {
     hc_quaternion_rotate(&camera.rotation, VEC3(0,0,-3), camera.position);
   }
   // hc_vec3_add(cube->position, tmpvec, cube->position);
-  hc_render_object(&camera, &cube);
+  hc_render_object(&renderer, &rc, &camera, &cube);
 
-  hc_render_object(&camera, &cube2);
+  for (int i = 0; i < 1000; i++) {
+  hc_render_object(&renderer, &rc, &camera, &cube2);
+  }
   double delta = hc_clock_step(&gclock);
   hc_anim_step(&cube_anim, delta*0.1, &cube.rotation);
   // printf("anim: time:%f playing:%d looping:%d\n", cube_anim.time,
@@ -114,11 +123,6 @@ void on_key_down(void *e) {
 
 int main(void) {
   hc_clock_new(&gclock);
-  hc_renderer_config rc = (hc_renderer_config) {
-    .clear = {0, 0, 0},
-    .width = 30,
-    .height = 30
-  };
   hc_input_subscribe(on_key_down, HC_INPUT_KEYDOWN);
   hc_input_subscribe(on_key_up, HC_INPUT_KEYUP);
   // hc_anim_new(&cube_anim, (hc_keyframe[]){{VEC3(-2,0,5),0}, {VEC3(-2,1,5),1},
@@ -143,16 +147,15 @@ int main(void) {
 
   hc_new_object(&cube2, &hc_geometry_cube, VEC3(1.2, 0, 0), hc_quaternion_identity,
                 (double[]){1, 0.2, 0.2});
-  // hc_init(false, 200, hc_video_pre_frame, hc_video_triangle, hc_video_frame,
-  //        update);
-  // hc_init(false, -1, hc_console_pre_frame, hc_console_triangle,
-  // hc_console_frame, update);
-  // int tmp[2];
-  // hc_world_to_screen(&camera, (double[]){4, 0, -1}, tmp);
-  // printf("%d %d\n", tmp[0], tmp[1]);
-  // exit(1);
-  hc_init(false, -1, hc_renderer_console, rc, update);
-  // hc_sdl_finish();
-  // hc_video_finish();
+
+  renderer.init(rc);
+
+  while (!hc_should_quit()) {
+    renderer.pre_frame();
+    update();
+    renderer.frame();
+  }
+
+  renderer.finish();
   return 0;
 }

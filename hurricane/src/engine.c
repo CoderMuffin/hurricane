@@ -10,8 +10,6 @@
 #include <stdio.h>
 
 static bool hc_internal_quit = false;
-static hc_renderer hc_internal_engine_renderer;
-static hc_renderer_config hc_internal_engine_renderer_config;
 
 static double hc_internal_eye_dist = 400 / (2 * 0.7); // 70 fov default
 static double hc_internal_frame_tmp_vec[3];
@@ -25,7 +23,7 @@ void hc_geometry_to_world(hc_object *object, int index, double out[3]) {
 }
 
 void hc_world_to_screen(const hc_object *camera,
-                        hc_renderer_config renderer_config,
+                        const hc_renderer_config *const renderer_config,
                         const double p_world[3], int out[2], double *out_z) {
   hc_vec3_sub(p_world, camera->position, hc_internal_world_transform_tmp_vec);
   hc_quaternion_rotate_inverse(&camera->rotation,
@@ -34,10 +32,10 @@ void hc_world_to_screen(const hc_object *camera,
 
   out[0] = hc_internal_world_transform_tmp_vec[0] * hc_internal_eye_dist /
                hc_internal_world_transform_tmp_vec[2] +
-           renderer_config.width / 2;
+           renderer_config->width / 2;
   out[1] = hc_internal_world_transform_tmp_vec[1] * hc_internal_eye_dist /
                hc_internal_world_transform_tmp_vec[2] +
-           renderer_config.height / 2;
+           renderer_config->height / 2;
   *out_z = 1.0/hc_internal_world_transform_tmp_vec[2];
 }
 
@@ -59,22 +57,22 @@ double hc_internal_lighting(hc_object *object, int i) {
   return (hc_vec3_dot((double[]){1, 0, 0}, normal) + 1) / 2;
 }
 
-void hc_render_object(hc_object *camera, hc_object *object) {
+void hc_render_object(const hc_renderer *const renderer, const hc_renderer_config *const renderer_config, hc_object *camera, hc_object *object) {
   int a[2], b[2], c[2];
   double az, bz, cz;
   for (int i = 0; i < object->geometry->face_count * 3; i += 3) {
     hc_geometry_to_world(object, i, hc_internal_frame_tmp_vec);
-    hc_world_to_screen(camera, hc_internal_engine_renderer_config, hc_internal_frame_tmp_vec, a, &az);
+    hc_world_to_screen(camera, renderer_config, hc_internal_frame_tmp_vec, a, &az);
 
     hc_geometry_to_world(object, i + 1, hc_internal_frame_tmp_vec);
-    hc_world_to_screen(camera, hc_internal_engine_renderer_config, hc_internal_frame_tmp_vec, b, &bz);
+    hc_world_to_screen(camera, renderer_config, hc_internal_frame_tmp_vec, b, &bz);
 
     hc_geometry_to_world(object, i + 2, hc_internal_frame_tmp_vec);
-    hc_world_to_screen(camera, hc_internal_engine_renderer_config, hc_internal_frame_tmp_vec, c, &cz);
+    hc_world_to_screen(camera, renderer_config, hc_internal_frame_tmp_vec, c, &cz);
 
     double dot = hc_internal_lighting(object, i);
 
-    hc_internal_engine_renderer.triangle(a[0], a[1], az, b[0], b[1], bz, c[0],
+    renderer->triangle(a[0], a[1], az, b[0], b[1], bz, c[0],
                                          c[1], cz,
                                          object->geometry->colors[i] * dot,
                                          object->geometry->colors[i + 1] * dot,
@@ -89,23 +87,4 @@ void hc_set_fov(double fov, hc_renderer_config renderer_config, bool use_height)
 
 void hc_quit(void) { hc_internal_quit = true; }
 
-void hc_init(const bool hc_render_progress, int frames, hc_renderer renderer, hc_renderer_config renderer_config,
-             void (*update)(void)) {
-  hc_internal_engine_renderer = renderer;
-  hc_internal_engine_renderer_config = renderer_config;
-
-  hc_internal_engine_renderer.init(renderer_config);
-
-  int i = 0;
-  while (!hc_internal_quit && (frames == -1 || i++ < frames)) {
-    hc_internal_engine_renderer.pre_frame();
-    update();
-    hc_internal_engine_renderer.frame();
-    if (hc_render_progress) {
-      printf("\rProcessing frame %d/%d", i, frames);
-      fflush(stdout);
-    }
-  }
-
-  hc_internal_engine_renderer.finish();
-}
+bool hc_should_quit(void) { return hc_internal_quit; }
