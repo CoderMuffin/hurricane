@@ -12,12 +12,12 @@
 
 static uint16_t *hc_prizm_buf;
 
-static double *depth_buf = NULL;
+static float *depth_buf = NULL;
 static hc_renderer_config config;
 
 static void init(hc_renderer_config renderer_config) {
   config = renderer_config;
-  depth_buf = malloc(sizeof(double) * config.width * config.height);
+  depth_buf = malloc(sizeof(float) * config.width * config.height);
   Bdisp_EnableColor(1);
   hc_prizm_buf = GetVRAMAddress();
 }
@@ -28,26 +28,40 @@ static uint16_t prizm_color(unsigned char r, unsigned char g, unsigned char b) {
 
 static void pre_frame() {
   uint16_t clear = prizm_color(config.clear[0], config.clear[1], config.clear[2]);
-  for (int i = 0; i < config.width * config.height; i++) {
-    hc_prizm_buf[i] = clear;
-    depth_buf[i] = INFINITY;
+  for (int y = 0; y < config.height; y++) {
+    for (int x = 0; x < config.width; x++) {
+      hc_prizm_buf[y * 384 + x] = clear;
+      depth_buf[y * config.width + x] = INFINITY;
+    }
   }
 }
 
-static void triangle(int x0, int y0, double z0, int x1, int y1, double z1,
-                         int x2, int y2, double z2, unsigned char r,
+void hc_prizm_triangle(int x0, int y0, float z0, int x1, int y1, float z1,
+                         int x2, int y2, float z2, unsigned char r,
                          unsigned char g, unsigned char b) {
   HC_INTERNAL_BUF_TRIANGLE(
-      x0, y0, z0, x1, y1, z1, x2, y2, z2, r, g, b, config.width, config.height,
+      x0, y0, z0, x1, y1, z1, x2, y2, z2, config.width, config.height,
       HC_INTERNAL_DEPTH_BUF_CHECK(
-          x0, y0, z0, x1, y1, z1, x2, y2, z2, r, g, b, config.width, depth_buf,
-          hc_prizm_buf[y * config.width + x] = prizm_color(r, g, b);
+          x0, y0, z0, x1, y1, z1, x2, y2, z2, config.width, depth_buf,
+          hc_prizm_buf[y * 384 + x] = prizm_color(r, g, b);
         ))
+}
+
+static int key_pressed(int basic_keycode) {
+  const unsigned short* keyboard_register = (unsigned short*)0xA44B0000;
+  int row, col, word, bit;
+  row = basic_keycode%10;
+  col = basic_keycode/10-1;
+  word = row>>1;
+  bit = col + ((row&1)<<3);
+  return (0 != (keyboard_register[word] & 1<<bit));
 }
 
 static int key;
 static void frame() {
-  GetKey(&key);
+  if (key_pressed(KEY_PRGM_MENU)) {
+    GetKey(&key);
+  }
   Bdisp_PutDisp_DD();
 }
 
@@ -58,7 +72,7 @@ static void finish() {
 const hc_renderer hc_renderer_prizm = {
     .init = init,
     .pre_frame = pre_frame,
-    .triangle = triangle,
+    .triangle = NULL,
     .frame = frame,
     .finish = finish,
     .internal_depth_buf = &depth_buf

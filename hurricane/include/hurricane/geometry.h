@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 typedef struct hc_geometry {
-  double *vertices;
+  float *vertices;
   unsigned int *faces;
   unsigned char *colors;
   unsigned int face_count;

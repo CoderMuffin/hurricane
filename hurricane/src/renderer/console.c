@@ -16,7 +16,7 @@ char *text_buf;
 char *map_buf;
 hc_renderer_config config;
 
-double *depth_buf;
+float *depth_buf;
 
 void *hc_internal_console_input_handler(void *_) {
   int old = getchar();
@@ -38,7 +38,7 @@ static void init(hc_renderer_config renderer_config) {
   char_buf = malloc((config.width * 2 + 1) * config.height * CHAR_SIZE + 1);
   text_buf = malloc(config.width * config.height * sizeof(char) + 1);
   map_buf = malloc(CHAR_SIZE);
-  depth_buf = malloc(config.width * config.height * sizeof(double));
+  depth_buf = malloc(config.width * config.height * sizeof(float));
   setvbuf(stdout, NULL, _IOFBF, (config.width + 1) * config.height * 24); // probably max 24 chars per map_buf out idk
 }
 
@@ -52,8 +52,8 @@ static void pre_frame(void) {
   }
 }
 
-static void triangle(int x0, int y0, double z0, int x1, int y1, double z1,
-                     int x2, int y2, double z2, unsigned char r,
+static void triangle(int x0, int y0, float z0, int x1, int y1, float z1,
+                     int x2, int y2, float z2, unsigned char r,
                      unsigned char g, unsigned char b) {
   HC_INTERNAL_BUF_TRIANGLE(
       x0, y0, z0, x1, y1, z1, x2, y2, z2, config.width, config.height,

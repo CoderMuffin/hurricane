@@ -5,13 +5,13 @@
 #include <assert.h>
 
 typedef struct hc_object {
-  double position[3];
+  float position[3];
   hc_quaternion rotation;
-  double scale[3];
+  float scale[3];
   const hc_geometry *geometry;
 } hc_object;
 
-void hc_new_object(hc_object *object, const hc_geometry *geometry, const double position[3], const hc_quaternion rotation, const double scale[3]) {
+void hc_new_object(hc_object *object, const hc_geometry *geometry, const float position[3], const hc_quaternion rotation, const float scale[3]) {
   assert(object != NULL);
   hc_vec3_copy(position, object->position);
   hc_quaternion_copy(&rotation, &object->rotation);

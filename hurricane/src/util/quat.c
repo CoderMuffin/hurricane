@@ -10,7 +10,7 @@
 
 const hc_quaternion hc_quaternion_identity = {1, {0, 0, 0}};
 
-void hc_quaternion_set(double w, double v1, double v2, double v3,
+void hc_quaternion_set(float w, float v1, float v2, float v3,
                        hc_quaternion *output) {
   assert(output != NULL);
   output->w = w;
@@ -47,24 +47,24 @@ void hc_quaternion_fprint(FILE *file, hc_quaternion *q) {
   fprintf(file, "(%.3f, %.3f, %.3f, %.3f)", q->w, q->v[0], q->v[1], q->v[2]);
 }
 
-void hc_quaternion_from_axis_angle(const double axis[3], const double angle,
+void hc_quaternion_from_axis_angle(const float axis[3], const float angle,
                                    hc_quaternion *output) {
   assert(output != NULL);
   // Formula from
   // http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleTohc_quaternion/
   output->w = cos(angle / 2.0);
-  double c = sin(angle / 2.0);
+  float c = sin(angle / 2.0);
   output->v[0] = c * axis[0];
   output->v[1] = c * axis[1];
   output->v[2] = c * axis[2];
 }
 
-double hc_quaternion_to_axis_angle(hc_quaternion *q, double output[3]) {
+float hc_quaternion_to_axis_angle(hc_quaternion *q, float output[3]) {
   assert(output != NULL);
   // Formula from
   // http://www.euclideanspace.com/maths/geometry/rotations/conversions/hc_quaternionToAngle/
-  double angle = 2.0 * acos(q->w);
-  double divider = sqrt(1.0 - q->w * q->w);
+  float angle = 2.0 * acos(q->w);
+  float divider = sqrt(1.0 - q->w * q->w);
 
   if (divider != 0.0) {
     // Calculate the axis
@@ -80,34 +80,34 @@ double hc_quaternion_to_axis_angle(hc_quaternion *q, double output[3]) {
   return angle;
 }
 
-void hc_quaternion_from_x_rotation(double angle, hc_quaternion *output) {
+void hc_quaternion_from_x_rotation(float angle, hc_quaternion *output) {
   assert(output != NULL);
-  double axis[3] = {1.0, 0, 0};
+  float axis[3] = {1.0, 0, 0};
   hc_quaternion_from_axis_angle(axis, angle, output);
 }
 
-void hc_quaternion_from_y_rotation(double angle, hc_quaternion *output) {
+void hc_quaternion_from_y_rotation(float angle, hc_quaternion *output) {
   assert(output != NULL);
-  double axis[3] = {0, 1.0, 0};
+  float axis[3] = {0, 1.0, 0};
   hc_quaternion_from_axis_angle(axis, angle, output);
 }
 
-void hc_quaternion_from_z_rotation(double angle, hc_quaternion *output) {
+void hc_quaternion_from_z_rotation(float angle, hc_quaternion *output) {
   assert(output != NULL);
-  double axis[3] = {0, 0, 1.0};
+  float axis[3] = {0, 0, 1.0};
   hc_quaternion_from_axis_angle(axis, angle, output);
 }
 
-hc_quaternion hc_quaternion_new_euler_zyx(double eulerZYX[3]) {
+hc_quaternion hc_quaternion_new_euler_zyx(float eulerZYX[3]) {
   hc_quaternion output;
   // Based on
   // https://en.wikipedia.org/wiki/Conversion_between_hc_quaternions_and_Euler_angles
-  double cy = cos(eulerZYX[2] * 0.5);
-  double sy = sin(eulerZYX[2] * 0.5);
-  double cr = cos(eulerZYX[0] * 0.5);
-  double sr = sin(eulerZYX[0] * 0.5);
-  double cp = cos(eulerZYX[1] * 0.5);
-  double sp = sin(eulerZYX[1] * 0.5);
+  float cy = cos(eulerZYX[2] * 0.5);
+  float sy = sin(eulerZYX[2] * 0.5);
+  float cr = cos(eulerZYX[0] * 0.5);
+  float sr = sin(eulerZYX[0] * 0.5);
+  float cp = cos(eulerZYX[1] * 0.5);
+  float sp = sin(eulerZYX[1] * 0.5);
 
   output.w = cy * cr * cp + sy * sr * sp;
   output.v[0] = cy * sr * cp - sy * cr * sp;
@@ -117,16 +117,16 @@ hc_quaternion hc_quaternion_new_euler_zyx(double eulerZYX[3]) {
   return output;
 }
 
-void hc_quaternion_from_euler_zyx(double eulerZYX[3], hc_quaternion *output) {
+void hc_quaternion_from_euler_zyx(float eulerZYX[3], hc_quaternion *output) {
   assert(output != NULL);
   // Based on
   // https://en.wikipedia.org/wiki/Conversion_between_hc_quaternions_and_Euler_angles
-  double cy = cos(eulerZYX[2] * 0.5);
-  double sy = sin(eulerZYX[2] * 0.5);
-  double cr = cos(eulerZYX[0] * 0.5);
-  double sr = sin(eulerZYX[0] * 0.5);
-  double cp = cos(eulerZYX[1] * 0.5);
-  double sp = sin(eulerZYX[1] * 0.5);
+  float cy = cos(eulerZYX[2] * 0.5);
+  float sy = sin(eulerZYX[2] * 0.5);
+  float cr = cos(eulerZYX[0] * 0.5);
+  float sr = sin(eulerZYX[0] * 0.5);
+  float cp = cos(eulerZYX[1] * 0.5);
+  float sp = sin(eulerZYX[1] * 0.5);
 
   output->w = cy * cr * cp + sy * sr * sp;
   output->v[0] = cy * sr * cp - sy * cr * sp;
@@ -134,24 +134,24 @@ void hc_quaternion_from_euler_zyx(double eulerZYX[3], hc_quaternion *output) {
   output->v[2] = sy * cr * cp - cy * sr * sp;
 }
 
-void hc_quaternion_to_euler_zyx(hc_quaternion *q, double output[3]) {
+void hc_quaternion_to_euler_zyx(hc_quaternion *q, float output[3]) {
   assert(output != NULL);
 
   // Roll (x-axis rotation)
-  double sinr_cosp = +2.0 * (q->w * q->v[0] + q->v[1] * q->v[2]);
-  double cosr_cosp = +1.0 - 2.0 * (q->v[0] * q->v[0] + q->v[1] * q->v[1]);
+  float sinr_cosp = +2.0 * (q->w * q->v[0] + q->v[1] * q->v[2]);
+  float cosr_cosp = +1.0 - 2.0 * (q->v[0] * q->v[0] + q->v[1] * q->v[1]);
   output[0] = atan2(sinr_cosp, cosr_cosp);
 
   // Pitch (y-axis rotation)
-  double sinp = +2.0 * (q->w * q->v[1] - q->v[2] * q->v[0]);
+  float sinp = +2.0 * (q->w * q->v[1] - q->v[2] * q->v[0]);
   if (fabs(sinp) >= 1)
     output[1] = copysign(M_PI / 2, sinp); // use 90 degrees if out of range
   else
     output[1] = asin(sinp);
 
   // Yaw (z-axis rotation)
-  double siny_cosp = +2.0 * (q->w * q->v[2] + q->v[0] * q->v[1]);
-  double cosy_cosp = +1.0 - 2.0 * (q->v[1] * q->v[1] + q->v[2] * q->v[2]);
+  float siny_cosp = +2.0 * (q->w * q->v[2] + q->v[0] * q->v[1]);
+  float cosy_cosp = +1.0 - 2.0 * (q->v[1] * q->v[1] + q->v[2] * q->v[2]);
   output[2] = atan2(siny_cosp, cosy_cosp);
 }
 
@@ -163,7 +163,7 @@ void hc_quaternion_conjugate(hc_quaternion *q, hc_quaternion *output) {
   output->v[2] = -q->v[2];
 }
 
-double hc_quaternion_norm(hc_quaternion *q) {
+float hc_quaternion_norm(hc_quaternion *q) {
   assert(q != NULL);
   return sqrt(q->w * q->w + q->v[0] * q->v[0] + q->v[1] * q->v[1] +
               q->v[2] * q->v[2]);
@@ -171,7 +171,7 @@ double hc_quaternion_norm(hc_quaternion *q) {
 
 void hc_quaternion_normalize(hc_quaternion *q, hc_quaternion *output) {
   assert(output != NULL);
-  double len = hc_quaternion_norm(q);
+  float len = hc_quaternion_norm(q);
   hc_quaternion_set(q->w / len, q->v[0] / len, q->v[1] / len, q->v[2] / len,
                     output);
 }
@@ -201,20 +201,20 @@ void hc_quaternion_mul(hc_quaternion *q1, hc_quaternion *q2,
   *output = result;
 }
 
-void hc_quaternion_rotate(const hc_quaternion *q, double v[3], double output[3]) {
+void hc_quaternion_rotate(const hc_quaternion *q, float v[3], float output[3]) {
   assert(output != NULL);
-  double result[3];
+  float result[3];
 
-  double ww = q->w * q->w;
-  double xx = q->v[0] * q->v[0];
-  double yy = q->v[1] * q->v[1];
-  double zz = q->v[2] * q->v[2];
-  double wx = q->w * q->v[0];
-  double wy = q->w * q->v[1];
-  double wz = q->w * q->v[2];
-  double xy = q->v[0] * q->v[1];
-  double xz = q->v[0] * q->v[2];
-  double yz = q->v[1] * q->v[2];
+  float ww = q->w * q->w;
+  float xx = q->v[0] * q->v[0];
+  float yy = q->v[1] * q->v[1];
+  float zz = q->v[2] * q->v[2];
+  float wx = q->w * q->v[0];
+  float wy = q->w * q->v[1];
+  float wz = q->w * q->v[2];
+  float xy = q->v[0] * q->v[1];
+  float xz = q->v[0] * q->v[2];
+  float yz = q->v[1] * q->v[2];
 
   // Formula from
   // http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/hc_quaternions/transforms/index.htm
@@ -238,20 +238,20 @@ void hc_quaternion_rotate(const hc_quaternion *q, double v[3], double output[3])
 }
 
 
-void hc_quaternion_rotate_inverse(const hc_quaternion *q, double v[3], double output[3]) {
+void hc_quaternion_rotate_inverse(const hc_quaternion *q, float v[3], float output[3]) {
   assert(output != NULL);
-  double result[3];
+  float result[3];
 
-  double ww = q->w * q->w;
-  double xx = -q->v[0] * -q->v[0];
-  double yy = -q->v[1] * -q->v[1];
-  double zz = -q->v[2] * -q->v[2];
-  double wx = q->w * -q->v[0];
-  double wy = q->w * -q->v[1];
-  double wz = q->w * -q->v[2];
-  double xy = -q->v[0] * -q->v[1];
-  double xz = -q->v[0] * -q->v[2];
-  double yz = -q->v[1] * -q->v[2];
+  float ww = q->w * q->w;
+  float xx = -q->v[0] * -q->v[0];
+  float yy = -q->v[1] * -q->v[1];
+  float zz = -q->v[2] * -q->v[2];
+  float wx = q->w * -q->v[0];
+  float wy = q->w * -q->v[1];
+  float wz = q->w * -q->v[2];
+  float xy = -q->v[0] * -q->v[1];
+  float xz = -q->v[0] * -q->v[2];
+  float yz = -q->v[1] * -q->v[2];
 
   // Formula from
   // http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/hc_quaternions/transforms/index.htm
@@ -274,13 +274,13 @@ void hc_quaternion_rotate_inverse(const hc_quaternion *q, double v[3], double ou
   output[2] = result[2];
 }
 
-void hc_quaternion_slerp(hc_quaternion *q1, hc_quaternion *q2, double t,
+void hc_quaternion_slerp(hc_quaternion *q1, hc_quaternion *q2, float t,
                          hc_quaternion *output) {
   hc_quaternion result;
 
   // Based on
   // http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/hc_quaternions/slerp/index.htm
-  double cosHalfTheta = q1->w * q2->w + q1->v[0] * q2->v[0] +
+  float cosHalfTheta = q1->w * q2->w + q1->v[0] * q2->v[0] +
                         q1->v[1] * q2->v[1] + q1->v[2] * q2->v[2];
 
   // if q1=q2 or qa=-q2 then theta = 0 and we can return qa
@@ -289,8 +289,8 @@ void hc_quaternion_slerp(hc_quaternion *q1, hc_quaternion *q2, double t,
     return;
   }
 
-  double halfTheta = acos(cosHalfTheta);
-  double sinHalfTheta = sqrt(1.0 - cosHalfTheta * cosHalfTheta);
+  float halfTheta = acos(cosHalfTheta);
+  float sinHalfTheta = sqrt(1.0 - cosHalfTheta * cosHalfTheta);
   // If theta = 180 degrees then result is not fully defined
   // We could rotate around any axis normal to q1 or q2
   if (fabs(sinHalfTheta) < QUATERNION_EPS) {
@@ -300,8 +300,8 @@ void hc_quaternion_slerp(hc_quaternion *q1, hc_quaternion *q2, double t,
     result.v[2] = (q1->v[2] * 0.5 + q2->v[2] * 0.5);
   } else {
     // Default hc_quaternion calculation
-    double ratioA = sin((1 - t) * halfTheta) / sinHalfTheta;
-    double ratioB = sin(t * halfTheta) / sinHalfTheta;
+    float ratioA = sin((1 - t) * halfTheta) / sinHalfTheta;
+    float ratioB = sin(t * halfTheta) / sinHalfTheta;
     result.w = (q1->w * ratioA + q2->w * ratioB);
     result.v[0] = (q1->v[0] * ratioA + q2->v[0] * ratioB);
     result.v[1] = (q1->v[1] * ratioA + q2->v[1] * ratioB);

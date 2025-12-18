@@ -39,8 +39,8 @@ hc_renderer renderer;
 
 hc_clock gclock;
 
-double tmpvec[3] = {0.02, 0.02, 0};
-double tmpvecupdate[3];
+float tmpvec[3] = {0.02, 0.02, 0};
+float tmpvecupdate[3];
 char action = '\0';
 hc_list blocks;
 
@@ -51,15 +51,15 @@ struct {
     struct {
         int real_angle; // free
         bool animating;
-        double progress;
+        float progress;
         hc_quaternion rotation_start;
         hc_quaternion rotation_end;
-        double position_start[3];
-        double position_end[3];
+        float position_start[3];
+        float position_end[3];
     } camera;
 } player;
 
-const double CAMERA_ANIM_DURATION = 0.3;
+const float CAMERA_ANIM_DURATION = 0.3;
 
 char format_tmp[100];
 hc_quaternion tick;
@@ -99,7 +99,7 @@ void on_key_down(void *e) {
 }
 
 void update(void) {
-    double delta = hc_clock_step(&gclock);
+    float delta = hc_clock_step(&gclock);
 
     for (int i = 0; i < blocks.length; i++) {
         hc_object *obj = hc_list_get(&blocks, i);
