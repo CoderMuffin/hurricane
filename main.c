@@ -4,7 +4,7 @@
 #include <hurricane/util/vec.h>
 #include <hurricane/util/list.h>
 #include <hurricane/loader/obj.h>
-#include <hurricane/renderer/prizm.h>
+#include <hurricane/renderer/SDL.h>
 #include <hurricane/input.h>
 
 #include <hurricane/anim.h>
@@ -25,7 +25,7 @@
   #define KEYS 39
   #define KEYD 40
 #endif
-float x_rot, y_rot;
+double x_rot, y_rot;
 void noop(void) {}
 
 bool w_down = false, s_down = false, a_down = false, d_down = false;
@@ -36,12 +36,12 @@ hc_object cube2;
 hc_clock gclock;
 hc_anim cube_anim;
 
-float tmpvec[3] = {0.02, 0.02, 0};
-float tmpvecupdate[3];
+double tmpvec[3] = {0.02, 0.02, 0};
+double tmpvecupdate[3];
 
-// float curr_second;
+// double curr_second;
 // int frames = 0;
-// void fps(float delta) {
+// void fps(double delta) {
 //   curr_second += delta;
 //   frames++;
 //   if (curr_second >= 1) {
@@ -73,7 +73,7 @@ void update() {
   hc_render_object(&camera, &cube);
 
   hc_render_object(&camera, &cube2);
-  float delta = hc_clock_step(&gclock);
+  double delta = hc_clock_step(&gclock);
   hc_anim_step(&cube_anim, delta*0.1, &cube.rotation);
   // printf("anim: time:%f playing:%d looping:%d\n", cube_anim.time,
   // cube_anim.playing, cube_anim.looping); printf("%f %f %f\n",
@@ -134,7 +134,7 @@ int main(void) {
 
 
   hc_new_object(&cube2, &hc_geometry_cube, VEC3(1.2, 0, 0), hc_quaternion_identity,
-                (float[]){1, 0.2, 0.2});
-  hc_init(false, 1000, hc_renderer_prizm, rc, update);
+                (double[]){1, 0.2, 0.2});
+  hc_init(false, -1, hc_renderer_sdl, rc, update);
   return 0;
 }

@@ -1,5 +1,5 @@
 scene system
-vec with xyz not floats
+vec with xyz not doubles
 game storage system (playerprefs?)
 fix obj.c import
-swap float for float or scalar macro
+swap double for double or scalar macro

@@ -28,6 +28,6 @@ typedef struct hc_clock {
 // Retrieved 2025-12-15, License - CC BY-SA 3.0
 
 void hc_clock_new(hc_clock *clock);
-float hc_clock_step(hc_clock *clock);
+double hc_clock_step(hc_clock *clock);
 
 #endif

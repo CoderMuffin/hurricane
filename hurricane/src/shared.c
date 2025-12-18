@@ -5,8 +5,8 @@ void swap_int(int *a, int *b) {
   *b = *a;
   *a = temp;
 }
-void swap_dbl(float *a, float *b) {
-  float temp = *b;
+void swap_dbl(double *a, double *b) {
+  double temp = *b;
   *b = *a;
   *a = temp;
 }

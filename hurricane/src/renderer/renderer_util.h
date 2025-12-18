@@ -5,7 +5,7 @@
 
 #define HC_INTERNAL_DEPTH_BUF_CHECK(x0, y0, z0, x1, y1, z1, x2, y2, z2, width, \
                                     buf, fn)                                   \
-  float depth = calculate_depth(x0, y0, z0, x1, y1, z1, x2, y2, z2, x, y);    \
+  double depth = calculate_depth(x0, y0, z0, x1, y1, z1, x2, y2, z2, x, y);    \
   if (isnan(depth) || !isfinite(depth) || depth <= 0.1) {                      \
     continue;                                                                  \
   }                                                                            \
@@ -32,11 +32,11 @@
     swap_int(&y1, &y2);                                                        \
     swap_dbl(&z1, &z2);                                                        \
   }                                                                            \
-  float dx_far = ((float)(x2 - x0)) / (y2 - y0 + 1);                         \
-  float dx_upper = ((float)(x1 - x0)) / (y1 - y0 + 1);                       \
-  float dx_low = ((float)(x2 - x1)) / (y2 - y1 + 1);                         \
-  float xf = x0;                                                              \
-  float xt = x0 + dx_upper; /* if y0 == y1, special case */                   \
+  double dx_far = ((double)(x2 - x0)) / (y2 - y0 + 1);                         \
+  double dx_upper = ((double)(x1 - x0)) / (y1 - y0 + 1);                       \
+  double dx_low = ((double)(x2 - x1)) / (y2 - y1 + 1);                         \
+  double xf = x0;                                                              \
+  double xt = x0 + dx_upper; /* if y0 == y1, special case */                   \
   for (int y = y0; y <= (y2 > height - 1 ? height - 1 : y2); y++) {            \
     if (y >= 0) {                                                              \
       for (int x = (xf > 0 ? (int)(xf) : 0);                                   \

@@ -8,14 +8,14 @@
 #define HC_CLIP_NEAR 0.1
 
 #define DEG2RAD (M_PI / 180)
-#define VEC3(x, y, z) ((float[]){(x), (y), (z)})
+#define VEC3(x, y, z) ((double[]){(x), (y), (z)})
 #define QUAT(x, y, z) ((hc_quaternion[]){hc_quaternion_new_euler_zyx(VEC3((z), (y), (x)))})
 
 void swap_int(int *a, int *b);
-void swap_dbl(float *a, float *b);
-float calculate_depth(float x0, float y0, float z0, float x1, float y1,
-                       float z1, float x2, float y2, float z2, float px,
-                       float py);
+void swap_dbl(double *a, double *b);
+double calculate_depth(double x0, double y0, double z0, double x1, double y1,
+                       double z1, double x2, double y2, double z2, double px,
+                       double py);
 void hc_sleep(long ms);
 
 #endif

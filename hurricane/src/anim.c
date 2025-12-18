@@ -3,22 +3,22 @@
 #include <hurricane/anim.h>
 #include <stdbool.h>
 
-void hc_animator_vec3(void *from, void *to, float t, int frame, void *out) {
+void hc_animator_vec3(void *from, void *to, double t, int frame, void *out) {
     hc_vec3_lerp(from, to, t, out);
 }
-void hc_animator_quaternion(void *from, void *to, float t, int frame,
+void hc_animator_quaternion(void *from, void *to, double t, int frame,
                             void *out) {
     hc_quaternion_slerp(from, to, t, out);
 }
 
 // void hc_animator_quaternion(hc_keyframe *from, hc_keyframe *to, void *out,
-//                       float time) {
-//   float end = to->time - from->time;
+//                       double time) {
+//   double end = to->time - from->time;
 //   time -= from->time;
 //   hc_quaternion_lerp(from->state, to->state, time / end, out);
 // }
 
-void hc_anim_step(hc_anim *anim, float delta, void *out) {
+void hc_anim_step(hc_anim *anim, double delta, void *out) {
     if (!anim->playing)
         return;
     anim->time += delta;

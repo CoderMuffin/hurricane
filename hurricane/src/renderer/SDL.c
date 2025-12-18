@@ -8,7 +8,7 @@
 #include <stdio.h>
 
 static Uint32 *image;
-static float *depth_buf = {0};
+static double *depth_buf = {0};
 static hc_renderer_config config;
 
 static SDL_Window *window;
@@ -19,7 +19,7 @@ static SDL_Event event;
 static void init(hc_renderer_config renderer_config) {
   config = renderer_config;
   image = malloc(sizeof(Uint32) * config.width * config.height);
-  depth_buf = malloc(sizeof(float) * config.width * config.height);
+  depth_buf = malloc(sizeof(double) * config.width * config.height);
 
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
     fprintf(stderr, "SDL_Init Error: %s\n", SDL_GetError());
@@ -53,8 +53,8 @@ static void pre_frame(void) {
     }
 }
 
-static void triangle(int x0, int y0, float z0, int x1, int y1, float z1,
-                     int x2, int y2, float z2, unsigned char r,
+static void triangle(int x0, int y0, double z0, int x1, int y1, double z1,
+                     int x2, int y2, double z2, unsigned char r,
                      unsigned char g, unsigned char b) {
   HC_INTERNAL_BUF_TRIANGLE(
       x0, y0, z0, x1, y1, z1, x2, y2, z2, config.width, config.height,

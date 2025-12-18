@@ -15,7 +15,7 @@ static Display *display;
 static Window window;
 static XImage *image;
 static Atom window_close_atom;
-static float *depth_buf;
+static double *depth_buf;
 
 static void hc_xlib_process_event(Display *display, Window window) {
   XEvent ev;
@@ -53,7 +53,7 @@ static void hc_xlib_init(hc_renderer_config renderer_config) {
                        DefaultDepth(display, DefaultScreen(display)), ZPixmap,
                        0, malloc(config.width * config.height * 4),
                        config.width, config.height, 32, 0);
-  depth_buf = malloc(sizeof(float) * config.width * config.height);
+  depth_buf = malloc(sizeof(double) * config.width * config.height);
   XSelectInput(display, window,
                ButtonPressMask | KeyPressMask | KeyReleaseMask);
   XMapWindow(display, window);
@@ -68,8 +68,8 @@ static void hc_xlib_pre_frame(void) {
   }
 }
 
-static void hc_xlib_triangle(int x0, int y0, float z0, int x1, int y1,
-                             float z1, int x2, int y2, float z2,
+static void hc_xlib_triangle(int x0, int y0, double z0, int x1, int y1,
+                             double z1, int x2, int y2, double z2,
                              unsigned char r, unsigned char g,
                              unsigned char b) {
   HC_INTERNAL_BUF_TRIANGLE(
