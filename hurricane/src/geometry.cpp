@@ -62,7 +62,7 @@ const hc_geometry hc_geometry_none = {
 
 
 const hc_geometry hc_geometry_cube = {
-    .vertices = (double[]){1,  -1, 1, 1,  -1, -1, 1,  1, -1, 1,  1, 1,
+    .vertices = (fixed[]){1,  -1, 1, 1,  -1, -1, 1,  1, -1, 1,  1, 1,
                            -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1},
     .faces =
         (unsigned int[]){4, 0, 3, 4, 3, 7, 0, 1, 2, 0, 2, 3, 1, 5, 6, 1, 6, 2,

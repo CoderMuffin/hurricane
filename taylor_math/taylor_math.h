@@ -1,28 +1,29 @@
 #ifndef TAYLOR_MATH_H
 #define TAYLOR_MATH_H
 
+#include <hurricane/fixed.hpp>
 #include <math.h>
 
 /* Trigonometric */
-double sin(double x);
-double cos(double x);
-double tan(double x);
+fixed sin(fixed x);
+fixed cos(fixed x);
+fixed tan(fixed x);
 
 /* Inverse trigonometric */
-double asin(double x);
-double acos(double x);
-double atan(double x);
-double atan2(double y, double x);
+fixed asin(fixed x);
+fixed acos(fixed x);
+fixed atan(fixed x);
+fixed atan2(fixed y, fixed x);
 
 /* Misc */
-double sqrt(double x);
-double fabs(double x);
-double copysign(double x, double y);
+fixed sqrt(fixed x);
+fixed fabs(fixed x);
+fixed copysign(fixed x, fixed y);
 
 #undef isnan
-int isnan(double x);
+int isnan(fixed x);
 
 #undef isfinite
-int isfinite(double x);
+int isfinite(fixed x);
 
 #endif

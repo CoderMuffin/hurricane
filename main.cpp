@@ -25,7 +25,7 @@
   #define KEYS 39
   #define KEYD 40
 #endif
-double x_rot, y_rot;
+fixed x_rot, y_rot;
 void noop(void) {}
 
 bool w_down = false, s_down = false, a_down = false, d_down = false;
@@ -36,12 +36,12 @@ hc_object cube2;
 hc_clock gclock;
 hc_anim cube_anim;
 
-double tmpvec[3] = {0.02, 0.02, 0};
-double tmpvecupdate[3];
+fixed tmpvec[3] = {0.02, 0.02, 0};
+fixed tmpvecupdate[3];
 
-// double curr_second;
+// fixed curr_second;
 // int frames = 0;
-// void fps(double delta) {
+// void fps(fixed delta) {
 //   curr_second += delta;
 //   frames++;
 //   if (curr_second >= 1) {
@@ -73,7 +73,7 @@ void update() {
   hc_render_object(&camera, &cube);
 
   hc_render_object(&camera, &cube2);
-  double delta = hc_clock_step(&gclock);
+  fixed delta = hc_clock_step(&gclock);
   hc_anim_step(&cube_anim, delta*0.1, &cube.rotation);
   // printf("anim: time:%f playing:%d looping:%d\n", cube_anim.time,
   // cube_anim.playing, cube_anim.looping); printf("%f %f %f\n",
@@ -134,7 +134,7 @@ int main(void) {
 
 
   hc_new_object(&cube2, &hc_geometry_cube, VEC3(1.2, 0, 0), hc_quaternion_identity,
-                (double[]){1, 0.2, 0.2});
+                VEC3{1, 0.2, 0.2});
   hc_init(false, -1, hc_renderer_sdl, rc, update);
   return 0;
 }

@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-void hc_mat4x4_identity(double out[4][4]) {
+void hc_mat4x4_identity(fixed out[4][4]) {
   for (short i = 0; i < 4; ++i) {
     for (short j = 0; j < 4; ++j) {
       out[i][j] = i == j;
@@ -11,13 +11,13 @@ void hc_mat4x4_identity(double out[4][4]) {
   }
 }
 
-void hc_mat4x4_print(const double mat[4][4]) {
+void hc_mat4x4_print(const fixed mat[4][4]) {
   for (short i = 0; i < 4; ++i) {
     printf("%f %f %f %f\n", mat[i][0], mat[i][1], mat[i][2], mat[i][3]);
   }
 }
 
-void hc_mat4x4_mul(double a[4][4], double b[4][4], double out[4][4]) {
+void hc_mat4x4_mul(fixed a[4][4], fixed b[4][4], fixed out[4][4]) {
   for (short i = 0; i < 4; ++i) {
     for (short j = 0; j < 4; ++j) {
       out[i][j] = a[i][0] * b[0][j] + a[i][1] * b[1][j] + a[i][2] * b[2][j] +
@@ -26,8 +26,8 @@ void hc_mat4x4_mul(double a[4][4], double b[4][4], double out[4][4]) {
   }
 }
 
-void hc_mat4x4_perspective(double fov, double aspect, double nearDist,
-                           double farDist, int leftHanded, double out[4][4]) {
+void hc_mat4x4_perspective(fixed fov, fixed aspect, fixed nearDist,
+                           fixed farDist, int leftHanded, fixed out[4][4]) {
   //
   // General form of the Projection Matrix
   //
@@ -49,8 +49,8 @@ void hc_mat4x4_perspective(double fov, double aspect, double nearDist,
     return;
   }
 
-  double frustumDepth = farDist - nearDist;
-  double oneOverDepth = 1 / frustumDepth;
+  fixed frustumDepth = farDist - nearDist;
+  fixed oneOverDepth = 1 / frustumDepth;
 
   hc_mat4x4_identity(out);
 
@@ -62,8 +62,8 @@ void hc_mat4x4_perspective(double fov, double aspect, double nearDist,
   out[3][3] = 0;
 }
 
-// double **hc_mat4x4_transpose(double m[4][4]) {
-//     double out[4][4] = {
+// fixed **hc_mat4x4_transpose(fixed m[4][4]) {
+//     fixed out[4][4] = {
 //         { m[0][0], m[1][0], m[2][0], m[3][0], },
 //         { m[0][1], m[1][1], m[2][1], m[3][1], },
 //         { m[0][2], m[1][2], m[2][2], m[3][2], },
@@ -72,8 +72,8 @@ void hc_mat4x4_perspective(double fov, double aspect, double nearDist,
 //     return out;
 // }
 
-void hc_mat4x4_mul_vec(double m[4][4], double v[3], double out[3]) {
-  double a, b, c, w;
+void hc_mat4x4_mul_vec(fixed m[4][4], fixed v[3], fixed out[3]) {
+  fixed a, b, c, w;
 
   a = v[0] * m[0][0] + v[1] * m[1][0] + v[2] * m[2][0] + m[3][0];
   b = v[0] * m[0][1] + v[1] * m[1][1] + v[2] * m[2][1] + m[3][1];

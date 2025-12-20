@@ -1,6 +1,8 @@
 #ifndef HC_CLOCK_H
 #define HC_CLOCK_H
 
+#include <hurricane/fixed.hpp>
+
 #ifdef _WIN32
     #define WIN32_LEAN_AND_MEAN
     #include <Windows.h>
@@ -28,6 +30,6 @@ typedef struct hc_clock {
 // Retrieved 2025-12-15, License - CC BY-SA 3.0
 
 void hc_clock_new(hc_clock *clock);
-double hc_clock_step(hc_clock *clock);
+fixed hc_clock_step(hc_clock *clock);
 
 #endif

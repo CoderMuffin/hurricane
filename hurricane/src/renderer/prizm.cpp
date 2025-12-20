@@ -12,12 +12,12 @@
 
 static uint16_t *hc_prizm_buf;
 
-static double *depth_buf = NULL;
+static fixed *depth_buf = NULL;
 static hc_renderer_config config;
 
 static void init(hc_renderer_config renderer_config) {
   config = renderer_config;
-  depth_buf = malloc(sizeof(double) * config.width * config.height);
+  depth_buf = malloc(sizeof(fixed) * config.width * config.height);
   Bdisp_EnableColor(1);
   hc_prizm_buf = GetVRAMAddress();
 }
@@ -36,8 +36,8 @@ static void pre_frame() {
   }
 }
 
-static void triangle(int x0, int y0, double z0, int x1, int y1, double z1,
-                         int x2, int y2, double z2, unsigned char r,
+static void triangle(int x0, int y0, fixed z0, int x1, int y1, fixed z1,
+                         int x2, int y2, fixed z2, unsigned char r,
                          unsigned char g, unsigned char b) {
   HC_INTERNAL_BUF_TRIANGLE(
       x0, y0, z0, x1, y1, z1, x2, y2, z2, config.width, config.height,

@@ -5,12 +5,12 @@
 #include "util/quat.h"
 
 typedef struct hc_object {
-  double position[3];
+  fixed position[3];
   hc_quaternion rotation;
-  double scale[3];
+  fixed scale[3];
   const hc_geometry *geometry;
 } hc_object;
 
-void hc_new_object(hc_object *object, const hc_geometry *geometry, const double position[3], const hc_quaternion rotation, const double scale[3]);
+void hc_new_object(hc_object *object, const hc_geometry *geometry, const fixed position[3], const hc_quaternion rotation, const fixed scale[3]);
 
 #endif

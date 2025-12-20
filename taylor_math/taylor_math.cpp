@@ -3,14 +3,14 @@
 
 /* ---------- helpers ---------- */
 
-double fabs(double x) {
+fixed fabs(fixed x) {
     return x < 0 ? -x : x;
 }
 
 /* Range reduction to [-pi, pi] */
-static double reduce(double x)
+static fixed reduce(fixed x)
 {
-    const double inv_2pi = 1.0 / (2.0 * M_PI);
+    const fixed inv_2pi = 1.0 / (2.0 * M_PI);
     long k = (long)(x * inv_2pi);
     x -= k * 2.0 * M_PI;
     if (x > M_PI)  x -= 2.0 * M_PI;
@@ -21,11 +21,11 @@ static double reduce(double x)
 /* ---------- sin / cos ---------- */
 
 /* 9th-degree minimax-ish polynomial */
-double sin(double x)
+fixed sin(fixed x)
 {
     x = reduce(x);
 
-    double x2 = x * x;
+    fixed x2 = x * x;
     return x * (1.0
         - x2 * (1.0/6.0
         - x2 * (1.0/120.0
@@ -33,11 +33,11 @@ double sin(double x)
         - x2 * (1.0/362880.0)))));
 }
 
-double cos(double x)
+fixed cos(fixed x)
 {
     x = reduce(x);
 
-    double x2 = x * x;
+    fixed x2 = x * x;
     return 1.0
         - x2 * (1.0/2.0
         - x2 * (1.0/24.0
@@ -45,9 +45,9 @@ double cos(double x)
         - x2 * (1.0/40320.0))));
 }
 
-double tan(double x)
+fixed tan(fixed x)
 {
-    double c = cos(x);
+    fixed c = cos(x);
     if (c == 0.0)
         return (x > 0 ? 1e308 : -1e308); /* crude overflow */
 
@@ -57,9 +57,9 @@ double tan(double x)
 /* ---------- atan ---------- */
 
 /* Polynomial valid on [0,1] */
-static double atan_poly(double x)
+static fixed atan_poly(fixed x)
 {
-    double x2 = x * x;
+    fixed x2 = x * x;
     return x * (1.0
         - x2 * (1.0/3.0
         - x2 * (1.0/5.0
@@ -67,7 +67,7 @@ static double atan_poly(double x)
         - x2 * (1.0/9.0)))));
 }
 
-double atan(double x)
+fixed atan(fixed x)
 {
     if (x < 0.0)
         return -atan(-x);
@@ -78,7 +78,7 @@ double atan(double x)
     return atan_poly(x);
 }
 
-double atan2(double y, double x)
+fixed atan2(fixed y, fixed x)
 {
     if (x > 0.0)
         return atan(y / x);
@@ -97,7 +97,7 @@ double atan2(double y, double x)
 
 /* ---------- asin / acos ---------- */
 
-double asin(double x)
+fixed asin(fixed x)
 {
     if (x >  1.0) return  M_PI_2;
     if (x < -1.0) return -M_PI_2;
@@ -106,7 +106,7 @@ double asin(double x)
     return atan(x / sqrt(1.0 - x * x));
 }
 
-double acos(double x)
+fixed acos(fixed x)
 {
     return M_PI_2 - asin(x);
 }
@@ -114,22 +114,22 @@ double acos(double x)
 /* ---------- sqrt ---------- */
 
 /* Newton–Raphson */
-double sqrt(double x)
+fixed sqrt(fixed x)
 {
     if (x <= 0.0)
         return 0.0;
 
-    double r = x;
+    fixed r = x;
     for (int i = 0; i < 10; i++)
         r = 0.5 * (r + x / r);
 
     return r;
 }
 
-double copysign(double x, double y)
+fixed copysign(fixed x, fixed y)
 {
     union {
-        double d;
+        fixed d;
         uint64_t u;
     } ux, uy;
 
@@ -143,10 +143,10 @@ double copysign(double x, double y)
     return ux.d;
 }
 
-inline int isnan(double x)
+inline int isnan(fixed x)
 {
     union {
-        double d;
+        fixed d;
         uint64_t u;
     } v = { x };
 
@@ -155,10 +155,10 @@ inline int isnan(double x)
            ((v.u & 0x000FFFFFFFFFFFFFULL) != 0);
 }
 
-inline int isfinite(double x)
+inline int isfinite(fixed x)
 {
     union {
-        double d;
+        fixed d;
         uint64_t u;
     } v = { x };
 

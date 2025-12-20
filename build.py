@@ -90,15 +90,15 @@ def cg50main():
 def main():
     executable = ROOT / "build/hc.exe"
     compile_all(
-        glob(ROOT, "*.c", exclude=[
-            "example/src/example.c",
-            "monster_maze.c",
-            "maze.c",
-            "hurricane/src/renderer/prizm.c",
-            "hurricane/src/renderer/console.c",
-            "hurricane/src/renderer/video.c",
-            "hurricane/src/renderer/xlib.c",
-            "hurricane/src/util/legacy_vec.c",
+        glob(ROOT, "*.cpp", exclude=[
+            "example/src/example.*",
+            "monster_maze.*",
+            "maze.*",
+            "hurricane/src/renderer/prizm.*",
+            "hurricane/src/renderer/console.*",
+            "hurricane/src/renderer/video.*",
+            "hurricane/src/renderer/xlib.*",
+            "hurricane/src/util/legacy_vec.*",
         ]),
         executable,
         libs=["sdl2"],

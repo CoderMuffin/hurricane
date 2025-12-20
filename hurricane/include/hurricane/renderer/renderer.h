@@ -1,9 +1,9 @@
 #ifndef HC_RENDERER_H
 #define HC_RENDERER_H
 
-double calculate_depth(double x0, double y0, double z0, double x1, double y1,
-                       double z1, double x2, double y2, double z2, double px,
-                       double py);
+fixed calculate_depth(fixed x0, fixed y0, fixed z0, fixed x1, fixed y1,
+                       fixed z1, fixed x2, fixed y2, fixed z2, fixed px,
+                       fixed py);
 
 typedef struct hc_renderer_config {
   int width;
@@ -14,11 +14,11 @@ typedef struct hc_renderer_config {
 typedef struct hc_renderer {
   void (*init)(hc_renderer_config);
   void (*pre_frame)(void);
-  void (*triangle)(int, int, double, int, int, double, int, int, double,
+  void (*triangle)(int, int, fixed, int, int, fixed, int, int, fixed,
                    unsigned char, unsigned char, unsigned char);
   void (*frame)(void);
   void (*finish)(void);
-  double (**internal_depth_buf);
+  fixed (**internal_depth_buf);
 } hc_renderer;
 
 #endif

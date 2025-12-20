@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 unsigned char hc_video_buf[HC_RENDER_SIZE_Y][HC_RENDER_SIZE_X][3] = {0};
-double hc_video_depth_buf[HC_RENDER_SIZE_Y][HC_RENDER_SIZE_X] = {0};
+fixed hc_video_depth_buf[HC_RENDER_SIZE_Y][HC_RENDER_SIZE_X] = {0};
 FILE *hc_video_pipe;
 
 static hc_renderer_config config;
@@ -31,8 +31,8 @@ void hc_video_pre_frame() {
       hc_video_depth_buf[y][x] = INFINITY;
     }
 }
-void hc_video_triangle(int x0, int y0, double z0, int x1, int y1, double z1,
-                       int x2, int y2, double z2, unsigned char r,
+void hc_video_triangle(int x0, int y0, fixed z0, int x1, int y1, fixed z1,
+                       int x2, int y2, fixed z2, unsigned char r,
                        unsigned char g, unsigned char b) {
   HC_INTERNAL_BUF_TRIANGLE(
       x0, y0, z0, x1, y1, z1, x2, y2, z2, config.width, config.height,

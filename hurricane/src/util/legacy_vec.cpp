@@ -1,19 +1,19 @@
 #include <math.h>
 
 typedef struct {
-  double v[2];
+  fixed v[2];
 } hc_vec2;
 typedef struct {
-  double v[3];
+  fixed v[3];
 } hc_vec3;
 
-hc_vec2 hc_new_vec2(double x, double y) {
+hc_vec2 hc_new_vec2(fixed x, fixed y) {
   hc_vec2 out;
   out.v[0] = x;
   out.v[1] = y;
   return out;
 }
-hc_vec3 hc_new_vec3(double x, double y, double z) {
+hc_vec3 hc_new_vec3(fixed x, fixed y, fixed z) {
   hc_vec3 out;
   out.v[0] = x;
   out.v[1] = y;
@@ -49,13 +49,13 @@ hc_vec3 hc_vec3_sub(hc_vec3 a, hc_vec3 b) {
   return out;
 }
 
-hc_vec2 hc_vec2_mul(hc_vec2 a, double b) {
+hc_vec2 hc_vec2_mul(hc_vec2 a, fixed b) {
   hc_vec2 out;
   out.v[0] = a.v[0] * b;
   out.v[1] = a.v[1] * b;
   return out;
 }
-hc_vec3 hc_vec3_mul(hc_vec3 a, double b) {
+hc_vec3 hc_vec3_mul(hc_vec3 a, fixed b) {
   hc_vec3 out;
   out.v[0] = a.v[0] * b;
   out.v[1] = a.v[1] * b;
@@ -77,13 +77,13 @@ hc_vec3 hc_vec3_vmul(hc_vec3 a, hc_vec3 b) {
   return out;
 }
 
-hc_vec2 hc_vec2_div(hc_vec2 a, double b) {
+hc_vec2 hc_vec2_div(hc_vec2 a, fixed b) {
   hc_vec2 out;
   out.v[0] = a.v[0] / b;
   out.v[1] = a.v[1] / b;
   return out;
 }
-hc_vec3 hc_vec3_div(hc_vec3 a, double b) {
+hc_vec3 hc_vec3_div(hc_vec3 a, fixed b) {
   hc_vec3 out;
   out.v[0] = a.v[0] / b;
   out.v[1] = a.v[1] / b;
@@ -105,10 +105,10 @@ hc_vec3 hc_vec3_vdiv(hc_vec3 a, hc_vec3 b) {
   return out;
 }
 
-double hc_vec2_sqrmag(hc_vec2 v) { return v.v[0] * v.v[0] + v.v[1] * v.v[1]; }
-double hc_vec3_sqrmag(hc_vec3 v) { return v.v[0] * v.v[0] + v.v[1] * v.v[1] + v.v[2] * v.v[2]; }
+fixed hc_vec2_sqrmag(hc_vec2 v) { return v.v[0] * v.v[0] + v.v[1] * v.v[1]; }
+fixed hc_vec3_sqrmag(hc_vec3 v) { return v.v[0] * v.v[0] + v.v[1] * v.v[1] + v.v[2] * v.v[2]; }
 
-double hc_vec2_mag(hc_vec2 v) { return sqrt(v.v[0] * v.v[0] + v.v[1] * v.v[1]); }
-double hc_vec3_mag(hc_vec3 v) {
+fixed hc_vec2_mag(hc_vec2 v) { return sqrt(v.v[0] * v.v[0] + v.v[1] * v.v[1]); }
+fixed hc_vec3_mag(hc_vec3 v) {
   return sqrt(v.v[0] * v.v[0] + v.v[1] * v.v[1] + v.v[2] * v.v[2]);
 }
