@@ -1,167 +1,143 @@
 #include <stdint.h>
+#include <hurricane/fixed.h>
 #include "taylor_math.h"
 
 /* ---------- helpers ---------- */
 
-double fabs(double x) {
+fixed fx_abs(fixed x) {
     return x < 0 ? -x : x;
 }
 
 /* Range reduction to [-pi, pi] */
-static double reduce(double x)
+static fixed reduce(fixed x)
 {
-    const double inv_2pi = 1.0 / (2.0 * M_PI);
-    long k = (long)(x * inv_2pi);
-    x -= k * 2.0 * M_PI;
-    if (x > M_PI)  x -= 2.0 * M_PI;
-    if (x < -M_PI) x += 2.0 * M_PI;
+    const fixed inv_2pi = tf(1.0 / (2.0 * M_PI));
+    long k = ti(fm(x, inv_2pi));
+    x -= fm(k, tf(2.0 * M_PI));
+    if (x > tf(M_PI))  x -= tf(2.0 * M_PI);
+    if (x < -tf(M_PI)) x += tf(2.0 * M_PI);
     return x;
 }
 
 /* ---------- sin / cos ---------- */
 
 /* 9th-degree minimax-ish polynomial */
-double sin(double x)
+fixed fx_sin(fixed x)
 {
     x = reduce(x);
 
-    double x2 = x * x;
-    return x * (1.0
-        - x2 * (1.0/6.0
-        - x2 * (1.0/120.0
-        - x2 * (1.0/5040.0
-        - x2 * (1.0/362880.0)))));
+    fixed x2 = fm(x, x);
+    return fm(x, tf(1.0)
+        - fm(x2, tf(1.0/6.0)
+        - fm(x2, tf(1.0/120.0)
+        - fm(x2, tf(1.0/5040.0)
+        - fm(x2, tf(1.0/362880.0))))));
 }
 
-double cos(double x)
+fixed fx_cos(fixed x)
 {
     x = reduce(x);
 
-    double x2 = x * x;
-    return 1.0
-        - x2 * (1.0/2.0
-        - x2 * (1.0/24.0
-        - x2 * (1.0/720.0
-        - x2 * (1.0/40320.0))));
+    fixed x2 = fm(x, x);
+    return tf(1.0)
+        - fm(x2, tf(1.0/2.0)
+        - fm(x2, tf(1.0/24.0)
+        - fm(x2, tf(1.0/720.0)
+        - fm(x2, tf(1.0/40320.0)))));
 }
 
-double tan(double x)
+fixed fx_tan(fixed x)
 {
-    double c = cos(x);
-    if (c == 0.0)
-        return (x > 0 ? 1e308 : -1e308); /* crude overflow */
+    fixed c = fx_cos(x);
+    if (c == tf(0.0))
+        return (x > tf(0) ? tf(1000) : -tf(1000)); /* crude overflow */
 
-    return sin(x) / c;
+    return fd(fx_sin(x), c);
 }
 
 /* ---------- atan ---------- */
 
 /* Polynomial valid on [0,1] */
-static double atan_poly(double x)
+static fixed atan_poly(fixed x)
 {
-    double x2 = x * x;
-    return x * (1.0
-        - x2 * (1.0/3.0
-        - x2 * (1.0/5.0
-        - x2 * (1.0/7.0
-        - x2 * (1.0/9.0)))));
+    fixed x2 = fm(x, x);
+    return fm( x, tf(1.0)
+        -  fm(x2, tf(1.0/3.0)
+        -  fm(x2, tf(1.0/5.0)
+        -  fm(x2, tf(1.0/7.0)
+        -  fm(x2, tf(1.0/9.0))))));
 }
 
-double atan(double x)
+fixed fx_atan(fixed x)
 {
-    if (x < 0.0)
-        return -atan(-x);
+    if (x < tf(0.0))
+        return -fx_atan(-x);
 
-    if (x > 1.0)
-        return M_PI_2 - atan_poly(1.0 / x);
+    if (x > tf(1.0))
+        return tf(M_PI / 2) - atan_poly(fd(tf(1.0), x));
 
     return atan_poly(x);
 }
 
-double atan2(double y, double x)
+fixed fx_atan2(fixed y, fixed x)
 {
     if (x > 0.0)
-        return atan(y / x);
+        return fx_atan(fd(y, x));
 
     if (x < 0.0) {
         if (y >= 0.0)
-            return atan(y / x) + M_PI;
+            return fx_atan(fd(y, x)) + tf(M_PI);
         else
-            return atan(y / x) - M_PI;
+            return fx_atan(fd(y, x)) - tf(M_PI);
     }
 
-    if (y > 0.0) return  M_PI_2;
-    if (y < 0.0) return -M_PI_2;
-    return 0.0;
+    if (y > 0.0) return  tf(M_PI / 2);
+    if (y < 0.0) return -tf(M_PI / 2);
+    return tf(0.0);
 }
 
 /* ---------- asin / acos ---------- */
 
-double asin(double x)
+fixed fx_asin(fixed x)
 {
-    if (x >  1.0) return  M_PI_2;
-    if (x < -1.0) return -M_PI_2;
+    if (x >  tf(1.0)) return  tf(M_PI / 2);
+    if (x < -tf(1.0)) return -tf(M_PI / 2);
 
     /* asin(x) = atan(x / sqrt(1 - x²)) */
-    return atan(x / sqrt(1.0 - x * x));
+    return fx_atan(fd(x, fx_sqrt(tf(1.0) - fm(x, x))));
 }
 
-double acos(double x)
+fixed fx_acos(fixed x)
 {
-    return M_PI_2 - asin(x);
+    return tf(M_PI/2) - fx_asin(x);
 }
 
 /* ---------- sqrt ---------- */
 
 /* Newton–Raphson */
-double sqrt(double x)
+fixed fx_sqrt(fixed x)
 {
     if (x <= 0.0)
-        return 0.0;
+        return tf(0.0);
 
-    double r = x;
+    fixed r = x;
     for (int i = 0; i < 10; i++)
-        r = 0.5 * (r + x / r);
+        r = fm(tf(0.5), r + fd(x, r));
 
     return r;
 }
 
-double copysign(double x, double y)
+fixed fx_copysign(fixed x, fixed y)
 {
-    union {
-        double d;
-        uint64_t u;
-    } ux, uy;
-
-    ux.d = x;
-    uy.d = y;
-
-    // Clear sign bit of x, copy sign bit from y
-    ux.u = (ux.u & 0x7FFFFFFFFFFFFFFFULL) |
-           (uy.u & 0x8000000000000000ULL);
-
-    return ux.d;
+    return y < 0 ? -fx_abs(x) : fx_abs(x);
 }
 
-inline int isnan(double x)
+inline int fx_isnan(fixed x)
 {
-    union {
-        double d;
-        uint64_t u;
-    } v = { x };
-
-    /* exponent all 1s, mantissa non-zero */
-    return ((v.u & 0x7FF0000000000000ULL) == 0x7FF0000000000000ULL) &&
-           ((v.u & 0x000FFFFFFFFFFFFFULL) != 0);
+    return 0;
 }
 
-inline int isfinite(double x)
+inline int fx_isfinite(fixed x)
 {
-    union {
-        double d;
-        uint64_t u;
-    } v = { x };
-
-    /* exponent not all 1s */
-    return (v.u & 0x7FF0000000000000ULL) != 0x7FF0000000000000ULL;
+    return 1;
 }

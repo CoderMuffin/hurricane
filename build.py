@@ -103,15 +103,15 @@ def main():
         executable,
         libs=["sdl2"],
         cflags=[
-            "-I", str(ROOT / "hurricane/include"), 
             "-I", str(ROOT / "taylor_math"), 
-            "-O3",
-            "-flto",
+            "-I", str(ROOT / "hurricane/include"), 
+            # "-O3",
+            # "-flto",
             "-Wall", "-Wpedantic", "-Werror", "-fdiagnostics-color=always", "-g"
         ],
         ldflags=[
-            "-lm",
-            "-flto"
+            # "-lm",
+            # "-flto"
         ]
     )
     run([executable])

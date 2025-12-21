@@ -1,5 +1,5 @@
 scene system
-vec with xyz not doubles
+vec with xyz not fixeds
 game storage system (playerprefs?)
 fix obj.c import
-swap double for double or scalar macro
+swap fixed for fixed or scalar macro

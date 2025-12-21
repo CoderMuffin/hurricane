@@ -1,28 +1,28 @@
 #ifndef TAYLOR_MATH_H
 #define TAYLOR_MATH_H
 
-#include <math.h>
+#include "../hurricane/include/hurricane/fixed.h"
+
+#define M_PI 3.1415926535897932
 
 /* Trigonometric */
-double sin(double x);
-double cos(double x);
-double tan(double x);
+fixed fx_sin(fixed x);
+fixed fx_cos(fixed x);
+fixed fx_tan(fixed x);
 
 /* Inverse trigonometric */
-double asin(double x);
-double acos(double x);
-double atan(double x);
-double atan2(double y, double x);
+fixed fx_asin(fixed x);
+fixed fx_acos(fixed x);
+fixed fx_atan(fixed x);
+fixed fx_atan2(fixed y, fixed x);
 
 /* Misc */
-double sqrt(double x);
-double fabs(double x);
-double copysign(double x, double y);
+fixed fx_sqrt(fixed x);
+fixed fx_abs(fixed x);
+fixed fx_copysign(fixed x, fixed y);
 
-#undef isnan
-int isnan(double x);
+int fx_isnan(fixed x);
 
-#undef isfinite
-int isfinite(double x);
+int fx_isfinite(fixed x);
 
 #endif

@@ -2,9 +2,10 @@
 #define HC_GEOMETRY_H
 
 #include <stdio.h>
+#include "fixed.h"
 
 typedef struct hc_geometry {
-  double *vertices;
+  fixed *vertices;
   unsigned int *faces;
   unsigned char *colors;
   unsigned int face_count;

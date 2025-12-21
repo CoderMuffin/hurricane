@@ -12,7 +12,6 @@
 #include <hurricane/clock.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <math.h>
 
 #if 1
   #define KEYW 119
@@ -25,7 +24,7 @@
   #define KEYS 39
   #define KEYD 40
 #endif
-double x_rot, y_rot;
+fixed x_rot, y_rot;
 void noop(void) {}
 
 bool w_down = false, s_down = false, a_down = false, d_down = false;
@@ -36,12 +35,12 @@ hc_object cube2;
 hc_clock gclock;
 hc_anim cube_anim;
 
-double tmpvec[3] = {0.02, 0.02, 0};
-double tmpvecupdate[3];
+fixed tmpvec[3] = {tf(0.02), tf(0.02), tf(0.0)};
+fixed tmpvecupdate[3];
 
-// double curr_second;
+// fixed curr_second;
 // int frames = 0;
-// void fps(double delta) {
+// void fps(fixed delta) {
 //   curr_second += delta;
 //   frames++;
 //   if (curr_second >= 1) {
@@ -73,8 +72,8 @@ void update() {
   hc_render_object(&camera, &cube);
 
   hc_render_object(&camera, &cube2);
-  double delta = hc_clock_step(&gclock);
-  hc_anim_step(&cube_anim, delta*0.1, &cube.rotation);
+  fixed delta = hc_clock_step(&gclock);
+  hc_anim_step(&cube_anim, delta, &cube.rotation);
   // printf("anim: time:%f playing:%d looping:%d\n", cube_anim.time,
   // cube_anim.playing, cube_anim.looping); printf("%f %f %f\n",
   // cube.position[0], cube.position[1], cube.position[2]);
@@ -126,15 +125,15 @@ int main(void) {
               3, hc_animator_quaternion);
   cube_anim.looping = true;
 
-  hc_set_fov(70, rc, false);
+  hc_set_fov(tf(70), rc, false);
   hc_new_object(&cube, &hc_geometry_cube, VEC3(0, 0.8, 0), hc_quaternion_identity,
                 VEC3(0.5, 0.5, 0.5));
   hc_new_object(&camera, &hc_geometry_none, VEC3(0, 0, -3),
-                hc_quaternion_identity, hc_vec3_one);
+                hc_quaternion_identity, VEC3(1, 1, 1));
 
 
   hc_new_object(&cube2, &hc_geometry_cube, VEC3(1.2, 0, 0), hc_quaternion_identity,
-                (double[]){1, 0.2, 0.2});
+                VEC3(1, 0.2, 0.2));
   hc_init(false, -1, hc_renderer_sdl, rc, update);
   return 0;
 }

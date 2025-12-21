@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <hurricane/fixed.h>
 #include <hurricane/geometry.h>
 
 int hc_getline(char **lineptr, size_t *n, FILE *stream) {
@@ -62,8 +63,8 @@ const hc_geometry hc_geometry_none = {
 
 
 const hc_geometry hc_geometry_cube = {
-    .vertices = (double[]){1,  -1, 1, 1,  -1, -1, 1,  1, -1, 1,  1, 1,
-                           -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1},
+    .vertices = (fixed[]){tf(1),  tf(-1), tf(1), tf(1),  tf(-1), tf(-1), tf(1),  tf(1), tf(-1), tf(1),  tf(1), tf(1),
+                           tf(-1), tf(-1), tf(1), tf(-1), tf(-1), tf(-1), tf(-1), tf(1), tf(-1), tf(-1), tf(1), tf(1)},
     .faces =
         (unsigned int[]){4, 0, 3, 4, 3, 7, 0, 1, 2, 0, 2, 3, 1, 5, 6, 1, 6, 2,
                          5, 4, 7, 5, 7, 6, 7, 3, 2, 7, 2, 6, 0, 5, 1, 0, 4, 5},
